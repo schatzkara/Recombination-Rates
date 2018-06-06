@@ -24,7 +24,7 @@ def sim_overlaps(n, L, mu):
 			c = random.randint(1,(L-1))
 			while(t[c] == 'A'):
 				t[c] = random.choice(nucleotides)
-			t = ''.join(t)
+		t = ''.join(t)
 		new.append(t)
 	return new
 
