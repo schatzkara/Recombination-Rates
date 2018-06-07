@@ -74,3 +74,17 @@ def matching_prob(c, m, n, L, x):
 	# else:
 	# 	return 'undefined'
 	return answer1
+
+def expected_overlaps(m, n, L):
+	expected = 0
+	x = min(m,n)
+	for o in range(0,(x+1)):
+		expected += (o * overlapping_prob(o, m, n, L))
+	return expected
+
+def expected_matches(m, n, L):
+	expected = 0
+	y = min(m,n)
+	for c in range(0,(y+1)):
+		expected += (c * matching_prob(c, m, n, L, 3))
+	return expected
