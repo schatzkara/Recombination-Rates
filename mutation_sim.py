@@ -23,8 +23,15 @@ def sim_mutations(n, L, mu):
 		t = list(s)
 		for m in range(mutations):
 			f = random.randint(1,(L-1))
+			# print('the random int is: ' + str(f))
+			# print('the nuc in that spot is: ' + t[f])
+			while(t[f] != 'A'):
+				f = random.randint(1,(L-1))
+				# print('the random int is: ' + str(f))
+			# t[f] = random.choice(nucleotides)
 			while(t[f] == 'A'):
 				t[f] = random.choice(nucleotides)
+				# print('the new nuc in that spot is: ' + t[f])
 		t = ''.join(t)
 		new.append(t)
 	# print(new)
@@ -51,5 +58,4 @@ def sim_mutations(n, L, mu):
 
 
 
-
-# print(sim_mutations(2,10,.50))
+# print(sim_mutations(1,10,0.50))
