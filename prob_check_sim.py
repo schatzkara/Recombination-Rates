@@ -4,23 +4,25 @@ import numpy as np
 import csv
 
 n=2
-mu = .2
-L = 10
-data = {}
+mu = [.05, .1, .25, .5, .75]
 
-total_cms = 0
-for z in range(1000):
-	expected = expected_cms(mu, L)
-	actual = sim_mutations(n, L, mu)
-	total_cms += actual
-	data[z+1] = (total_cms)/(z+1)
-
-with open('sim_data.csv', 'w', newline = '') as f:
-    writer = csv.writer(f)
-    writer.writerow(['sim_num','average_cms'])
-    writer.writerows(data.items())
-print('expected: ' + str(expected)) 
-print(data)
+for L in range(4,16):
+	for m in mu:
+		total_cms = 0
+		data = {}
+		expected = expected_cms(m, L)
+		for z in range(10):
+			# expected = expected_cms(m, L)
+			actual = sim_mutations(n, L, m)
+			total_cms += actual
+			data[z+1] = (total_cms)/(z+1)
+		with open(('sim_data_' + str(L) + '_' + str(m) + '.csv'), 'w', newline = '') as f:
+		    writer = csv.writer(f)
+		    writer.writerow(['sim_num',('average_cms_' + str(m))])
+		    writer.writerows(data.items())
+		    writer.writerow([str(expected)])
+		print('expected: ' + str(expected)) 
+# print(data)
 
 
 # expected = {}

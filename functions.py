@@ -142,4 +142,4 @@ def expected_cms(mu, L):
 		total += prob_cm(c, mu, L)
 	return value
 
-print(1/math.factorial(10000000))
+# print(1/math.factorial(10000000))
