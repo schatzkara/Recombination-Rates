@@ -1,19 +1,18 @@
 from functions import expected_cms 
-from mutation_sim import sim_mutations
+from mutation_sim import sim_equal_mutations
 import numpy as np
 import csv
 
 n=2
-mu = [.05, .1, .25, .5, .75]
+mu = [.2, .4, .6, .8]
 
-for L in range(4,16):
+for L in range(40,50):
 	for m in mu:
 		total_cms = 0
 		data = {}
 		expected = expected_cms(m, L)
-		for z in range(10):
-			# expected = expected_cms(m, L)
-			actual = sim_mutations(n, L, m)
+		for z in range(1000):
+			actual = sim_equal_mutations(n, L, m)
 			total_cms += actual
 			data[z+1] = (total_cms)/(z+1)
 		with open(('sim_data_' + str(L) + '_' + str(m) + '.csv'), 'w', newline = '') as f:

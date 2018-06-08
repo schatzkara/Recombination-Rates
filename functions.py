@@ -41,10 +41,6 @@ def pi_formula(c, o):
 	combos = n_choose_k(o, c)
 	match = (1/3)**c
 	diff = (2/3)**(o-c)
-	# if (combos == 0): 
-	# 	return 0
-	# else:
-	# 	return (match * diff * (1/combos))
 	return (combos * match * diff)
 
 def overlapping_prob(o, m, n, L):
@@ -64,7 +60,6 @@ def overlapping_prob(o, m, n, L):
 		return 0
 	else: 
 		return (overlaps * strain2 * strain1 * (1/(combos1 * combos2)))
-		# return (choose * (1/(combos1 * combos2)))
 
 def matching_prob(c, m, n, L, x):
 	if L <= 0:
@@ -99,18 +94,13 @@ def expected_overlaps(m, n, L):
 	expected = np.longdouble(0)
 	x = min(m,n)
 	for o in range(0,(x+1)):
-		# print(overlapping_prob(o, m, n, L))
 		expected += np.longdouble(o * overlapping_prob(o, m, n, L))
-		# expected += (o * (10 ** overlapping_prob(o, m, n, L)))
-		# print(expected)
-		#log = math.log10(expected)
 	return expected
 
 def expected_matches(m, n, L):
 	expected = np.longdouble(0)
 	y = min(m,n)
 	for c in range(0,(y+1)):
-		# print(matching_prob(c, m, n, L, 3))
 		expected += np.longdouble(c * matching_prob(c, m, n, L, 3))
 	return expected
 
@@ -129,10 +119,8 @@ def prob_cm(c, mu, L):
 					innersum += (x * y * z)
 		outersum = (innersum * pi_formula(c, o))
 		prob.append(outersum)
-		# if pi_formula(c,o) > 1:
 		innersum = 0
 	return sum(prob)
-	# return outersum
 
 def expected_cms(mu, L):
 	value = 0
@@ -141,5 +129,3 @@ def expected_cms(mu, L):
 		value += (c * prob_cm(c, mu, L))
 		total += prob_cm(c, mu, L)
 	return value
-
-# print(1/math.factorial(10000000))
