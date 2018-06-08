@@ -4,6 +4,7 @@ nucleotides = ['A', 'T', 'C', 'G']
 
 def sim_mutations(n, L, mu):
 	totals = {}
+	convergent_mutations = 0
 	strains = []
 	new = []
 	nucleotides = ['A', 'T', 'C', 'G']
@@ -53,9 +54,10 @@ def sim_mutations(n, L, mu):
 					c += 1
 	totals['overlaps'] = o
 	totals['matches'] = c
+	convergent_mutations = c
 
-	return totals
+	return convergent_mutations
 
 
 
-# print(sim_mutations(1,10,0.50))
+# print(sim_mutations(2,10,0.50))

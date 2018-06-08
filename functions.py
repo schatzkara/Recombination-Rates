@@ -6,59 +6,69 @@ def n_choose_k(n, k):
 		if k < 0: 
 			return 0
 		else:
-			num = math.factorial(n)
-			denom = math.factorial(k) * math.factorial(n-k)
-			answer = num/denom
-			return answer
+			num = 1
+			for x in range(n-k+1,n+1):
+				num = num * x
+			denom = math.factorial(k)
+			return num/denom
+	elif k < 0:
+		return 0
 	else:
-		return "undefined"
+		return 0
+
+def multiple(n, w,x,y):
+	if n >= (w + x + y):
+		if w < 0 or (x-w) < 0 or (y-w) < 0:
+			return 0
+		else:
+			num = 1
+			for m in range((n-w-x-y+1),n+1):
+				num = num * m
+			denom = math.factorial(w) * math.factorial(x-w) * math.factorial(y-w)
+			return num/denom
+	elif w < 0 or (x-w) < 0 or (y-w) < 0:
+		return 0
+	else: 
+		return 0
 
 def n_change_k(n, k, x):
 	return ((x**k) * n_choose_k(n, k))
 
-# def pi_wrong(c,o):
-# 	answer = 0
-# 	for k in range(c,(o+1)):
-# 		answer += (((-1)**c) * (n_choose_k(o, k)) * ((-1/3)**k))
-# 	return answer
+def poisson_prob(m, expected):
+	return (math.exp(-expected) * ((expected ** m)/(math.factorial(m))))
 
 def pi_formula(c, o):
-	combos = n_choose_k(o,c)
+	combos = n_choose_k(o, c)
 	match = (1/3)**c
 	diff = (2/3)**(o-c)
-	if(type(combos) is not str):
-		prob = 1/((n_choose_k(o,c))**2)
-		return (combos * prob * match * diff)
-	else:
-		return 'undefined'
+	# if (combos == 0): 
+	# 	return 0
+	# else:
+	# 	return (match * diff * (1/combos))
+	return (combos * match * diff)
 
 def overlapping_prob(o, m, n, L):
+	if L <= 0:
+		return 0
 	if(m < n):
 		temp = m
 		m = n
 		n = temp
+	choose = multiple(L, o, m-o, n-o)
 	overlaps = n_choose_k(L, o)
 	strain2 = n_choose_k((L-o), (n-o))
 	strain1 = n_choose_k((L-n), (m-o))
 	combos1 = n_choose_k(L, m)
 	combos2 = n_choose_k(L, n)
-	# logo = math.log10(overlaps)
-	# logs1 = math.log10(strain1)
-	# logs2 = math.log10(strain2)
-	# logc1 = math.log10(combos1)
-	# logc2 = math.log10(combos2)
-	# print('overlaps: ' + str(overlaps) + 'strain2: ' + str(strain2) + 'strain1: ' + str(strain1) + 'combos1: ' + str(combos1) + 'combos2: ' + str(combos2))
-	if(type(overlaps) is not str and type(strain1) is not str and type(strain2) is not str and type(combos1) is not str and type(combos2) is not str):
-		prob = np.longdouble(1/(combos1 * combos2))
-		# print('prob: ' + str(prob))
-		# print('answer: ' + str(prob * overlaps * strain2 * strain1))
-		answer = np.longdouble(prob * overlaps * strain2 * strain1)
-		return answer
-		# return (logo + logs1 + logs2 + logc1 + logc2)
+	if(combos1 == 0 or combos2 == 0):
+		return 0
 	else: 
-		return 'undefined'
+		return (overlaps * strain2 * strain1 * (1/(combos1 * combos2)))
+		# return (choose * (1/(combos1 * combos2)))
 
 def matching_prob(c, m, n, L, x):
+	if L <= 0:
+		return 0
 	if(m < n):
 		temp = m
 		m = n
@@ -68,18 +78,10 @@ def matching_prob(c, m, n, L, x):
 	strain1 = n_change_k((L-n), (m-c), x)
 	combos1 = n_change_k(L, m, x)
 	combos2 = n_change_k(L, n, x)
-	# logm = math.log10(matches)
-	# logs1 = math.log10(strain1)
-	# logs2 = math.log10(strain2)
-	# logc1 = math.log10(combos1)
-	# logc2 = math.log10(combos2)
-	if(type(matches) is not str and type(strain1) is not str and type(strain2) is not str and type(combos1) is not str and type(combos2) is not str):
-		prob = np.longdouble(1/(combos1 * combos2))
-		answer1 = np.longdouble(prob * matches * strain2 * strain1)
-		# loganswer = (logm + logs1 + logs2 + logc1 + logc2)
-	else: 
-		answer1 = 'undefined'
-		# loganswer = 'undefined'
+	if(combos1 == 0 or combos2 == 0):
+		return 0
+	else:
+		return (matches * strain2 * strain1 * (1/(combos1 * combos2)))
 	# if(type(overlapping_prob(c, m, n, L)) is not str):
 	# 	answer2 = (((1/3) ** c) * overlapping_prob(c, m, n, L))
 	# else:
@@ -91,8 +93,7 @@ def matching_prob(c, m, n, L, x):
 	# 	return answer1 - answer2
 	# else:
 	# 	return 'undefined'
-	return answer1
-	# return loganswer
+	# return answer1
 
 def expected_overlaps(m, n, L):
 	expected = np.longdouble(0)
@@ -112,3 +113,53 @@ def expected_matches(m, n, L):
 		# print(matching_prob(c, m, n, L, 3))
 		expected += np.longdouble(c * matching_prob(c, m, n, L, 3))
 	return expected
+
+def prob_cm(c, mu, L):
+	expected_value = mu*L
+	innersum = 0
+	outersum = 0
+	for o in range(L+1):
+		for m1 in range(L+1):
+			for m2 in range(m1+1):
+				if L > 0:
+					x = poisson_prob(m1, expected_value)
+					y = poisson_prob(m2, expected_value)
+					z = overlapping_prob(o, m1, m2, L)
+					# if(z > 1):
+					# 	print('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
+					# print("PoisX = " + str(m1) + '	' + str(x))
+					# print("PoisY = " + str(m2) + '	' + str(y))
+					# print(z)
+					# print('the prob of ' + str(o) + ' overlaps w ' + str(m1) + ' and ' + str(m2) + ' is: ' + str(x*y*z))
+					innersum += (x * y * z)
+					# print('innersum: ' + str(innersum))
+		#print('innersum: ' + str(innersum))
+		#print('pi(' + str(c) + ',' + str(o) + ')' + str(pi_formula(c, o)))
+		outersum += (innersum * pi_formula(c, o))
+		# if pi_formula(c,o) > 1:
+		print(pi_formula(c,o))
+			# print('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
+		# print('outersum: ' + str(outersum))
+	# print('					UHHHHH')
+	print('outersum: ' + str(outersum))
+	return outersum
+
+def expected_cms(mu, L):
+	value = 0
+	total = 0
+	for c in range(L+1):
+		print('								' + str(c))
+		value += (c * prob_cm(c, mu, L))
+		total += prob_cm(c, mu, L)
+		# print(c)
+		# if (prob_cm(c,mu,L)) > 1:
+		# 	print('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
+		# print('value: ' + str(value)) # str(prob_cm(c,mu,L)))
+	if(total > 1):
+		print('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
+		print(total)
+	if total == 1:
+		print('I AM A GODDESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
+		print(total)
+	print(value)
+	return value
