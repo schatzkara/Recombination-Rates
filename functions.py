@@ -118,48 +118,28 @@ def prob_cm(c, mu, L):
 	expected_value = mu*L
 	innersum = 0
 	outersum = 0
+	prob = []
 	for o in range(L+1):
 		for m1 in range(L+1):
-			for m2 in range(m1+1):
+			for m2 in range(L+1):
 				if L > 0:
 					x = poisson_prob(m1, expected_value)
 					y = poisson_prob(m2, expected_value)
 					z = overlapping_prob(o, m1, m2, L)
-					# if(z > 1):
-					# 	print('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-					# print("PoisX = " + str(m1) + '	' + str(x))
-					# print("PoisY = " + str(m2) + '	' + str(y))
-					# print(z)
-					# print('the prob of ' + str(o) + ' overlaps w ' + str(m1) + ' and ' + str(m2) + ' is: ' + str(x*y*z))
 					innersum += (x * y * z)
-					# print('innersum: ' + str(innersum))
-		#print('innersum: ' + str(innersum))
-		#print('pi(' + str(c) + ',' + str(o) + ')' + str(pi_formula(c, o)))
-		outersum += (innersum * pi_formula(c, o))
+		outersum = (innersum * pi_formula(c, o))
+		prob.append(outersum)
 		# if pi_formula(c,o) > 1:
-		print(pi_formula(c,o))
-			# print('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-		# print('outersum: ' + str(outersum))
-	# print('					UHHHHH')
-	print('outersum: ' + str(outersum))
-	return outersum
+		innersum = 0
+	return sum(prob)
+	# return outersum
 
 def expected_cms(mu, L):
 	value = 0
 	total = 0
 	for c in range(L+1):
-		print('								' + str(c))
 		value += (c * prob_cm(c, mu, L))
 		total += prob_cm(c, mu, L)
-		# print(c)
-		# if (prob_cm(c,mu,L)) > 1:
-		# 	print('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-		# print('value: ' + str(value)) # str(prob_cm(c,mu,L)))
-	if(total > 1):
-		print('AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
-		print(total)
-	if total == 1:
-		print('I AM A GODDESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
-		print(total)
-	print(value)
 	return value
+
+print(1/math.factorial(10000000))

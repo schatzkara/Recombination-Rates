@@ -1,35 +1,26 @@
 from functions import expected_cms 
 from mutation_sim import sim_mutations
 import numpy as np
-# import xlwt
+import csv
 
 n=2
-mu = .5
-L = 40
+mu = .2
+L = 10
 data = {}
-# book = xlwt.Workbook()
-# sheet = book.add_sheet(sheet)
-# variables = [x, y, z]
-# x_desc = 'Simulation Number'
-# y_desc = 'Average Number of CMs'
-# desc = [x_desc, y_desc]
-# col1_name = 'SimNum'
-# col2_name = 'CMs'
 
 total_cms = 0
-# for z in range(1):
-expected = expected_cms(mu, L)
-actual = sim_mutations(n, L, mu)
-total_cms += actual
-data[1] = (total_cms)/(1)
-# sheet.write()
-	# print('trial ' + str(z+1))
-	# print('the actual cms: ' + str(actual))
+for z in range(1000):
+	expected = expected_cms(mu, L)
+	actual = sim_mutations(n, L, mu)
+	total_cms += actual
+	data[z+1] = (total_cms)/(z+1)
 
+with open('sim_data.csv', 'w', newline = '') as f:
+    writer = csv.writer(f)
+    writer.writerow(['sim_num','average_cms'])
+    writer.writerows(data.items())
 print('expected: ' + str(expected)) 
 print(data)
-
-# book.save(sim.csv)
 
 
 # expected = {}
