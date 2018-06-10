@@ -81,7 +81,14 @@ def sim_unequal_mutations(n, L, mu):
 		f = random.randint((L-1), mutations, replace=False)
 		for m in f:
 			current = t[m]
-			t[m] = random.choice(nucleotides, p=weights_A)
+			if current == 'A':
+				t[m] = random.choice(nucleotides, p=weights_A)
+			elif current == 'T':
+				t[m] = random.choice(nucleotides, p=weights_T)
+			elif current == 'C':
+				t[m] = random.choice(nucleotides, p=weights_C)
+			elif current == 'G':
+				t[m] = random.choice(nucleotides, p=weights_G)
 		t = ''.join(t)
 		new.append(t)
 
