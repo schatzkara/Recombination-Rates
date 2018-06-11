@@ -5,6 +5,7 @@ import numpy as np
 # assumes equal probabilities of C,T,G
 # forces a mutation
 # and does not allow for multiple mutations in one site
+# time comlexity: O(n^3), where n is the bigger of n and L; technically it's n^3 + n^2 + n
 def sim_equal_mutations(n, L, mu):
 	totals = {}
 	convergent_mutations = 0
@@ -13,13 +14,15 @@ def sim_equal_mutations(n, L, mu):
 	nucleotides = ['A', 'T', 'C', 'G']
 
 	# creates the initial strains
+	# time complexity: O(n), where n is the bigger of L and n; technically it's L+n
+	s = ''
+	for y in range(L):
+		s+='A'
 	for x in range(n):
-		s = ''
-		for y in range(L):
-			s+='A'
 		strains.append(s)
 
 	# mutates the strains
+	# time complexity: O(n^2), where n is the bigger of n adn mu*L; technically it's n*mu*L
 	mutations = int(mu * L)
 	for s in strains:
 		t = list(s)
@@ -33,6 +36,7 @@ def sim_equal_mutations(n, L, mu):
 		new.append(t)
 
 	# counts up actual o and c values
+	# time complexity: O(n^3), where n is the bigger of n and L; technically it's n^2 * L
 	o = 0
 	c = 0
 	for a in range(len(new)):
@@ -56,6 +60,7 @@ def sim_equal_mutations(n, L, mu):
 # factors in the probabilites of A,T,C,G
 # allows 'mutation' to itself******************
 # does not allow for multiple mutations in one spot
+# time complexity: O(n^3), where n is the bigger of n and L; technically it's n^3 + n^2 + n
 def sim_unequal_mutations(n, L, mu):
 	totals = {}
 	convergent_mutations = 0
@@ -68,6 +73,7 @@ def sim_unequal_mutations(n, L, mu):
 	weights_C = [0.2, 0.5, 0.2, 0.1]
 
 	# creates the initial strains
+	# time comlexity: O(n), where n is the bigger of L and n; technically it's L+n
 	ancestor = ''
 	for y in range(L):
 		ancestor+=random.choice(nucleotides)
@@ -75,6 +81,7 @@ def sim_unequal_mutations(n, L, mu):
 		strains.append(ancestor)
 
 	# mutates the strains
+	# time complexity: O(n^2), where n is the bigger of n and mu*L; technically it's n*mu*L
 	mutations = int(mu * L)
 	for child in strains:
 		t = list(child)
@@ -93,6 +100,7 @@ def sim_unequal_mutations(n, L, mu):
 		new.append(t)
 
 	# counts up actual o and c values
+	# time complexity: O(n^3), where n is the bigger of n and L; technically it's n^2 * L
 	o = 0
 	c = 0
 	for a in range(len(new)):

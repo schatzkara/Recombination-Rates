@@ -1,6 +1,7 @@
 import math
 import numpy as np
 
+# time complexity: O(1)
 def n_choose_k(n, k):
 	if n >= k:
 		if k < 0: 
@@ -16,6 +17,7 @@ def n_choose_k(n, k):
 	else:
 		return 0
 
+# time complexity: O(1)
 def multiple(n, w,x,y):
 	if n >= (w + x + y):
 		if w < 0 or (x-w) < 0 or (y-w) < 0:
@@ -31,18 +33,22 @@ def multiple(n, w,x,y):
 	else: 
 		return 0
 
+# time complexity: O(1)
 def n_change_k(n, k, x):
 	return ((x**k) * n_choose_k(n, k))
 
+# time complexity: O(1)
 def poisson_prob(m, expected):
 	return (math.exp(-expected) * ((expected ** m)/(math.factorial(m))))
 
+# time complexity: O(1)
 def pi_formula(c, o):
 	combos = n_choose_k(o, c)
 	match = (1/3)**c
 	diff = (2/3)**(o-c)
 	return (combos * match * diff)
 
+# time complexity: O(1)
 def overlapping_prob(o, m, n, L):
 	if L <= 0:
 		return 0
@@ -61,6 +67,7 @@ def overlapping_prob(o, m, n, L):
 	else: 
 		return (overlaps * strain2 * strain1 * (1/(combos1 * combos2)))
 
+# time complexity: O(1)
 def matching_prob(c, m, n, L, x):
 	if L <= 0:
 		return 0
@@ -90,6 +97,7 @@ def matching_prob(c, m, n, L, x):
 	# 	return 'undefined'
 	# return answer1
 
+# time complexity: O(n), where n is the smaller of m and n
 def expected_overlaps(m, n, L):
 	expected = np.longdouble(0)
 	x = min(m,n)
@@ -97,6 +105,7 @@ def expected_overlaps(m, n, L):
 		expected += np.longdouble(o * overlapping_prob(o, m, n, L))
 	return expected
 
+# time complexity: O(n), where n is the smaller of m and n
 def expected_matches(m, n, L):
 	expected = np.longdouble(0)
 	y = min(m,n)
@@ -104,6 +113,7 @@ def expected_matches(m, n, L):
 		expected += np.longdouble(c * matching_prob(c, m, n, L, 3))
 	return expected
 
+# time complexity: O(n^3), where n is L
 def prob_cm(c, mu, L):
 	expected_value = mu*L
 	innersum = 0
@@ -122,6 +132,7 @@ def prob_cm(c, mu, L):
 		innersum = 0
 	return sum(prob)
 
+# time complexity: O(n), where n is L
 def expected_cms(mu, L):
 	value = 0
 	total = 0

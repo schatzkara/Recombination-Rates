@@ -3,10 +3,11 @@ from mutation_sim import sim_equal_mutations
 import numpy as np
 import csv
 
+# time complexity: O(n^3)
 n=2
 mu = [.2, .4, .6, .8]
 
-for L in range(40,50):
+for L in range(41,101):
 	for m in mu:
 		total_cms = 0
 		data = {}
