@@ -67,6 +67,7 @@ def theta_value(species):
 def nucleotide_composition(species):
 	GC_comp = []
 	strains = list(species.values())
+	values = []
 	for strain in strains:
 		GC = 0
 		for k in range(len(strain)):
@@ -77,7 +78,9 @@ def nucleotide_composition(species):
 	# print('The STD of GC composition is ' + str(np.std(GC_comp)))
 	# return (str(np.mean(GC_comp)) + ' with STD ' + str(np.std(GC_comp)))
 	# return np.mean(GC_comp)
-	return [str(np.mean(GC_comp)), str(np.std(GC_comp))]
+	values.append(np.mean(GC_comp))
+	values.append(np.std(GC_comp))
+	return values
 
 # time complexity: O(n^4), where n is the biggest of the number of files, the number of lines in the files, the number of strains, and the length of the strains; technically, it's n^4 + 2n^3 + n^2
 path = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/concatenates'
@@ -86,10 +89,10 @@ with open(('species_params.csv'), 'w', newline = '') as f:
 	writer.writerow(['species', 'pi', 'theta', 'GC%', 'STDev'])
 	for filename in glob.glob(os.path.join(path, '*.fa')):
 		species = read_in_strains(filename)
-		name = filename.strip('C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/concatenates')
+		name = filename.strip('C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/concatenates').strip('\concat_').strip('.fa')
 		pi = str(pi_value(species))
 		theta = str(theta_value(species))
-		GC_comp = str(nucleotide_composition(species))
+		GC_comp = list(nucleotide_composition(species))
 		GC_average = GC_comp[0]
 		GC_stdev = GC_comp[1]
 
