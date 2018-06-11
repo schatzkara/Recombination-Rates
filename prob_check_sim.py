@@ -3,7 +3,7 @@ from mutation_sim import sim_equal_mutations
 import numpy as np
 import csv
 
-# time complexity: O(n^3)
+# time complexity: O(n^6); technically it's 2n^6
 n=2
 mu = [.2, .4, .6, .8]
 

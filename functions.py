@@ -132,7 +132,7 @@ def prob_cm(c, mu, L):
 		innersum = 0
 	return sum(prob)
 
-# time complexity: O(n), where n is L
+# time complexity: O(n^4), where n is L
 def expected_cms(mu, L):
 	value = 0
 	total = 0
