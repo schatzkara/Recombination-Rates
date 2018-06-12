@@ -61,22 +61,18 @@ def sim_equal_mutations(n, L, mu):
 # allows 'mutation' to itself******************
 # does not allow for multiple mutations in one spot
 # time complexity: O(n^3), where n is the bigger of n and L; technically it's n^3 + n^2 + n
-def sim_unequal_mutations(n, L, mu, kappa):
-	alpha = (mu * kappa)/(kappa + 1) # mu / (1 + (2/kappa)) # probability of transitions
-	beta = mu/(kappa + 1) # mu / (kappa + 2) # probability of transversions
+def sim_unequal_mutations(n, L, mu, kappa, phi):
+	alpha = (mu * kappa)/(kappa + 1) # probability of transitions
+	beta = mu/(kappa + 1) # probability of transversions
 	totals = {}
 	convergent_mutations = 0
 	strains = []
 	new = []
 	nucleotides = ['A', 'T', 'G', 'C']
-	weights_A = [(1-mu), (beta/2), alpha, (beta/2)]
-	# print(sum(weights_A))
-	weights_T = [(beta/2), (1-mu), (beta/2), alpha]
-	# print(sum(weights_T))
-	weights_G = [alpha, (beta/2), (1-mu), (beta/2)]
-	# print(sum(weights_T))
-	weights_C = [(beta/2), alpha, (beta/2), (1-mu)]
-	# print(sum(weights_C))
+	weights_A = [(1-mu), (beta*phi), alpha, (beta*(1-phi))]
+	weights_T = [(beta*phi), (1-mu), (beta*(1-phi)), alpha]
+	weights_G = [alpha, (beta*(1-phi)), (1-mu), (beta*phi)]
+	weights_C = [(beta*(1-phi)), alpha, (beta*phi), (1-mu)]
 
 	# creates the initial strains
 	# time comlexity: O(n), where n is the bigger of L and n; technically it's L+n

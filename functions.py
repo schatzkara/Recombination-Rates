@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from scipy import stats
 
 # time complexity: O(1)
 def n_choose_k(n, k):
@@ -39,7 +40,22 @@ def n_change_k(n, k, x):
 
 # time complexity: O(1)
 def poisson_prob(m, expected):
-	return (math.exp(-expected) * ((expected ** m)/(math.factorial(m))))
+	return stats.poisson.pmf(m, expected)
+	# return (math.exp(-expected) * ((expected ** m)/(math.factorial(m))))
+
+def cumulative_poisson_prob(L, expected):
+	return stats.poisson.cdf(L, expected)
+	# factor = math.exp(-expected)
+	# summation = 0
+	# for i in range(L+1):
+	# 	summation += ((expected ** i) / (math.factorial(i)))
+	# return (factor * summation)
+
+def binomial_prob(m, mu, L):
+	combos = n_choose_k(L, m)
+	match = mu**m
+	diff = (1-mu)**(L-m)
+	return (combos * match * diff)
 
 # time complexity: O(1)
 def pi_formula(c, o):
@@ -132,10 +148,11 @@ def prob_cm(c, mu, L):
 		for m1 in range(L+1):
 			for m2 in range(L+1):
 				if L > 0:
+					w = cumulative_poisson_prob(L, expected_value)
 					x = poisson_prob(m1, expected_value)
 					y = poisson_prob(m2, expected_value)
 					z = overlapping_prob(o, m1, m2, L)
-					innersum += (x * y * z)
+					innersum += (((x * y) / w**2) * z)
 		outersum = (innersum * pi_formula(c, o))
 		prob.append(outersum)
 		innersum = 0
@@ -143,6 +160,7 @@ def prob_cm(c, mu, L):
 
 def better_prob_cm(c, mu, L, kappa):
 	expected_value = mu*L
+	# w = cumulative_poisson_prob(L, expected_value)
 	innersum = 0
 	outersum = 0
 	prob = []
@@ -150,9 +168,13 @@ def better_prob_cm(c, mu, L, kappa):
 		for m1 in range(L+1):
 			for m2 in range(L+1):
 				if L > 0:
+					# w = cumulative_poisson_prob(L, expected_value)
 					x = poisson_prob(m1, expected_value)
 					y = poisson_prob(m2, expected_value)
+					# x = binomial_prob(m1, mu, L)
+					# y = binomial_prob(m2, mu, L)
 					z = overlapping_prob(o, m1, m2, L)
+					# innersum += (((x * y) / w**2) * z)
 					innersum += (x * y * z)
 		outersum = (innersum * pi_bar_formula(c, o, mu, kappa))
 		prob.append(outersum)
