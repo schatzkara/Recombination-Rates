@@ -11,7 +11,7 @@ def sim_equal_mutations(n, L, mu):
 	convergent_mutations = 0
 	strains = []
 	new = []
-	nucleotides = ['A', 'T', 'C', 'G']
+	nucleotides = ['A', 'T', 'G', 'C']
 
 	# creates the initial strains
 	# time complexity: O(n), where n is the bigger of L and n; technically it's L+n
@@ -61,16 +61,22 @@ def sim_equal_mutations(n, L, mu):
 # allows 'mutation' to itself******************
 # does not allow for multiple mutations in one spot
 # time complexity: O(n^3), where n is the bigger of n and L; technically it's n^3 + n^2 + n
-def sim_unequal_mutations(n, L, mu):
+def sim_unequal_mutations(n, L, mu, kappa):
+	alpha = (mu * kappa)/(kappa + 1) # mu / (1 + (2/kappa)) # probability of transitions
+	beta = mu/(kappa + 1) # mu / (kappa + 2) # probability of transversions
 	totals = {}
 	convergent_mutations = 0
 	strains = []
 	new = []
-	nucleotides = ['A', 'T', 'C', 'G']
-	weights_A = [0.2, 0.5, 0.2, 0.1]
-	weights_T = [0.2, 0.5, 0.2, 0.1]
-	weights_G = [0.2, 0.5, 0.2, 0.1]
-	weights_C = [0.2, 0.5, 0.2, 0.1]
+	nucleotides = ['A', 'T', 'G', 'C']
+	weights_A = [(1-mu), (beta/2), alpha, (beta/2)]
+	# print(sum(weights_A))
+	weights_T = [(beta/2), (1-mu), (beta/2), alpha]
+	# print(sum(weights_T))
+	weights_G = [alpha, (beta/2), (1-mu), (beta/2)]
+	# print(sum(weights_T))
+	weights_C = [(beta/2), alpha, (beta/2), (1-mu)]
+	# print(sum(weights_C))
 
 	# creates the initial strains
 	# time comlexity: O(n), where n is the bigger of L and n; technically it's L+n
@@ -82,20 +88,18 @@ def sim_unequal_mutations(n, L, mu):
 
 	# mutates the strains
 	# time complexity: O(n^2), where n is the bigger of n and mu*L; technically it's n*mu*L
-	mutations = int(mu * L)
 	for child in strains:
 		t = list(child)
-		f = random.randint((L-1), mutations, replace=False)
-		for m in f:
-			current = t[m]
+		for s in range(len(t)):
+			current = t[s]
 			if current == 'A':
-				t[m] = random.choice(nucleotides, p=weights_A)
+				t[s] = (random.choices(nucleotides, weights=weights_A, k=1))[0]
 			elif current == 'T':
-				t[m] = random.choice(nucleotides, p=weights_T)
-			elif current == 'C':
-				t[m] = random.choice(nucleotides, p=weights_C)
+				t[s] = (random.choices(nucleotides, weights=weights_T, k=1))[0]
 			elif current == 'G':
-				t[m] = random.choice(nucleotides, p=weights_G)
+				t[s] = (random.choices(nucleotides, weights=weights_G, k=1))[0]
+			elif current == 'C':
+				t[s] = (random.choices(nucleotides, weights=weights_C, k=1))[0]
 		t = ''.join(t)
 		new.append(t)
 
@@ -117,5 +121,6 @@ def sim_unequal_mutations(n, L, mu):
 	totals['overlaps'] = o
 	totals['matches'] = c
 	convergent_mutations = c
-
+	# print(ancestor)
+	# print(new)
 	return convergent_mutations

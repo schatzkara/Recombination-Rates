@@ -48,6 +48,15 @@ def pi_formula(c, o):
 	diff = (2/3)**(o-c)
 	return (combos * match * diff)
 
+def pi_bar_formula(c, o, mu, kappa):
+	combos = n_choose_k(o, c)
+	alpha = (mu * kappa)/(kappa + 1) # mu / (1 + (2/kappa)) # probability of transitions
+	beta = mu/(kappa + 1) # mu / (kappa + 2) # probability of transversions
+	prob_convergent = ((2 + 4*(kappa**2))/((2 + 2*kappa)**2)) # ((2 + kappa**2)/((2 + kappa)*2)) # (beta**2)/2 + alpha**2
+	match = (prob_convergent)**c 
+	diff = (1 - prob_convergent)**(o-c)
+	return (combos * match * diff)
+
 # time complexity: O(1)
 def overlapping_prob(o, m, n, L):
 	if L <= 0:
@@ -132,11 +141,38 @@ def prob_cm(c, mu, L):
 		innersum = 0
 	return sum(prob)
 
+def better_prob_cm(c, mu, L, kappa):
+	expected_value = mu*L
+	innersum = 0
+	outersum = 0
+	prob = []
+	for o in range(L+1):
+		for m1 in range(L+1):
+			for m2 in range(L+1):
+				if L > 0:
+					x = poisson_prob(m1, expected_value)
+					y = poisson_prob(m2, expected_value)
+					z = overlapping_prob(o, m1, m2, L)
+					innersum += (x * y * z)
+		outersum = (innersum * pi_bar_formula(c, o, mu, kappa))
+		prob.append(outersum)
+		innersum = 0
+	return sum(prob)
+
 # time complexity: O(n^4), where n is L
 def expected_cms(mu, L):
 	value = 0
-	total = 0
+	# total = 0
 	for c in range(L+1):
 		value += (c * prob_cm(c, mu, L))
-		total += prob_cm(c, mu, L)
+		# total += prob_cm(c, mu, L)
+	return value
+
+def better_expected_cms(mu, L, kappa):
+	value = 0
+	# total = 0
+	for c in range(L+1):
+		value += (c * better_prob_cm(c, mu, L, kappa))
+		# total += better_prob_cm(c, mu, L, kappa)
+	# print(total)
 	return value

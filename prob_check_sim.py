@@ -21,6 +21,7 @@ for L in range(41,101):
 		    writer.writerow(['sim_num',('average_cms_' + str(m))])
 		    writer.writerows(data.items())
 		    writer.writerow([str(expected)])
+		    writer.writerow([((m**2)/3) * L])
 		print('expected: ' + str(expected)) 
 # print(data)
 
