@@ -1,3 +1,7 @@
+#! python3
+
+# script to simulate DNA sequences mutating and detect the number of convergent mutations between them
+
 import random
 import numpy as np
 
@@ -56,19 +60,23 @@ def sim_equal_mutations(n, L, mu):
 
 	return convergent_mutations
 
-# this sim starts 2 identical but random strands
-# factors in the probabilites of A,T,C,G
-# allows 'mutation' to itself******************
-# does not allow for multiple mutations in one spot
-# time complexity: O(n^3), where n is the bigger of n and L; technically it's n^3 + n^2 + n
+# simulation to mutate DNA strands and count up the total number of convergent mutations between them 
+# starts with identical but random strands; factors in the probabilites of A,T,C,G; allows 'mutation' to itself************; does not allow for multiple mutations in one spot
+# params: 
+# 	n (int) = number of DNA strands
+# 	L (int) = length of the DNA strands
+# 	mu (float) = mutation rate (units: mutations per base pair per generation)
+# 	kappa (float) = ratio of transitions to transversions
+# 	phi (float) = probability of transversion to its complementary base pair 
+# return: int that equals the total number of convergent mutations between all pairs of DNA strands
+# time complexity: O(n^3), where n is the bigger of n and L; technically it's n^3 + n^2 + n (actually n^2 * L + n*L + n + L)
 def sim_unequal_mutations(n, L, mu, kappa, phi):
 	alpha = (mu * kappa)/(kappa + 1) # probability of transitions
 	beta = mu/(kappa + 1) # probability of transversions
-	totals = {}
-	convergent_mutations = 0
-	strains = []
-	new = []
+	strains = [] # list of the original DNA sequences
+	new = [] # list of the mutated DNA sequences
 	nucleotides = ['A', 'T', 'G', 'C']
+	# the following are the probabilites of mutating to each of the nucleotides or staying the same depending on the original nucleotide
 	weights_A = [(1-mu), (beta*phi), alpha, (beta*(1-phi))]
 	weights_T = [(beta*phi), (1-mu), (beta*(1-phi)), alpha]
 	weights_G = [alpha, (beta*(1-phi)), (1-mu), (beta*phi)]
@@ -77,16 +85,16 @@ def sim_unequal_mutations(n, L, mu, kappa, phi):
 	# creates the initial strains
 	# time comlexity: O(n), where n is the bigger of L and n; technically it's L+n
 	ancestor = ''
-	for y in range(L):
+	for y in range(L): # builds a random ancestor strand of length L
 		ancestor+=random.choice(nucleotides)
-	for x in range(n):
+	for x in range(n): # duplicates the ancestor to generate n strains
 		strains.append(ancestor)
 
 	# mutates the strains
-	# time complexity: O(n^2), where n is the bigger of n and mu*L; technically it's n*mu*L
+	# time complexity: O(n^2), where n is the bigger of n and L; technically it's n*L
 	for child in strains:
 		t = list(child)
-		for s in range(len(t)):
+		for s in range(len(t)): # goes through each nucleotide and mutates it or keeps it the same
 			current = t[s]
 			if current == 'A':
 				t[s] = (random.choices(nucleotides, weights=weights_A, k=1))[0]
@@ -101,11 +109,12 @@ def sim_unequal_mutations(n, L, mu, kappa, phi):
 
 	# counts up actual o and c values
 	# time complexity: O(n^3), where n is the bigger of n and L; technically it's n^2 * L
-	o = 0
-	c = 0
-	for a in range(len(new)):
-		strain1 = list(new[a])
-		for b in range((a+1),len(new)):
+	o = 0 # counter for number of overlapping sites
+	c = 0 # counter for number of overlapping and matching sites aka convergent sites
+	totals = {} # dictionary to hold the total overlaps and matches (key: site type, value: number)
+	for a in range(len(new)): # uses each strain as 'strain1'
+		strain1 = list(new[a]) 
+		for b in range((a+1),len(new)): # uses each other strain to which it has not yet been compared as 'strain2'
 			strain2 = list(new[b])
 			for d in range(len(strain1)):
 				# counts up the number of overlapping mutation sites
@@ -116,7 +125,4 @@ def sim_unequal_mutations(n, L, mu, kappa, phi):
 						c += 1
 	totals['overlaps'] = o
 	totals['matches'] = c
-	convergent_mutations = c
-	# print(ancestor)
-	# print(new)
-	return convergent_mutations
+	return c
