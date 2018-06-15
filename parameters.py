@@ -1,6 +1,6 @@
 #! python3
 
-# script to estimate Pi, Theta and the nucleotide composition (GC%) of each clonal species
+# script to estimate Pi, Theta, and the nucleotide composition (GC%) of each clonal species
 
 import numpy as np
 import os 
@@ -74,7 +74,7 @@ def theta_value(species):
 	return theta
 
 # this function finds the nucleotide composition (GC%) of the entire species
-# units: # of GC sties / length
+# units: # of GC sites / length
 # params: 
 # 	species (dict) = where the values are the genomes of different strains
 # return: list that contains the average GC% of all the strains and the standard deviation
@@ -102,7 +102,7 @@ def nucleotide_composition(species):
 # runs the functions to get pi, theta, GC% average, and GC% standard deviation for each species and write them into a .csv file
 # time complexity: O(n^4), where n is the length of the strains
 path = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/concatenates' # path where the .fa files are located 
-with open(('species_params2.csv'), 'w', newline = '') as f: 
+with open(('species_params3.csv'), 'w', newline = '') as f: 
 	writer = csv.writer(f)
 	writer.writerow(['species', 'pi', 'theta', 'GC%', 'STDev']) # column headers
 	for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for each species
