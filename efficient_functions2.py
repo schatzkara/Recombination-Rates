@@ -30,7 +30,7 @@ def multiple(L, o, m1, m2):
 # time complexity: 0(1)
 def pi_bar_formula(c, o, kappa, phi):
 	prob = (kappa**2 + 1 - 2*phi + 2*(phi)**2)/((kappa+1)**2) # the probability of some convergent mutation aka a 'success' in the binomial probability
-	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability function
+	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
 
 # function to calculate P(o;m1,m2,L): the probability of o overlapping sites given m1 and m2 mutations on strain 1 and strain 2 respectively
 # params:
@@ -38,14 +38,16 @@ def pi_bar_formula(c, o, kappa, phi):
 # 	m1 (int) = mutations in strain 1
 # 	m2 (int) = mutations in strain 2
 # 	L (int) = length of DNA strand
+# 	mutation_combos (list of ints) = ordered values of 'L choose m' for m = 0 to L
 # return: float that equals the probability of o given m1 and m2
 # time complexity: O(1)
-def overlapping_prob(o, m1, m2, L):
+def overlapping_prob(o, m1, m2, L, mutation_combos):
 	if(m1 < m2): # forces m1 > m2 WLOG for computational ease
 		temp = m1
 		m1 = m2
 		m2 = temp
-	combos = (special.comb(L,m1,exact=False,repetition=False) * special.comb(L,m2,exact=False,repetition=False)) # total number of ways to place m1 and m2 along L
+	combos = mutation_combos[m1] * mutation_combos[m2]
+	# combos = (special.comb(L,m1,exact=False,repetition=False) * special.comb(L,m2,exact=False,repetition=False)) # total number of ways to place m1 and m2 along L
 	return (multiple(L, o, m1, m2) / combos) 
 
 # function to calcluate P(c): the probability of c convergent mutations over all values of o,m1,m2
@@ -86,23 +88,26 @@ def prob_cm(c, mu, L):
 # 	kappa (float) = ratio of transitions to transversions
 # 	phi (float) = probability of transversion to its complementary base pair
 # 	mu_probs (list of floats) = ordered list of the Poisson probabilites for m = 0 to L
+# 	mutation_combos (list of ints) = ordered values of 'L choose m' for m = 0 to L
 # return: float that equals the total probability of c (over all values of o,m1,m2)
 # time complexity: O(n^3), where n is L
-def better_prob_cm(c, mu, L, kappa, phi, mu_probs):
+def better_prob_cm(c, mu, L, kappa, phi, mu_probs, mutation_combos):
 	innersum = 0 # counter for sum of the inner 2 summations
 	outersum = 0 # counter for the total summation
-	prob = [] # list to hold the proabilities of c for each combination of m1,m2,L
+	# prob = [] # list to hold the proabilities of c for each combination of m1,m2,L
+
 	for o in range(L+1):
 		for m1 in range(L+1):
 			for m2 in range(L+1):
 				x = mu_probs[m1]
 				y = mu_probs[m2]
-				z = overlapping_prob(o, m1, m2, L)
+				z = overlapping_prob(o, m1, m2, L, mutation_combos)
 				innersum += (x * y * z)
-		outersum = (innersum * pi_bar_formula(c, o, kappa, phi))
-		prob.append(outersum)
+		outersum += (innersum * pi_bar_formula(c, o, kappa, phi))
+		# prob.append(outersum)
 		innersum = 0
-	return sum(prob)
+	return outersum
+	# return sum(prob)
 
 # function to calculate the expected number of convergent mutations for a given mutation rate and DNA sequence length
 # assumes that the probability of switching to each other nucleotide is equivalent
@@ -131,10 +136,12 @@ def expected_cms(mu, L):
 def better_expected_cms(mu, L, kappa, phi):
 	value = 0
 	# expected = mu*L
-	mu_probs = (L+1)*[None]
-	for m in range(L+1): # creates an ordered list of the Poisson probabilities for m = 0 to L
+	mu_probs = (L+1)*[None] # will be populated as an ordered list of the Poisson probabilities for m = 0 to L
+	mutation_combos = (L+1)*[None] # will be populated as an ordered list of 'L choose m' for m = 0 to L
+	for m in range(L+1): 
 		mu_probs[m] = stats.poisson.pmf(m,(mu*L))
+		mutation_combos[m] = special.comb(L,m,exact=False,repetition=False)
 
 	for c in range(L+1): # calculates the expected value
-		value += (c * better_prob_cm(c, mu, L, kappa, phi, mu_probs))
+		value += (c * better_prob_cm(c, mu, L, kappa, phi, mu_probs, mutation_combos))
 	return value

@@ -6,10 +6,13 @@ import random
 import numpy as np
 
 # this sim starts with all As
-# assumes equal probabilities of C,T,G
-# forces a mutation
-# and does not allow for multiple mutations in one site
-# time comlexity: O(n^3), where n is the bigger of n and L; technically it's n^3 + n^2 + n
+# assumes equal probabilities of C,T,G, forces a mutation, and does not allow for multiple mutations in one site
+# params: 
+# 	n (int) = number of DNA strands
+# 	L (int) = length of the DNA strands
+# 	mu (float) = mutation rate (units: mutations per base pair per generation
+# return: int that equals the total number of convergent mutations between all pairs of DNA strands
+# time comlexity: O(n^3), where n is L
 def sim_equal_mutations(n, L, mu):
 	totals = {}
 	convergent_mutations = 0
@@ -69,7 +72,7 @@ def sim_equal_mutations(n, L, mu):
 # 	kappa (float) = ratio of transitions to transversions
 # 	phi (float) = probability of transversion to its complementary base pair 
 # return: int that equals the total number of convergent mutations between all pairs of DNA strands
-# time complexity: O(n^3), where n is the bigger of n and L; technically it's n^3 + n^2 + n (actually n^2 * L + n*L + n + L)
+# time complexity: O(n^3), where n is L
 def sim_unequal_mutations(n, L, mu, kappa, phi):
 	alpha = (mu * kappa)/(kappa + 1) # probability of transitions
 	beta = mu/(kappa + 1) # probability of transversions

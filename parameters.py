@@ -36,7 +36,7 @@ def read_in_strains(filename):
 # params: 
 # 	species (dict) = where the values are the genomes of different strains
 # return: float that equals the pi value of the species
-# time complexity: O(n^3), where n is the bigger of the number of strains and the length of the strains; technically it's n^2 * L
+# time complexity: O(n^3), where n is the length of genomes
 def pi_value(species):
 	diff_prop = [] # list of the proportion of site differences b/w each 2 genomes
 	differences = 0 # counter for the number of differences
@@ -59,7 +59,7 @@ def pi_value(species):
 # params: 
 # 	species (dict) = where the values are the genomes of different strains
 # return: float that equals the theta value of the species
-# time complexity: O(n^2), where n is the bigger of the length of the strains and the number of strains; technically it's L * n
+# time complexity: O(n^2), where n is the length of genomes
 def theta_value(species):
 	diff_sites = [] # list of the sites that are polymorphic
 	strains = list(species.values())
@@ -78,7 +78,7 @@ def theta_value(species):
 # params: 
 # 	species (dict) = where the values are the genomes of different strains
 # return: list that contains the average GC% of all the strains and the standard deviation
-# time compleity: O(n^2), where n is the bigger of the number of strains and the length of the strains; technically, it's n * L
+# time compleity: O(n^2), where n is the length of the strains
 def nucleotide_composition(species):
 	GC_comp = [] # list of the GC% of each strain
 	strains = list(species.values())
@@ -100,7 +100,7 @@ def nucleotide_composition(species):
 
 
 # runs the functions to get pi, theta, GC% average, and GC% standard deviation for each species and write them into a .csv file
-# time complexity: O(n^4), where n is the biggest of the number of files, the number of lines in the files, the number of strains, and the length of the strains; technically, it's n^4 + 2n^3 + n^2
+# time complexity: O(n^4), where n is the length of the strains
 path = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/concatenates' # path where the .fa files are located 
 with open(('species_params2.csv'), 'w', newline = '') as f: 
 	writer = csv.writer(f)
@@ -123,17 +123,3 @@ with open(('species_params2.csv'), 'w', newline = '') as f:
 		# print('theta = ' + str(theta))
 		# print('GC% = ' + str(GC_comp))
 		print('\n')
-
-# for filename in glob.glob(os.path.join(path, '*.fa')):
-# 		species = read_in_strains(filename)
-
-# 		print(filename)
-# 		print('pi = ' + str(pi_value(species)))
-# 		print('theta = ' + str(theta_value(species)))
-# 		print('GC% = ' + str(nucleotide_composition(species)))
-# 		print('\n')
-
-
-# print('pi = ' + str(pi_value(read_in_strains(0))))
-# print('theta = ' + str(theta_value(read_in_strains(0))))
-# print('GC% = ' + str(nucleotide_composition(read_in_strains(0))))
