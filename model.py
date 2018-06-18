@@ -63,28 +63,14 @@ def prob_overlapping(L,o,m1,m2,mutation_combos):
 		# pairs = num/denom # elementalwise division
 		# pairs = (np.arange(L,L-m1-m2+o,-1, dtype = np.float))/(np.concatenate((np.arange(o,0,-1, dtype = np.float),np.arange(m1-o,0,-1, dtype = np.float),np.arange(m2-o,0,-1, dtype = np.float))))
 		# product = np.prod(pairs) # value of 'L choose o, m1, m2, L-m1-m2+o' (number of successful ways to get o overlapping sites)
+		# combos = mutation_combos[m1] * mutation_combos[m2]
+
+		# works all the computation in log form and then exponentiates at the end; keeps the magnitude in check
 		combos = np.log(mutation_combos[m1]) + np.log(mutation_combos[m2]) # total number of ways to arrange m1 and m2 mutations on strain 1 and strain 2 respectively
-		# combos = mp.exp(np.log(mutation_combos[m1] + mutation_combos[m2]))
-		# print('prob_overlapping with ' + str(o) + ',' + str(m1) + ',' + str(m2))
-		# print('num: ')
-		# print(num)
-		# print('denom: ')
-		# print(denom)
 		num = np.log(num)
-		# print('num: ')
-		# print(num)
 		denom = np.log(denom)
-		# print('denom: ')
-		# print(denom)
 		pairs = num-denom
-		# print('pairs: ')
-		# print(pairs)
 		product = np.sum(pairs)
-		# print('product: ')
-		# print(product)
-		# print('combos: ')
-		# print(combos)
-		# print('prob_overlapping with ' + str(o) + ',' + str(m1) + ',' + str(m2) + ': ' + str(np.exp(product-combos)))
 		prob = np.exp(product-combos)
 	return prob
 
