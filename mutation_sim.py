@@ -64,7 +64,7 @@ def sim_equal_mutations(n, L, mu):
 	return convergent_mutations
 
 # simulation to mutate DNA strands and count up the total number of convergent mutations between them 
-# starts with identical but random strands; factors in the probabilites of A,T,C,G; allows 'mutation' to itself************; does not allow for multiple mutations in one spot
+# starts with identical but random strands; factors in the probabilites of A,T,C,G; allows 'mutation' to itself; does not allow for multiple mutations in one spot
 # params: 
 # 	n (int) = number of DNA strands
 # 	L (int) = length of the DNA strands

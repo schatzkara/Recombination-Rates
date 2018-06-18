@@ -91,7 +91,7 @@ def prob_cm(c, mu, L):
 # 	mutation_combos (list of ints) = ordered values of 'L choose m' for m = 0 to L
 # return: float that equals the total probability of c (over all values of o,m1,m2)
 # time complexity: O(n^3), where n is L
-def better_prob_cm(c, mu, L, kappa, phi, mu_probs, mutation_combos):
+def better_prob_cm(c, mu, L, kappa, phi, m_probs, mutation_combos):
 	innersum = 0 # counter for sum of the inner 2 summations
 	outersum = 0 # counter for the total summation
 	# prob = [] # list to hold the proabilities of c for each combination of m1,m2,L
@@ -99,8 +99,8 @@ def better_prob_cm(c, mu, L, kappa, phi, mu_probs, mutation_combos):
 	for o in range(L+1):
 		for m1 in range(L+1):
 			for m2 in range(L+1):
-				x = mu_probs[m1]
-				y = mu_probs[m2]
+				x = m_probs[m1]
+				y = m_probs[m2]
 				z = overlapping_prob(o, m1, m2, L, mutation_combos)
 				innersum += (x * y * z)
 		outersum += (innersum * pi_bar_formula(c, o, kappa, phi))
@@ -136,12 +136,12 @@ def expected_cms(mu, L):
 def better_expected_cms(mu, L, kappa, phi):
 	value = 0
 	# expected = mu*L
-	mu_probs = (L+1)*[None] # will be populated as an ordered list of the Poisson probabilities for m = 0 to L
+	m_probs = (L+1)*[None] # will be populated as an ordered list of the Poisson probabilities for m = 0 to L
 	mutation_combos = (L+1)*[None] # will be populated as an ordered list of 'L choose m' for m = 0 to L
 	for m in range(L+1): 
-		mu_probs[m] = stats.poisson.pmf(m,(mu*L))
+		m_probs[m] = stats.poisson.pmf(m,(mu*L))
 		mutation_combos[m] = special.comb(L,m,exact=False,repetition=False)
 
 	for c in range(L+1): # calculates the expected value
-		value += (c * better_prob_cm(c, mu, L, kappa, phi, mu_probs, mutation_combos))
+		value += (c * better_prob_cm(c, mu, L, kappa, phi, m_probs, mutation_combos))
 	return value

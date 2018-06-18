@@ -2,7 +2,7 @@
 
 # script to estimate Pi, Theta, and the nucleotide composition (GC%) of each clonal species
 
-import numpy as np
+# import numpy as np
 import os 
 import glob
 import csv
@@ -50,7 +50,8 @@ def pi_value(species):
 					differences+=1
 			diff_prop.append(differences/len(strain1))
 			differences = 0 # resets the difference counter before moving on to a new pair of strains
-	pi = np.mean(diff_prop)
+	# pi = np.mean(diff_prop)
+	pi = sum(diff_prop)/len(diff_prop)
 	print(pi)
 	return pi
 
@@ -82,7 +83,7 @@ def theta_value(species):
 def nucleotide_composition(species):
 	GC_comp = [] # list of the GC% of each strain
 	strains = list(species.values())
-	values = [] # list containing GC% average and standard deviation over the entire species
+	# values = [] # list containing GC% average and standard deviation over the entire species
 	for strain in strains:
 		GC = 0 # counter for the number of Gs and Cs in the strain
 		for k in range(len(strain)):
@@ -93,10 +94,13 @@ def nucleotide_composition(species):
 	# print('The STD of GC composition is ' + str(np.std(GC_comp)))
 	# return (str(np.mean(GC_comp)) + ' with STD ' + str(np.std(GC_comp)))
 	# return np.mean(GC_comp)
-	values.append(np.mean(GC_comp))
-	values.append(np.std(GC_comp))
-	print(values)
-	return values
+	# values.append(np.mean(GC_comp))
+	# values.append(np.std(GC_comp))
+	# print(values)
+	# return values
+	GC = sum(GC_comp)/len(GC_comp)
+	print(GC)
+	return GC
 
 
 # runs the functions to get pi, theta, GC% average, and GC% standard deviation for each species and write them into a .csv file
@@ -104,19 +108,20 @@ def nucleotide_composition(species):
 path = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/concatenates' # path where the .fa files are located 
 with open(('species_params3.csv'), 'w', newline = '') as f: 
 	writer = csv.writer(f)
-	writer.writerow(['species', 'pi', 'theta', 'GC%', 'STDev']) # column headers
+	writer.writerow(['species', 'pi', 'theta', 'GC%']) # column headers
 	for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for each species
 		species = read_in_strains(filename)
 		name = filename.strip('C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/concatenates').strip('\concat_') # strips off everything but the actual species name
 		print(name)
 		pi = str(pi_value(species))
 		theta = str(theta_value(species))
-		GC_comp = list(nucleotide_composition(species))
-		GC_average = GC_comp[0]
-		GC_stdev = GC_comp[1]
+		# GC_comp = list(nucleotide_composition(species))
+		GC_average = nucleotide_composition(species)
+		# GC_average = GC_comp[0]
+		# GC_stdev = GC_comp[1]
 
 
-		writer.writerow([name, pi, theta, GC_average, GC_stdev])
+		writer.writerow([name, pi, theta, GC_average])
 
 		# print(filename)
 		# print('pi = ' + str(pi))
