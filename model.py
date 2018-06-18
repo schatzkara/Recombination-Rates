@@ -31,6 +31,7 @@ def expected_cms(L,mu,kappa,phi):
 		for m2 in range(L+1): # allows for all possible values of m2
 			y = x * m_probs[m2]
 			for o in range(min(m1,m2)+1): # allows for all possible values of o (note that o cannot be greater m1 OR m2 because then there can be no overlaps)
+				# print('prob overlapping: ' + str(prob_overlapping(L,o,m1,m2,mutation_combos)) + ' c_prob: ' + str(c_probs[o]))
 				z = prob_overlapping(L,o,m1,m2,mutation_combos) * c_probs[o]
 				sum2 += z
 			sum1 += y * sum2
@@ -50,37 +51,42 @@ def expected_cms(L,mu,kappa,phi):
 # return: float that equals the probability of o given m1 and m2
 # time complexity: O(1)
 def prob_overlapping(L,o,m1,m2,mutation_combos):
+	prob = 0
 	# mutation_combos = (L+1)*[None] # will be populated as an ordered list of 'L choose m' for m = 0 to L
 	# for m in range(L+1): 
 	# 	mutation_combos[m] = special.comb(L,m,exact=False,repetition=False)
-	# num = np.array(range(L,L-m1-m2+o,-1), dtype = np.float)
-	# o_list = np.array(range(o,0,-1), dtype = np.float)
-	# m1_list = np.array(range(m1-o,0,-1), dtype = np.float)
-	# m2_list = np.array(range(m2-o,0,-1), dtype = np.float)
-	# denom = np.concatenate((o_list, m1_list, m2_list))
-	# denom = np.concatenate((np.array(range(o,0,-1), dtype = np.float),np.array(range(m1-o,0,-1), dtype = np.float),np.array(range(m2-o,0,-1), dtype = np.float)))
-	num = np.arange(L,L-m1-m2+o,-1, dtype = np.float) # array with each integer that would be multiplied to calculate L!/(L-m1-m2+o)!
-	denom = np.concatenate((np.arange(o,0,-1, dtype = np.float),np.arange(m1-o,0,-1, dtype = np.float),np.arange(m2-o,0,-1, dtype = np.float))) # array with each integer that would be multiplied to calculate o!, m1!, and m2!
-	pairs = num/denom # elementalwise division
-	# pairs = (np.arange(L,L-m1-m2+o,-1, dtype = np.float))/(np.concatenate((np.arange(o,0,-1, dtype = np.float),np.arange(m1-o,0,-1, dtype = np.float),np.arange(m2-o,0,-1, dtype = np.float))))
-	product = np.prod(pairs) # value of 'L choose o, m1, m2, L-m1-m2+o' (number of successful ways to get o overlapping sites)
-	combos = mutation_combos[m1] * mutation_combos[m2] # total number of ways to arrange m1 and m2 mutations on strain 1 and strain 2 respectively
-	# combos = mp.exp(np.log(mutation_combos[m1] + mutation_combos[m2]))
-
-	num = np.log(num)
-	# print('num: ')
-	# print(num)
-	denom = np.log(denom)
-	# print('denom: ')
-	# print(denom)
-	pairs = num-denom
-	# print('pairs: ')
-	# print(pairs)
-	product = np.exp(np.sum(pairs))
-	# print('product: ')
-	# print(product)
-	# print('prob_overlapping with ' + str(o) + ',' + str(m1) + ',' + str(m2) + ': ' + str(product/combos))
-	return product/combos
+	if(L-m1-m2-o < 1):
+		prob = 0
+	else:
+		num = np.arange(L,L-m1-m2+o,-1, dtype = np.float) # array with each integer that would be multiplied to calculate L!/(L-m1-m2+o)!
+		denom = np.concatenate((np.arange(o,0,-1, dtype = np.float),np.arange(m1-o,0,-1, dtype = np.float),np.arange(m2-o,0,-1, dtype = np.float))) # array with each integer that would be multiplied to calculate o!, m1!, and m2!
+		# pairs = num/denom # elementalwise division
+		# pairs = (np.arange(L,L-m1-m2+o,-1, dtype = np.float))/(np.concatenate((np.arange(o,0,-1, dtype = np.float),np.arange(m1-o,0,-1, dtype = np.float),np.arange(m2-o,0,-1, dtype = np.float))))
+		# product = np.prod(pairs) # value of 'L choose o, m1, m2, L-m1-m2+o' (number of successful ways to get o overlapping sites)
+		combos = np.log(mutation_combos[m1]) + np.log(mutation_combos[m2]) # total number of ways to arrange m1 and m2 mutations on strain 1 and strain 2 respectively
+		# combos = mp.exp(np.log(mutation_combos[m1] + mutation_combos[m2]))
+		# print('prob_overlapping with ' + str(o) + ',' + str(m1) + ',' + str(m2))
+		# print('num: ')
+		# print(num)
+		# print('denom: ')
+		# print(denom)
+		num = np.log(num)
+		# print('num: ')
+		# print(num)
+		denom = np.log(denom)
+		# print('denom: ')
+		# print(denom)
+		pairs = num-denom
+		# print('pairs: ')
+		# print(pairs)
+		product = np.sum(pairs)
+		# print('product: ')
+		# print(product)
+		# print('combos: ')
+		# print(combos)
+		# print('prob_overlapping with ' + str(o) + ',' + str(m1) + ',' + str(m2) + ': ' + str(np.exp(product-combos)))
+		prob = np.exp(product-combos)
+	return prob
 
 # function to calculate the Poisson probabilities of all possible values of m with expected value = mu*L
 # params:
