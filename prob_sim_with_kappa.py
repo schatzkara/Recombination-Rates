@@ -2,9 +2,9 @@
 
 # script to run the mutation simulation over multiple iterations and compare the actual number of convergent mutations to that from our model
 # time complexity for each mu,L combination: O(n^4), where n is L
-# time complexity: O(n^6), where n is L
 from efficient_functions2 import better_expected_cms
 from mutation_sim import sim_unequal_mutations
+from mutation_sim import efficient_sim_unequal_mutations
 from model import expected_cms
 import csv
 
@@ -16,12 +16,12 @@ import csv
 # 	kappa (float) = ratio of transitions to transversions
 # 	phi (float) = probabiltiy of transversion to its complementary base pair
 # 	iterations (int) = number of iterations to run
-# return: a .csv file with the data from all iterations and the expected value
+# return: a .csv file will be produced in the directory where this file is located with the data from all iterations and the expected value
 
 # enter parameters here
-n = 2 # number of DNA strands
-L = list(range(20,31)) # format for range(): list(range(starting length, ending length+1, increment))
-mu = [0.1]
+n = 2
+L = list(range(1000,1001)) # format for range(): list(range(starting length, ending length+1, increment))
+mu = [0.2]
 kappa = 3 
 phi = 1/2 
 iterations = 1000
@@ -33,7 +33,7 @@ for l in L: # iterates over every length desired
 		data = {} # dictionary for data over all iterations (key: iteration number, value: average convergent mutations of all iterations up to that point)
 		model_expected = expected_cms(l, m, kappa, phi) # better_expected_cms(m, l, kappa, phi) # number of expected convergent mutations from our model
 		for z in range(iterations): # number of iterations to run
-			actual = sim_unequal_mutations(n, l, m, kappa, phi) # number of actual convergent mutations from simulation
+			actual = efficient_sim_unequal_mutations(n, l, m, kappa, phi) # number of actual convergent mutations from simulation
 			total_cms += actual
 			data[z+1] = (total_cms)/(z+1)
 		with open(('better_sim_data_' + str(l) + '_' + str(m) + '.csv'), 'w', newline = '') as f: # writes the data to a .csv file
