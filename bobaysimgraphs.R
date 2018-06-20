@@ -16,17 +16,17 @@ k1Params = list()
 j <- 1
 
 for(i in k1Files) {
-  #read all of the csv files
-  name = gsub("-",".",i)
-  name = gsub(".csv","",name)
-  params = unlist(strsplit(name,split="_"))[c(5,7)]
-  k1Params[[j]]=params
-  i = paste(".\\",i,sep="")
-  assign(name,read.csv(i, header=T))
-  
-  #add to dataList
-  k1List[[j]] = assign(name,read.csv(i, header=T))
-  j = j+1 
+#read all of the csv files
+name = gsub("-",".",i)
+name = gsub(".csv","",name)
+params = unlist(strsplit(name,split="_"))[c(5,7)]
+k1Params[[j]]=params
+i = paste(".\\",i,sep="")
+assign(name,read.csv(i, header=T))
+
+#add to dataList
+k1List[[j]] = assign(name,read.csv(i, header=T))
+j = j+1 
 }
 
 #Import K2 files
@@ -40,17 +40,17 @@ j <- 1
 k2Params = list()
 
 for(i in k2Files) {
-  #read all of the csv files
-  name = gsub("-",".",i)
-  name = gsub(".csv","",name)
-  params = unlist(strsplit(name,split="_"))[c(4,5)]
-  k2Params[[j]]=params
-  i = paste(".\\",i,sep="")
-  assign(name,read.csv(i, header=T))
-  
-  #add to dataList
-  k2List[[j]] = assign(name,read.csv(i, header=T))
-  j = j+1 
+#read all of the csv files
+name = gsub("-",".",i)
+name = gsub(".csv","",name)
+params = unlist(strsplit(name,split="_"))[c(4,5)]
+k2Params[[j]]=params
+i = paste(".\\",i,sep="")
+assign(name,read.csv(i, header=T))
+
+#add to dataList
+k2List[[j]] = assign(name,read.csv(i, header=T))
+j = j+1 
 }
 
 #Import K3 files
@@ -64,46 +64,72 @@ j <- 1
 k3Params = list()
 
 for(i in k3Files) {
-  #read all of the csv files
-  name = gsub("-",".",i)
-  name = gsub(".csv","",name)
-  params = unlist(strsplit(name,split="_"))[c(5,6)]
-  k3Params[[j]]=params
-  i = paste(".\\",i,sep="")
-  assign(name,read.csv(i, header=T))
-  
-  #add to dataList
-  k3List[[j]] = assign(name,read.csv(i, header=T))
-  j = j+1 
+#read all of the csv files
+name = gsub("-",".",i)
+name = gsub(".csv","",name)
+params = unlist(strsplit(name,split="_"))[c(5,6)]
+k3Params[[j]]=params
+i = paste(".\\",i,sep="")
+assign(name,read.csv(i, header=T))
+
+#add to dataList
+k3List[[j]] = assign(name,read.csv(i, header=T))
+j = j+1 
 }
 
 #clear unnecessary variables
 keep(k1List,k1Params,k2List,k2Params,k3List,k3Params,Nk1,Nk2,Nk3,sure=T)
 ls()
 i <- 1
-fn = list()
 
-for (n in 1:1000) {
-  fn[[i]] <- paste("plot",i,sep = "_")
-  i = i+1
-}
+fn = list()
+# for (n in 1:1000) {
+#   fn[[i]] <- paste("plot",i,sep = "_")
+#   i = i+1
+# }
 
 i <- 1
 avk1 = vector("numeric",length(k1List[[1]][[2]]))
+avk2 = vector("numeric",length(k2List[[1]][[2]]))
+avk3 = vector("numeric",length(k3List[[1]][[2]]))
 
 snps = 1:300
 
-for (k in snps) {
-  avk1[[i]] = sum(k1List[[k]][[2]])/300
-  i = i+1
+# for (k in snps) {
+#   avk1[[i]] = sum(k1List[[k]])/300
+#   i = i+1
+# }
+# 
+# k1Data = data.frame(snps,avk1)
+
+i <- 1
+j <- 1
+
+k2sumsList = vector("list",1000)
+for (k in 1:1000) {
+name = paste("it",k,"k2",sep="")
+k2sumsList[[k]] = assign(name,vector("numeric",300))
+for (l in 1:300) {
+  k2sumsList[[l]] = k2List[[k]][l,2]
+}
 }
 
-
-
-k1Data = data.frame(snps,avk1)
-
-sampleplot = ggplot(data=k1Data,aes(x=k1Data[[1]],y=k1Data[[2]]))
-print(sampleplot + geom_smooth())
+# 
+# k2Data = data.frame(snps,avk2)
+# i <- 1
+# 
+# for (k in snps) {
+#   avk3[[i]] = sum(k3List[[k]][[2]])/300
+#   i = i+1
+# }
+# 
+# k3Data = data.frame(snps,avk3)
+# 
+# sampleplot = ggplot(data=k1Data,aes(x=snps))
+# sampleplot = sampleplot + geom_smooth(aes(x=snps,y=k1Data[[2]],color="K=1"),method="loess")
+# sampleplot = sampleplot + geom_smooth(aes(x=snps,y=k2Data[[2]],color="K=2"),method="loess")
+# sampleplot = sampleplot + geom_smooth(aes(x=snps,y=k3Data[[2]],color="K=3"),method="loess")
+# print(sampleplot)
 
 # #ggplot the data
 # for (m in k1List) {
