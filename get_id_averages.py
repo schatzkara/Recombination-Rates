@@ -32,7 +32,7 @@ for l in L: # iterates over every length desired
 
 				with open(('averages_for_id_sim_' + str(l) + '_' + str(gc) + '_' + str(k) + '.csv'), 'w', newline = '') as f:
 					writer = csv.writer(f)
-					writer.writerow(['Mutations on Each Strain', 'Average ID%', 'STDev', 'Average CMs', 'STDev']) # column headers
+					writer.writerow(['Mutations on Each Strain', 'Average ID%', 'ID% STDev', 'Average CMs', 'CMs STDev']) # column headers
 					j = 0
 					for filename in glob.glob(os.path.join(path, '*.csv')):
 						k = 0
