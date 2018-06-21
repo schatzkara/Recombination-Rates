@@ -20,9 +20,9 @@ for l in L:
 				print(k)
 				print(phi)
 				print(i+1)
-				expected_idp = expected_idp((1/l), k, phi, (i+1))
-				expected_cms = expected_cms_given_m(l,(i+1),k,phi) # THIS DOES IT WITH MU*
-				idps[i] = expected_idp
+				idp = expected_idp(1/l, k, phi, i+1)
+				expected_cms = expected_cms_given_m(l,i+1,k,phi) # THIS DOES IT WITH MU*
+				idps[i] = idp
 				cms[i] = expected_cms
 				print(i)
 			with open(('model_id_vs_cm_data_' + str(l) + '_' + str(k) + '.csv'), 'w', newline = '') as f:

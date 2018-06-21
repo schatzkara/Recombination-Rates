@@ -137,7 +137,7 @@ def pi_bar(c,o,kappa,phi):
 def mutation_matrix(mu, kappa, phi, generations):
 	alpha = (mu * kappa)/(kappa + 1) # probability of transitions
 	beta = mu/(kappa + 1) # probability of transversions
-	m = np.matrix([[(1-mu), beta*phi, alpha, beta*(1-phi)], [beta*phi, (1-mu), beta*(1-phi), alpha], [alpha, beta*(1-phi), (1-mu), beta*phi], [beta*(1-phi), alpha, beta*phi, (1-mu)]])
+	m = np.matrix([[(1-mu), beta*phi, alpha, beta*(1-phi)], [beta*phi, (1-mu), beta*(1-phi), alpha], [alpha, beta*(1-phi), (1-mu), beta*phi], [beta*(1-phi), alpha, beta*phi, (1-mu)]], dtype = np.float)
 	mg = np.linalg.matrix_power(m, generations)
 	# for g in range(generations-1):
 	# 	m = np.dot(m,m)
@@ -150,9 +150,10 @@ def expected_idp(mu, kappa, phi, generations):
 	print('got m^g')
 	expected_idp = 0
 	for x in range(4):
-		expected_idp += ((mg.item((0,x)))**2)
+		expected_idp += (mg[0,x])**2
 		print(x)
 		print(expected_idp)
+	return expected_idp
 	# x.item((0, 1))
 
 def expected_cms_given_m(L,mutations,kappa,phi):
