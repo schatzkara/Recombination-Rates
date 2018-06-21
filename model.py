@@ -182,14 +182,16 @@ def expected_cms_given_m(L,mutations,kappa,phi):
 
 	return total
 
-def expected_cms_with_mg(L, mu, kappa, phi):
+def expected_cms_with_mg(L, mu, kappa, phi, generations):
 	sum1 = 0 # counter for sum of all o and c combinations
 	sum2 = 0 # counter for sum of all o, c, and m2 combinations
 	total = 0 # counter for total sum
 
 	m_probs = prob_m(L,mu) # ordered list of the Poisson probabilties of each number of mutations with length L
 
-	c_probs = prob_c_with_mg(L,kappa,phi) # ordered list of the expected values of c for each possible value of o
+	mg = mutation_matrix(mu, kappa, phi, generations)
+
+	c_probs = prob_c_with_mg(L,kappa,phi,mg) # ordered list of the expected values of c for each possible value of o
 
 	mutation_combos = combos(L) # ordered list of all the possible 'L choose m' values
 
@@ -208,19 +210,21 @@ def expected_cms_with_mg(L, mu, kappa, phi):
 
 	return total
 
-def prob_c_with_mg(L,kappa,phi):
+def prob_c_with_mg(L,kappa,phi,mg):
 	c_probs = (L+1)*[None] # will be populated as an ordered list of the expected values of c for o = 0 to L
 
 	summation = 0 # counter for the total expected value
 
 	for o in range(L+1): # allows for all possible values of o
 		for c in range(o+1): # allows for all possible values of c
-			summation += c * pi_bar(c,o,kappa,phi) # calculates the particular contribution to the expected value
+			summation += c * pi_bar_with_mg(c,o,kappa,phi,mg) # calculates the particular contribution to the expected value
 		c_probs[o] = summation
 		summation = 0
 
 	return c_probs
 
-def pi_bar_with_mg(c,o,kappa,phi):
-	prob = (kappa**2 + 1 - 2*phi + 2*(phi)**2)/((kappa+1)**2) # the probability of some convergent mutation aka a 'success' in the binomial probability
+def pi_bar_with_mg(c,o,kappa,phi,mg):
+	# prob = (kappa**2 + 1 - 2*phi + 2*(phi)**2)/((kappa+1)**2) # the probability of some convergent mutation aka a 'success' in the binomial probability
+	# mg = mutation_matrix(mu, kappa, phi, generations)
+	prob = (mg[0,1]**2 + mg[0,2]**2 + mg[0,3]**2)/((mg[0,1] + mg[0,2] + mg[0,3])**2)
 	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
