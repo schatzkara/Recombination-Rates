@@ -21,7 +21,7 @@ for l in L:
 				print(phi)
 				print(i+1)
 				idp = expected_idp(1/l, k, phi, i+1)
-				expected_cms = expected_cms_given_m(l,i+1,k,phi) # THIS DOES IT WITH MU*
+				expected_cms = expected_cms_given_m(l,i+1,k,phi)
 				idps[i] = idp
 				cms[i] = expected_cms
 				print(i)
