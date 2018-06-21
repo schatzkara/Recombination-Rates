@@ -134,5 +134,92 @@ def pi_bar(c,o,kappa,phi):
 	prob = (kappa**2 + 1 - 2*phi + 2*(phi)**2)/((kappa+1)**2) # the probability of some convergent mutation aka a 'success' in the binomial probability
 	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
 
-# (20,5,10,8)
-print(expected_cms(1000,0.1,3,0.5))
+def mutation_matrix(mu, kappa, phi, generations):
+	alpha = (mu * kappa)/(kappa + 1) # probability of transitions
+	beta = mu/(kappa + 1) # probability of transversions
+	m = np.matrix([[(1-mu), beta*phi, alpha, beta*(1-phi)], [beta*phi, (1-mu), beta*(1-phi), alpha], [alpha, beta*(1-phi), (1-mu), beta*phi], [beta*(1-phi), alpha, beta*phi, (1-mu)]])
+	mg = np.linalg.matrix_power(m, generations)
+	# for g in range(generations-1):
+	# 	m = np.dot(m,m)
+	return mg 
+
+def expected_idp(mu, kappa, phi, generations):
+	print('entered function')
+	print(generations)
+	mg = mutation_matrix(mu, kappa, phi, generations)
+	print('got m^g')
+	expected_idp = 0
+	for x in range(4):
+		expected_idp += ((mg.item((0,x)))**2)
+		print(x)
+		print(expected_idp)
+	# x.item((0, 1))
+
+def expected_cms_given_m(L,mutations,kappa,phi):
+	# sum1 = 0 # counter for sum of all o and c combinations
+	# sum2 = 0 # counter for sum of all o, c, and m2 combinations
+	total = 0 # counter for total sum
+
+	# m_probs = prob_m(L,mu) # ordered list of the Poisson probabilties of each number of mutations with length L
+
+	c_probs = prob_c(L,kappa,phi) # ordered list of the expected values of c for each possible value of o
+
+	mutation_combos = combos(L) # ordered list of all the possible 'L choose m' values
+
+	# for m1 in range(L+1): # allows for all possible values of m1
+	# 	x = m_probs[m1]
+	# 	for m2 in range(L+1): # allows for all possible values of m2
+	# 		y = x * m_probs[m2]
+	for o in range(mutations+1): # allows for all possible values of o (note that o cannot be greater m1 OR m2 because then there can be no overlaps)
+		# print('prob overlapping: ' + str(prob_overlapping(L,o,m1,m2,mutation_combos)) + ' c_prob: ' + str(c_probs[o]))
+		total += prob_overlapping(L,o,mutations,mutations,mutation_combos) * c_probs[o]
+		# sum2 += z
+	# sum1 += y * sum2
+	# sum2 = 0
+	# total += sum1
+	# sum1 = 0
+
+	return total
+
+def expected_cms_with_mg(L, mu, kappa, phi):
+	sum1 = 0 # counter for sum of all o and c combinations
+	sum2 = 0 # counter for sum of all o, c, and m2 combinations
+	total = 0 # counter for total sum
+
+	m_probs = prob_m(L,mu) # ordered list of the Poisson probabilties of each number of mutations with length L
+
+	c_probs = prob_c_with_mg(L,kappa,phi) # ordered list of the expected values of c for each possible value of o
+
+	mutation_combos = combos(L) # ordered list of all the possible 'L choose m' values
+
+	for m1 in range(L+1): # allows for all possible values of m1
+		x = m_probs[m1]
+		for m2 in range(L+1): # allows for all possible values of m2
+			y = x * m_probs[m2]
+			for o in range(min(m1,m2)+1): # allows for all possible values of o (note that o cannot be greater m1 OR m2 because then there can be no overlaps)
+				# print('prob overlapping: ' + str(prob_overlapping(L,o,m1,m2,mutation_combos)) + ' c_prob: ' + str(c_probs[o]))
+				z = prob_overlapping(L,o,m1,m2,mutation_combos) * c_probs[o]
+				sum2 += z
+			sum1 += y * sum2
+			sum2 = 0
+		total += sum1
+		sum1 = 0
+
+	return total
+
+def prob_c_with_mg(L,kappa,phi):
+	c_probs = (L+1)*[None] # will be populated as an ordered list of the expected values of c for o = 0 to L
+
+	summation = 0 # counter for the total expected value
+
+	for o in range(L+1): # allows for all possible values of o
+		for c in range(o+1): # allows for all possible values of c
+			summation += c * pi_bar(c,o,kappa,phi) # calculates the particular contribution to the expected value
+		c_probs[o] = summation
+		summation = 0
+
+	return c_probs
+
+def pi_bar_with_mg(c,o,kappa,phi):
+	prob = (kappa**2 + 1 - 2*phi + 2*(phi)**2)/((kappa+1)**2) # the probability of some convergent mutation aka a 'success' in the binomial probability
+	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
