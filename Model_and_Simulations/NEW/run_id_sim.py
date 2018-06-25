@@ -23,7 +23,7 @@ L = [1000]
 generations = [300]
 GC = [1.0]
 kappa = [1.0, 2.0, 3.0]
-phi = 1/2
+phi = [1/2]
 iterations = 1000
 # path_name = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/Data/SNP Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(int(k))
 # file_name = 'SNPs_sim_data_' + str(l) + '_' + str(gc) + '_' + str(k) + '_' + '{0:04}'.format(z+1)

@@ -23,7 +23,7 @@ L = [1000]
 generations = [300]
 GC = [0.5]
 kappa = [1.0]
-phi = 1/2
+phi = [1/2]
 iterations = 1000
 one_file = True
 
