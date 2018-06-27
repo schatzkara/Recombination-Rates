@@ -156,22 +156,26 @@ def expected_idp(mu, kappa, phi, generations):
 	return expected_idp
 	# x.item((0, 1))
 
-def expected_cms_given_m(L,mutations,kappa,phi):
+def expected_cms_given_m(L,mu,generations,kappa,phi):
 	# sum1 = 0 # counter for sum of all o and c combinations
 	# sum2 = 0 # counter for sum of all o, c, and m2 combinations
 	total = 0 # counter for total sum
 
 	# m_probs = prob_m(L,mu) # ordered list of the Poisson probabilties of each number of mutations with length L
 
-	c_probs = prob_c(L,kappa,phi) # ordered list of the expected values of c for each possible value of o
+	mg = mutation_matrix(mu, kappa, phi, generations)
+
+	c_probs = prob_c_with_mg(L,kappa,phi,mg) # ordered list of the expected values of c for each possible value of o
 
 	mutation_combos = combos(L) # ordered list of all the possible 'L choose m' values
 
+	mutations = int((generations*(1-mu)**2)/mu)
+	# mutations = mu*generations
 	# for m1 in range(L+1): # allows for all possible values of m1
 	# 	x = m_probs[m1]
 	# 	for m2 in range(L+1): # allows for all possible values of m2
 	# 		y = x * m_probs[m2]
-	for o in range(mutations+1): # allows for all possible values of o (note that o cannot be greater m1 OR m2 because then there can be no overlaps)
+	for o in range(mutations+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
 		# print('prob overlapping: ' + str(prob_overlapping(L,o,m1,m2,mutation_combos)) + ' c_prob: ' + str(c_probs[o]))
 		total += prob_overlapping(L,o,mutations,mutations,mutation_combos) * c_probs[o]
 		# sum2 += z
@@ -181,6 +185,9 @@ def expected_cms_given_m(L,mutations,kappa,phi):
 	# sum1 = 0
 
 	return total
+
+# def expected_m_at_site():
+
 
 def expected_cms_with_mg(L, mu, kappa, phi, generations):
 	sum1 = 0 # counter for sum of all o and c combinations
@@ -228,3 +235,9 @@ def pi_bar_with_mg(c,o,kappa,phi,mg):
 	# mg = mutation_matrix(mu, kappa, phi, generations)
 	prob = (mg[0,1]**2 + mg[0,2]**2 + mg[0,3]**2)/((mg[0,1] + mg[0,2] + mg[0,3])**2)
 	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
+
+def new_prob_c(mu, kappa, phi, generations):
+	mg = mutation_matrix(mu, kappa, phi, generations)
+	return (mg[0,1]**2 + mg[0,2]**2 + mg[0,3]**2)/((mg[0,1] + mg[0,2] + mg[0,3])**2)
+
+# def id_equation()

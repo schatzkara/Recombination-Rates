@@ -1,4 +1,6 @@
 #! python3
+# export PATH=/opt/rh/rh-python36/root/usr/bin:$PATH
+
 
 # script to run the mutation simulation over multiple iterations and compare the actual number of convergent mutations to that from our model
 # time complexity for each mu,L combination: O(n^4), where n is L
@@ -22,13 +24,13 @@ from run_sims import run_mutation_sim
 
 # enter parameters here
 n = 2
-L = list(range(675,1001, 25)) # format for range(): list(range(starting length, ending length+1, increment))
-mu = [0.1,0.2,0.3]
-kappa = [3] 
-phi = [1/2] 
+L = [1000, 5000, 10000] # format for range(): list(range(starting length, ending length+1, increment))
+mu = [0.0001, 0.001]
+kappa = [0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0] 
+phi = [0.0, 0.25, 0.5, 0.75, 1.0] 
 iterations = 1000
 
-run_mutation_sim(n, L, mu, kappa, phi, iterations):
+run_mutation_sim(n, L, mu, kappa, phi, iterations)
 
 # # actually runs the simulations
 # for l in L: # iterates over every length desired

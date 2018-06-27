@@ -249,8 +249,10 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 	ancestor = '' # ancestor DNA strand
 	strains = n*[None] # list of the child DNA sequences
 	nucleotides = ['A', 'T', 'G', 'C']
-	id_matrix = np.empty([n,n], dtype = float, order='C')
-	cms_list_matrix = np.empty([n,n], dtype = {}, order='C')
+	id_matrix = np.empty([n,n], dtype = np.float, order='C')
+	# cms_list_matrix = np.empty([n,n], order='C')
+	cms_list_matrix = [[{} for x in range(n)] for y in range(n)]
+	print(cms_list_matrix)
 	# the following are the probabilites of mutating to each of the nucleotides or staying the same depending on the original nucleotide
 	weights_A = [(1-mu), (beta*phi), alpha, (beta*(1-phi))]
 	weights_T = [(beta*phi), (1-mu), (beta*(1-phi)), alpha]
@@ -263,11 +265,14 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 	for y in range(n):
 		strains[y] = ancestor
 
-	mutation_sites = [n*[None]]
+	mutation_sites = n*[[]]
+	# print(mutation_sites)
 	for gen in range(generations): # adds one SNP for each generation
 		for child in range(n): # adds one SNP to each child strand
+			# print(child)
 			t = list(strains[child])
 			site = random.randint(0,L-1) # the site that is to be mutated
+			# print(mutation_sites[child])
 			if(site not in mutation_sites[child]):
 				mutation_sites[child].append(site)
 			current = t[site]
@@ -283,17 +288,25 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 			t = ''.join(t)
 			strains[child] = t # replaces the old child with the new one
 		c = 0
-		for strain1 in range(n):
-			for strain2 in range(1,n):
-				for site in mutation_sites[strain1]:
-					if(strains[strain1][site] == strains[strain2][site]):
-						c += 1
-						cms_list_matrix[strain1,strain2][site] = strains[strain1][site]
-						cms_list_matrix[strain2,strain1][site] = strains[strain1][site]
-					identity = (L - len(mutation_sites[strain1]) - len(mutation_sites[strain2]) + 2*c)/L
-					id_matrix[strain1,strain2] = identity
-					id_matrix[strain2,strain1] = identity
-				c = 0
+	print(mutation_sites)
+	for strain1 in range(n):
+		id_matrix[strain1][strain1] = 1
+		for strain2 in range(strain1+1,n):
+			# cms_list_matrix[strain1,strain2] = {}
+			# cms_list_matrix[strain2,strain1] = {}
+			for site in mutation_sites[strain1]:
+				if(strains[strain1][site] == strains[strain2][site]):
+					c += 1
+					cms_list_matrix[strain1][strain2][site] = strains[strain1][site]
+					cms_list_matrix[strain2][strain1][site] = strains[strain1][site]
+					# cms_list_matrix[strain1,strain2][site] = (int(site), strains[strain1][site])
+					# cms_list_matrix[strain2,strain1][site] = (int(site), strains[strain1][site])
+				identity = (L - len(mutation_sites[strain1]) - len(mutation_sites[strain2]) + 2*c)/L
+				id_matrix[strain1,strain2] = identity
+				id_matrix[strain2,strain1] = identity
+			c = 0
+	print(cms_list_matrix)
+	print(id_matrix)
 	return id_matrix
 
-# id_matrix_sim(4,10,4,1/10,1,1/2)
+id_matrix_sim(10,10,6,1/10,1,1/2)
