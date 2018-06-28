@@ -169,7 +169,7 @@ def expected_cms_given_m(L,mu,generations,kappa,phi):
 
 	mutation_combos = combos(L) # ordered list of all the possible 'L choose m' values
 
-	mutations = int((generations*(1-mu)**2)/mu)
+	mutations = int((L*(1-mu)**2))
 	# mutations = mu*generations
 	# for m1 in range(L+1): # allows for all possible values of m1
 	# 	x = m_probs[m1]

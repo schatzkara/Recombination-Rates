@@ -16,7 +16,7 @@ import numpy as np
 # 	phi (list of floats) = the phi values that the sim ran for
 # 	path (string) = the path where all the .csv files are located (make sure that only the files you want the averages for are in the path)
 # output: a .csv file containing the CM average and standard deviation of each generation with the following columns: Mutations on Each Strain, Average CMs, STDev
-def get_SNP_sim_averages(L, generations, GC, kappa, phi, path):
+def get_SNP_sim_averages(L, generations, GC, kappa, phi, data_path, save_path):
 	for l in L: # iterates over every length the sim ran for
 		for g in generations: # iterates over every number of generations the sim ran for
 			for gc in GC: # iterates over every GC% the sim ran for
@@ -26,24 +26,26 @@ def get_SNP_sim_averages(L, generations, GC, kappa, phi, path):
 						data = {} # a dictionary to hold all the data from all the files; has key: generation number - 1 and value: list of CMs for that generation
 						for x in range(g):
 							data[x] = []
-						with open(('averages_for_SNP_sim_' + str(l) + '_' + str(g) + '_' + str(gc) + '_' + str(k) + '_' + str(p) + '.csv'), 'w', newline = '') as f: # opens the file that the data will be written to
+						file_name = 'averages_for_SNP_sim_' + str(l) + '_' + str(g) + '_' + str(gc) + '_' + str(k) + '_' + str(p)
+						full_name = os.path.join(save_path, file_name + '.csv')
+						with open((full_name), 'w', newline = '') as f: # opens the file that the data will be written to
 							writer = csv.writer(f)
-							writer.writerow(['Mutations on Each Strain', 'Average CMs', 'STDev']) # column headers
+							writer.writerow(['Mutations on Each Strain', 'Average CMs', 'STDev', 'L', 'GC%', 'kappa', 'phi']) # column headers
 							j = 1 # counter for the number of files
-							for filename in glob.glob(os.path.join(path, '*.csv')): # iterates over every .csv file in the path
+							for filename in glob.glob(os.path.join(data_path, '*.csv')): # iterates over every .csv file in the path
 								with open(filename) as d: # reads the file
 									reader = csv.reader(d)
 									next(reader) # skips the column headers
-									data = [r for r in reader] # this is a list of lists; the external list contains all the rows, the internal list contains each row element
-									for row in range(len(data)): # iterates over every row of the data; the row corresponds to a generation
-										ms = int(data[row][0]) # extracts the number of mutations on each strand from the data
-										cms = int(data[row][1]) # extracts the number of convergent mutations from the data
+									file_data = [r for r in reader] # this is a list of lists; the external list contains all the rows, the internal list contains each row element
+									for row in range(len(file_data)): # iterates over every row of the data; the row corresponds to a generation
+										ms = int(file_data[row][0]) # extracts the number of mutations on each strand from the data
+										cms = int(file_data[row][1]) # extracts the number of convergent mutations from the data
 										data[ms-1].append(cms)
 								print('FILE NUMBER ' + str(j))
 								j += 1
 							i = 1 # counter for the generation number 
 							for item in data.values(): # writes each row to the new file; each row corresponds to a generation
-								writer.writerow([i, np.mean(item), np.std(item)])
+								writer.writerow([i, np.mean(item), np.std(item), l, gc, k, p])
 								i += 1
 
 # this function gets the average and standard deviation of each generation for all iterations of the ID sim
@@ -55,7 +57,7 @@ def get_SNP_sim_averages(L, generations, GC, kappa, phi, path):
 # 	phi (list of floats) = the phi values that the sim ran for
 # 	path (string) = the path where all the .csv files are located (make sure that only the files you want the averages for are in the path)
 # output: a .csv file containing the ID% and CM averages and standard deviations of each generation with the following columns: Mutations on Each Strain, Average ID%, ID% STDev, Average CMs, CMs STDev
-def get_ID_sim_averages(L, generations, GC, kappa, phi, path):
+def get_ID_sim_averages(L, generations, GC, kappa, phi, data_path, save_path):
 	for l in L: # iterates over every length the sim ran for
 		for g in generations: # iterates over every number of generations the sim ran for
 			for gc in GC: # iterates over every GC% the sim ran for
@@ -67,11 +69,13 @@ def get_ID_sim_averages(L, generations, GC, kappa, phi, path):
 						for x in range(g):
 							values[x] = []
 							values2[x] = []
-						with open(('averages_for_id_sim_' + str(l) + '_' + str(g) + '_' + str(gc) + '_' + str(k) + '_' + str(p) + '.csv'), 'w', newline = '') as f: # opens the file that the data will be written to
+						file_name = 'averages_for_id_sim_' + str(l) + '_' + str(g) + '_' + str(gc) + '_' + str(k) + '_' + str(p)
+						full_name = os.path.join(save_path, file_name + '.csv')
+						with open((full_name), 'w', newline = '') as f: # opens the file that the data will be written to
 							writer = csv.writer(f)
-							writer.writerow(['Mutations on Each Strain', 'Average ID%', 'ID% STDev', 'Average CMs', 'CMs STDev']) # column headers
+							writer.writerow(['Mutations on Each Strain', 'Average ID%', 'ID% STDev', 'Average CMs', 'CMs STDev', 'L', 'GC%', 'kappa', 'phi']) # column headers
 							j = 1 # counter for the number of files
-							for filename in glob.glob(os.path.join(path, '*.csv')): # iterates over every .csv file in the path
+							for filename in glob.glob(os.path.join(data_path, '*.csv')): # iterates over every .csv file in the path
 								with open(filename) as d: # reads the file
 									reader = csv.reader(d)
 									next(reader) # skips the column headers
@@ -85,4 +89,4 @@ def get_ID_sim_averages(L, generations, GC, kappa, phi, path):
 								print('FILE NUMBER ' + str(j))
 								j += 1
 							for x in range(g): # writes each row to the new file; each row corresponds to a generation
-								writer.writerow([(x+1), np.mean(values[x]), np.std(values[x]), np.mean(values2[x]), np.std(values2[x])])
+								writer.writerow([(x+1), np.mean(values[x]), np.std(values[x]), np.mean(values2[x]), np.std(values2[x])], l, gc, k, p)

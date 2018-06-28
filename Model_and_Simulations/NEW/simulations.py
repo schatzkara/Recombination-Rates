@@ -309,4 +309,4 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 	print(id_matrix)
 	return id_matrix
 
-id_matrix_sim(10,10,6,1/10,1,1/2)
+# id_matrix_sim(10,10,6,1/10,1,1/2)

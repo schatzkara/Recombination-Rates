@@ -21,7 +21,7 @@ from run_sims import run_ID_sim
 # enter parameters here
 L = [1000]
 generations = [300]
-GC = [1.0]
+GC = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0]
 kappa = [1.0, 2.0, 3.0]
 phi = [1/2]
 iterations = 1000
@@ -29,7 +29,8 @@ iterations = 1000
 # file_name = 'SNPs_sim_data_' + str(l) + '_' + str(gc) + '_' + str(k) + '_' + '{0:04}'.format(z+1)
 one_file = True
 
-run_ID_sim(L, generations GC, kappa, phi, iterations, one_file)
+run_ID_sim(L, generations, GC, kappa, phi, iterations, one_file)
+
 
 # for l in L: # iterates over every length desired
 # 	for g in generations: # iterates over every number of SNPs desired

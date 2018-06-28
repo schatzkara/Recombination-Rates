@@ -3,7 +3,7 @@ from model import expected_cms_given_m
 import csv
 
 L = [1000]
-mu = [1]
+mu = [1/1000]
 kappa = [1.0,2.0,3.0]
 phi = [0.5]
 generations = 300
