@@ -154,7 +154,6 @@ def expected_idp(mu, kappa, phi, generations):
 		print(x)
 		print(expected_idp)
 	return expected_idp
-	# x.item((0, 1))
 
 def expected_cms_given_m(L,mu,generations,kappa,phi):
 	# sum1 = 0 # counter for sum of all o and c combinations
@@ -169,7 +168,7 @@ def expected_cms_given_m(L,mu,generations,kappa,phi):
 
 	mutation_combos = combos(L) # ordered list of all the possible 'L choose m' values
 
-	mutations = int((L*(1-mu)**2))
+	mutation_sites = int((mu*L)/expected_m_at_site(mu, generations)
 	# mutations = mu*generations
 	# for m1 in range(L+1): # allows for all possible values of m1
 	# 	x = m_probs[m1]
@@ -177,7 +176,7 @@ def expected_cms_given_m(L,mu,generations,kappa,phi):
 	# 		y = x * m_probs[m2]
 	for o in range(mutations+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
 		# print('prob overlapping: ' + str(prob_overlapping(L,o,m1,m2,mutation_combos)) + ' c_prob: ' + str(c_probs[o]))
-		total += prob_overlapping(L,o,mutations,mutations,mutation_combos) * c_probs[o]
+		total += prob_overlapping(L,o,mutation_sites,mutation_sites,mutation_combos) * c_probs[o]
 		# sum2 += z
 	# sum1 += y * sum2
 	# sum2 = 0
@@ -186,8 +185,14 @@ def expected_cms_given_m(L,mu,generations,kappa,phi):
 
 	return total
 
-# def expected_m_at_site():
-
+def expected_m_at_site(mu, g):
+	return (g*(mu**(g+1)))/(1-mu) + (mu - mu**(g+1))/((1-mu)**2)
+	# total = 0
+	# if(mu**(g+1)*g <= .0001:
+		# total = 
+	# for x in range(g+1):
+		# total += (mu**x)*x
+	# return total
 
 def expected_cms_with_mg(L, mu, kappa, phi, generations):
 	sum1 = 0 # counter for sum of all o and c combinations
