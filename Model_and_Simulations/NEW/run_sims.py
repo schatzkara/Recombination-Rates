@@ -7,6 +7,7 @@ from simulations import mutations_sim
 from simulations import efficient_mutations_sim
 from simulations import mutations_over_generations_sim
 from simulations import id_percent_sim
+from simulations import id_matrix_sim
 # from mutation_sim import sim_equal_mutations
 # from mutation_sim import sim_unequal_mutations
 # from mutation_sim import efficient_sim_unequal_mutations
@@ -15,7 +16,7 @@ from simulations import id_percent_sim
 from data_averages import get_SNP_sim_averages
 from data_averages import get_ID_sim_averages
 import csv
-import os.path
+import os
 
 # function to run the mutation simulation over multiple iterations and compare the actual number of convergent mutations to that from our model
 # time complexity for each mu,L,kappa,phi combination: O(n^4), where n is L
@@ -55,43 +56,58 @@ def run_mutation_sim(n, L, mu, kappa, phi, iterations):
 					# print('expected: ' + str(((m)**2 * ((k**2 + 1/2)/(k + 1)**2) * l)) + ' model_expected: ' + str(model_expected)) 
 
 def run_SNP_sim(L, generations, GC, kappa, phi, iterations, one_file):
+	current_path = os.path.dirname(os.path.abspath(__file__))
 	for l in L: # iterates over every length desired
 		for g in generations: # iterates over every number of SNPs desired
 			for gc in GC: # iterates over every GC% desired
 				for k in kappa: # iterates over every kappa desired
 					for p in phi: # iterates over every phi desired
 						for z in range(iterations): # runs it for the desired iterations
-							current_path = os.path.dirname(os.path.abspath(__file__))
-							save_path = current_path + 'SNP Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
+							# current_path = os.path.dirname(os.path.abspath(__file__))
+							save_path = current_path + '/SNP Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
+							if not os.path.exists(save_path):
+								os.makedirs(save_path)
 							# save_path = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/Data/SNP Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(int(k))
 							file_name = 'SNPs_sim_data_' + str(l) + '_' + str(g) + '_' + str(gc) + '_' + str(k) + '_' + str(p) + '_' + '{0:04}'.format(z+1)
 							full_name = os.path.join(save_path, file_name + '.csv')   
 							with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
 							    writer = csv.writer(f)
-							    writer.writerow(['Mutations on Each Strain', 'CMs']) # column headers
-							    data = [list(range(1,g+1)), (mutations_over_generations_sim(l, g, gc, k, p))] # one variable is the number of SNPs and the other is the number of convergent mutations
+							    writer.writerow(['Mutations on Each Strain', 'CMs', 'L', 'GC%', 'kappa', 'phi']) # column headers
+							    data = [list(range(1,g+1)), (mutations_over_generations_sim(l, g, gc, k, p)), g*[l], g*[gc], g*[k], g*[p]] # one variable is the number of SNPs and the other is the number of convergent mutations
 							    data = zip(*data) # formats the data so it can be written row by row and produce two long columns
 							    writer.writerows(data) # writes the data
 	if(one_file):
-		get_SNP_sim_averages(L, generations, GC, kappa, phi, save_path)
+		new_path = current_path + '/SNP Sim'
+		get_SNP_sim_averages(L, generations, GC, kappa, phi, save_path, new_path)
 
 def run_ID_sim(L, generations, GC, kappa, phi, iterations, one_file):
+	current_path = os.path.dirname(os.path.abspath(__file__))
 	for l in L: # iterates over every length desired
 		for g in generations: # iterates over every number of SNPs desired
 			for gc in GC: # iterates over every GC% desired
 				for k in kappa: # iterates over every kappa desired
 					for p in phi: # iterates over every phi desired
 						for z in range(iterations): # runs it for the desired iterations
-							current_path = os.path.dirname(os.path.abspath(__file__))
-							save_path = current_path + 'ID Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
+							save_path = current_path + '/ID Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
+							if not os.path.exists(save_path):
+								os.makedirs(save_path)
 							# save_path = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/Data/ID Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(int(k))
 							file_name = 'ID_sim_data_' + str(l) + '_' + str(g) + '_' + str(gc) + '_' + str(k) + '_' + str(p) + '_' + '{0:04}'.format(z+1)
 							full_name = os.path.join(save_path, file_name + '.csv')   
 							with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
 							    writer = csv.writer(f)
-							    writer.writerow(['Mutations on Each Strain', 'ID%', 'CMs']) # column headers
+							    writer.writerow(['Mutations on Each Strain', 'ID%', 'CMs', 'L', 'GC%', 'kappa', 'phi']) # column headers
 							    sim = id_percent_sim(l, g, gc, k, p)
 							    for key in sim.keys():
-							    	writer.writerow([key+1, sim[key][0], sim[key][1]]) # writes the data
+							    	writer.writerow([key+1, sim[key][0], sim[key][1], l, gc, k, p]) # writes the data
 	if(one_file):
-		get_ID_sim_averages(L, generations, GC, kappa, phi, save_path)
+		new_path = current_path + '/ID Sim'
+		get_ID_sim_averages(L, generations, GC, kappa, phi, save_path, new_path)
+
+def run_ID_matrix_sim(n, L, generations, mu, kappa, phi):
+	for l in L:
+		for g in generations:
+			for m in mu:
+				for k in kappa:
+					for p in phi:
+						id_matrix_sim(n, l, g, m, k, p)

@@ -12,7 +12,7 @@ for l in L:
 	for m in mu:
 		for k in kappa:
 			for p in phi:
-				with open(('better_model_m_vs_cm_data_' + str(l) + '_' + str(k) + '_' + str(p) + '.csv'), 'w', newline = '') as f:
+				with open(('better_model_m_vs_cm_data_' + str(l) + '_' + str(m) + '_' + str(k) + '_' + str(p) + '.csv'), 'w', newline = '') as f:
 					writer = csv.writer(f)
 					writer.writerow(['Number of Mutations on Each Strand', 'Expected Number of Convergent Mutations', 'Length', 'mu', 'kappa', 'phi'])
 					for g in range(generations):
