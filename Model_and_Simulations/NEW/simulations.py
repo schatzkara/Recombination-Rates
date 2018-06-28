@@ -212,6 +212,7 @@ def id_percent_sim(L, generations, GC_prop, kappa, phi):
 
 	# adds the SNPs to each strain
 	mutation_sites = [[],[]] # a list of lists where each list contains the sites that were mutated in the corresponding strand; the strand number is the first index and the generation number in the second index
+	o = 0
 	c = 0 # counter for the number of convergent mutations that have arisen
 	for gen in range(generations): # adds one SNP for each generation
 		for child in range(2): # adds one SNP to each child strand
@@ -231,13 +232,23 @@ def id_percent_sim(L, generations, GC_prop, kappa, phi):
 				t[site] = (random.choices(nucleotides, weights=weights_G, k=1))[0]
 			elif current == 'C':
 				t[site] = (random.choices(nucleotides, weights=weights_C, k=1))[0]
+			if t[site] == ancestor[site]:
+				mutation_sites[child].remove(site)
 			t = ''.join(t)
 			strains[child] = t # replaces the old child with the new one
+		for site in mutation_sites[strain1]:
+				if site in mutation_sites[strain2]:
+					o += 1
+					if(strains[strain1][site] == strains[strain2][site] != ancestor[site]):
+						c += 1
 		for site in mutation_sites[0]: # counts up the number of convergent mutations
-			if(strains[0][site] == strains[1][site] != ancestor[site]):
-				c += 1
-		identity = (L - len(mutation_sites[0]) - len(mutation_sites[1]) + 2*c)/L
+			if site in mutation_sites[1]:
+				o += 1
+				if(strains[0][site] == strains[1][site] != ancestor[site]):
+					c += 1
+		identity = (L - len(mutation_sites[0]) - len(mutation_sites[1]) + o + c)/L
 		id_cms[gen] = [identity, c]
+		o = 0
 		c = 0
 	# print(len(id_cms.keys()))
 	# print(len(id_cms.keys()))
@@ -288,6 +299,8 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 				t[site] = (random.choices(nucleotides, weights=weights_G, k=1))[0]
 			elif current == 'C':
 				t[site] = (random.choices(nucleotides, weights=weights_C, k=1))[0]
+			if t[site] == ancestor[site]:
+				mutation_sites[child].remove(site)
 			t = ''.join(t)
 			strains[child] = t # replaces the old child with the new one
 	o = 0
@@ -312,7 +325,7 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 					# cms_list_matrix[strain2,strain1][site] = (int(site), strains[strain1][site])
 			# print(len(mutation_sites[strain1]))
 			# print(len(mutation_sites[strain2]))
-			identity = (L - len(mutation_sites[strain1]) - (len(mutation_sites[strain2]) - o) + c)/L
+			identity = (L - len(mutation_sites[strain1]) - len(mutation_sites[strain2]) + o + c)/L
 			id_matrix[strain1,strain2] = identity
 			id_matrix[strain2,strain1] = identity
 			print('1: ' + str(strain1) + ', 2: ' + str(strain2) + ', m1: ' + str(len(mutation_sites[strain1])) + ', m2: ' + str(len(mutation_sites[strain2])) + ', o: ' + str(o) + ', c: ' + str(c))
