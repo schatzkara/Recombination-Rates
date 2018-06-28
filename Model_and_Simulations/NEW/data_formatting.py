@@ -40,7 +40,7 @@ def combine_SNP_sim_data(L, generations, path):
 				# values2[x] = []
 	with open(('all_averages_for_SNP_sim_data.csv'), 'w', newline = '') as f: # opens the file that the data will be written to
 		writer = csv.writer(f)
-		writer.writerow(['Mutations on Each Strain', 'Average CMs', 'STDev', 'L', 'GC%', 'kappa', 'phi']) # column headers
+		# writer.writerow(['Mutations on Each Strain', 'Average CMs', 'STDev', 'L', 'GC%', 'kappa', 'phi']) # column headers
 		j = 1 # counter for the number of files
 		for filename in glob.glob(os.path.join(path, '*.csv')): # iterates over every .csv file in the path
 			# gc = filename[-11:-8] # extracts the GC% from the file name
@@ -73,7 +73,7 @@ def combine_ID_sim_data(L, generations, path):
 			# 	values2[x] = []
 	with open(('all_averages_for_ID_sim_data.csv'), 'w', newline = '') as f: # opens the file that the data will be written to
 		writer = csv.writer(f)
-		writer.writerow(['Mutations on Each Strain', 'Average ID%', 'ID% STDev', 'Average CMs', 'CMs STDev', 'L', 'GC%', 'kappa', 'phi']) # column headers
+		# writer.writerow(['Mutations on Each Strain', 'Average ID%', 'ID% STDev', 'Average CMs', 'CMs STDev', 'L', 'GC%', 'kappa', 'phi']) # column headers
 		j = 1 # counter for the number of files 
 		for filename in glob.glob(os.path.join(path, '*.csv')): # iterates over every .csv file in the path
 			# gc = filename[-11:-8] # extracts the GC% from the file name 
