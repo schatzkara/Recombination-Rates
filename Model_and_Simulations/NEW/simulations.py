@@ -236,11 +236,6 @@ def id_percent_sim(L, generations, GC_prop, kappa, phi):
 				mutation_sites[child].remove(site)
 			t = ''.join(t)
 			strains[child] = t # replaces the old child with the new one
-		for site in mutation_sites[strain1]:
-				if site in mutation_sites[strain2]:
-					o += 1
-					if(strains[strain1][site] == strains[strain2][site] != ancestor[site]):
-						c += 1
 		for site in mutation_sites[0]: # counts up the number of convergent mutations
 			if site in mutation_sites[1]:
 				o += 1
