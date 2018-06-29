@@ -118,3 +118,17 @@ def combine_model_ID_data(L, generations, path):
 							writer.writerow([row[0], row[1], row[2], k])
 					print('FILE NUMBER ' + str(j))
 					j += 1
+
+def combine_model_cm_vs_m_data(path):
+	with open(('all_model_cm_vs_m_data.csv'), 'w', newline = '') as f:
+		writer = csv.writer(f)
+		j = 1
+		for filename in glob.glob(os.path.join(path, '*.csv')):
+			with open(filename) as d:
+				reader = csv.reader(d)
+				if(j > 1):
+					next(reader)
+				for row in reader:
+					writer.writerow(row)
+			print('file number ' + str(j))
+			j += 1
