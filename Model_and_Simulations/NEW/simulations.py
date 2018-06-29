@@ -357,11 +357,12 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 
 	# print(cms)
 
-	multiple_cms = 0
+	multiple_cms = (n-2)*[0] # index = q - 3
 	for site in cms:
 		for base in nucleotides:
-			if site[base] > 2:
-				multiple_cms += 1
+			for q in range(3,n+1):
+				if site[base] == q:
+					multiple_cms[q-3] += 1
 	print(multiple_cms)
 	return multiple_cms
 

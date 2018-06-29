@@ -113,13 +113,17 @@ def run_ID_matrix_sim(N, L, generations, mu, kappa, phi, iterations):
 						for p in phi:
 							with open((id_matrix_sim_data_ + str(n) + '_' + str(l) + '_' + str(m) + '_' + str(k) + '_' + str(p) + '.csv'), 'w', newline = '') as f:
 								writer = csv.writer(f)
-								writer.writerow(['Iteration Number', 'Number of 3+ Mutations', 'n', 'L', 'mu', 'kappa', 'phi'])
+								c_q = (n-2)*[] # index = q - 3
+								for q in range(3,n+1):
+									c_q[q-3] = 'c_' + 'str(q)
+								writer.writerow(['Iteration Number', c_q, 'n', 'L', 'mu', 'kappa', 'phi'])
 								values = i*[None]
 								for i in range(iterations):
 									values[i] = id_matrix_sim(n, l, g, m, k, p)
-								data = [list(range(1,iterations+1)), values, iterations*[n], iterations*[l], iterations*[m], iterations*[k], iterations*[p]]
-								data = zip(*data)
-								writer.writerows(data)
+									writer.writerow([(i+1),values[i], n,l,m,k,p])
+								# data = [list(range(1,iterations+1)), values, iterations*[n], iterations*[l], iterations*[m], iterations*[k], iterations*[p]]
+								# data = zip(*data)
+								# writer.writerows(data)
 								
 								
 								
