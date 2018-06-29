@@ -104,10 +104,22 @@ def run_ID_sim(L, generations, GC, kappa, phi, iterations, one_file):
 		new_path = current_path + '/ID Sim'
 		get_ID_sim_averages(L, generations, GC, kappa, phi, save_path, new_path)
 
-def run_ID_matrix_sim(n, L, generations, mu, kappa, phi):
-	for l in L:
-		for g in generations:
-			for m in mu:
-				for k in kappa:
-					for p in phi:
-						id_matrix_sim(n, l, g, m, k, p)
+def run_ID_matrix_sim(N, L, generations, mu, kappa, phi, iterations):
+	for n in N:
+		for l in L:
+			for g in generations:
+				for m in mu:
+					for k in kappa:
+						for p in phi:
+							with open((id_matrix_sim_data_ + str(n) + '_' + str(l) + '_' + str(m) + '_' + str(k) + '_' + str(p) + '.csv'), 'w', newline = '') as f:
+								writer = csv.writer(f)
+								writer.writerow(['Iteration Number', 'Number of 3+ Mutations', 'n', 'L', 'mu', 'kappa', 'phi'])
+								values = i*[None]
+								for i in range(iterations):
+									values[i] = id_matrix_sim(n, l, g, m, k, p)
+								data = [list(range(1,iterations+1)), values, iterations*[n], iterations*[l], iterations*[m], iterations*[k], iterations*[p]]
+								data = zip(*data)
+								writer.writerows(data)
+								
+								
+								

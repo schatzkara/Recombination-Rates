@@ -90,3 +90,26 @@ def get_ID_sim_averages(L, generations, GC, kappa, phi, data_path, save_path):
 								j += 1
 							for x in range(g): # writes each row to the new file; each row corresponds to a generation
 								writer.writerow([(x+1), np.mean(values[x]), np.std(values[x]), np.mean(values2[x]), np.std(values2[x])], l, gc, k, p)
+								
+def get_ID_matrix_sim_averages(path):
+	with open(('all_averages_id_matrix_sim.csv'), 'w', newline = '') as f:
+		writer = csv.writer(f)
+		writer.writerow(['Average Number of 3+ Mutations', 'n', 'L', 'mu', 'kappa', 'phi'])
+		for filename in glob.glob(os.path.join(path, '*.csv')):
+			with open(filename) as d:
+			reader = csv.reader(d)
+			next(reader)
+			data = [r for r in reader]
+			wcms = []
+			n = data[0][2]
+			l = data[0][3]
+			m = data[0][4]
+			k = data[0][5]
+			p = data[0][6]
+			for row in range(len(data)):
+				wcms.append(row[1])
+			writer.writerow([np.mean(wcms), n, l, m, k, p])
+								
+								
+								
+								
