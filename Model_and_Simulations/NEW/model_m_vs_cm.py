@@ -4,8 +4,8 @@ import csv
 
 L = [1000]
 mu = [1/1000]
-kappa = [1.0,2.0,3.0]
-phi = [0.5]
+kappa = [1.0,2.0,3.0,4.0,5.0,6.0]
+phi = [0.25,0.50,0.75,1.00]
 generations = 300
 
 for l in L:
@@ -17,3 +17,4 @@ for l in L:
 					writer.writerow(['Number of Mutations on Each Strand', 'Expected Number of Convergent Mutations', 'Length', 'mu', 'kappa', 'phi'])
 					for g in range(generations):
 						writer.writerow([g+1, expected_cms_given_m(l,m,g+1,k,p), l, m, k, p])
+						print(g)

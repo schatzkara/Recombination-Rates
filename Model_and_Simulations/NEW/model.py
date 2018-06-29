@@ -151,8 +151,8 @@ def expected_idp(mu, kappa, phi, generations):
 	expected_idp = 0
 	for x in range(4):
 		expected_idp += (mg[0,x])**2
-		print(x)
-		print(expected_idp)
+		# print(x)
+		# print(expected_idp)
 	return expected_idp
 
 def expected_cms_given_m(L,mu,generations,kappa,phi):
@@ -168,13 +168,13 @@ def expected_cms_given_m(L,mu,generations,kappa,phi):
 
 	mutation_combos = combos(L) # ordered list of all the possible 'L choose m' values
 
-	mutation_sites = int((mu*L)/expected_m_at_site(mu, generations)
+	mutation_sites = int((mu*L)/expected_m_at_site(mu, generations))
 	# mutations = mu*generations
 	# for m1 in range(L+1): # allows for all possible values of m1
 	# 	x = m_probs[m1]
 	# 	for m2 in range(L+1): # allows for all possible values of m2
 	# 		y = x * m_probs[m2]
-	for o in range(mutations+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
+	for o in range(mutation_sites+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
 		# print('prob overlapping: ' + str(prob_overlapping(L,o,m1,m2,mutation_combos)) + ' c_prob: ' + str(c_probs[o]))
 		total += prob_overlapping(L,o,mutation_sites,mutation_sites,mutation_combos) * c_probs[o]
 		# sum2 += z

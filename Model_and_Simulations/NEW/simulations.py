@@ -300,9 +300,9 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 			strains[child] = t # replaces the old child with the new one
 	o = 0
 	c = 0
-	print(ancestor)
-	print(strains)
-	print(mutation_sites)
+	# print(ancestor)
+	# print(strains)
+	# print(mutation_sites)
 	for strain1 in range(n):
 		id_matrix[strain1][strain1] = 1
 		for strain2 in range(strain1+1,n):
@@ -326,8 +326,8 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 			print('1: ' + str(strain1) + ', 2: ' + str(strain2) + ', m1: ' + str(len(mutation_sites[strain1])) + ', m2: ' + str(len(mutation_sites[strain2])) + ', o: ' + str(o) + ', c: ' + str(c))
 			o = 0
 			c = 0
-	print(cms_list_matrix)
-	print(id_matrix)
+	# print(cms_list_matrix)
+	# print(id_matrix)
 	# return id_matrix
 
 	cms = L*[None]
@@ -355,7 +355,7 @@ def id_matrix_sim(n, L, generations, mu, kappa, phi):
 					strains_with_site[site].append(strain2)
 					site_count[nucleotide] += 1
 
-	print(cms)
+	# print(cms)
 
 	multiple_cms = 0
 	for site in cms:

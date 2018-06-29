@@ -6,13 +6,14 @@
 from model_evaluations import cm_vs_id_evaluation
 
 L = [1000]
+mu = [1/1000]
 generations = [300]
 # GC = [1.0]
-kappa = [2.0, 3.0]
-phi = [1/2]
+kappa = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+phi = [0.25, 0.50, 0.75, 1.00]
 # iterations = 1000
 
-cm_vs_id_evaluation(L, generations, kappa, phi)
+cm_vs_id_evaluation(L, mu, generations, kappa, phi)
 
 # for l in L:
 # 	for g in generations:
