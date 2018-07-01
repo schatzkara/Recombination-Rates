@@ -245,46 +245,46 @@ def identity_sim(L, mu, generations, GC_prop, kappa, phi):
         return id_cms
         
 def id_matrix_sim(n, L, mu, generations, kappa, phi):
-        ancestor = '' # ancestor DNA strand
-        strains = n*[None] # list of the child DNA sequences
-        id_matrix = np.empty([n,n], dtype = np.float, order='C')
-        c_matrix = np.empty([n,n], dtype = np.int64, order='C')
-        ancestor = generate_ancestor(L)
-        for y in range(n):
-                strains[y] = ancestor
-
-        # this section adds the mutations to each daughter strain
-        nucleotides = ['A', 'T', 'G', 'C']
-        m = int(mu*L) # the number of mutations to add per generation
-        mutation_sites = n*[None] # a list of lists where each list contains the sites that were mutated in the corresponding strand; the strand number is the first index and the generation number in the second index
-        for x in range(n):
-                mutation_sites[x] = []
-        for g in range(generations): # adds m mutations for each generation
-                for child in range(n): # adds m mutations to each daughter strand
-                        t = list(strains[child])
-                        for x in range(m): # mutates the appropriate number of sites for a generation
-                                site = random.randint(0,L-1) # the site that is to be mutated
-                                if(site not in mutation_sites[child]):
-                                        mutation_sites[child].append(site)
-                                current_nucleotide = t[site]
-                                # mutates the nucleotide based on the appropriate probabilties
-                                t[site] = mutate(current_nucleotide, mu, kappa, phi, True)
-                                if t[site] == ancestor[site]:
-                                        mutation_sites[child].remove(site)
-                        t = ''.join(t)
-                        strains[child] = t # replaces the old child with the new one
+		ancestor = '' # ancestor DNA strand
+		strains = n*[None] # list of the child DNA sequences
+		id_matrix = np.empty([n,n], dtype = np.float, order='C')
+		c_matrix = np.empty([n,n], dtype = np.int64, order='C')
+		ancestor = generate_ancestor(L)
+		for y in range(n):
+				strains[y] = ancestor
+		
+		# this section adds the mutations to each daughter strain
+		nucleotides = ['A', 'T', 'G', 'C']
+		m = int(mu*L) # the number of mutations to add per generation
+		mutation_sites = n*[None] # a list of lists where each list contains the sites that were mutated in the corresponding strand; the strand number is the first index and the generation number in the second index
+		for x in range(n):
+				mutation_sites[x] = []
+		for g in range(int(generations)): # adds m mutations for each generation
+				for child in range(n): # adds m mutations to each daughter strand
+						t = list(strains[child])
+						for x in range(m): # mutates the appropriate number of sites for a generation
+								site = random.randint(0,L-1) # the site that is to be mutated
+								if(site not in mutation_sites[child]):
+										mutation_sites[child].append(site)
+								current_nucleotide = t[site]
+								# mutates the nucleotide based on the appropriate probabilties
+								t[site] = mutate(current_nucleotide, mu, kappa, phi, True)
+								if t[site] == ancestor[site]:
+										mutation_sites[child].remove(site)
+						t = ''.join(t)
+						strains[child] = t # replaces the old child with the new one
                         
-        for strain1 in range(n):
-                id_matrix[strain1][strain1] = 1
-                c_matrix[strain1][strain1] = 0
-                for strain2 in range(strain1+1,n):
-                        totals = detect_o_and_c(ancestor, strains[strain1], strains[strain2], mutation_sites1 = mutation_sites[strain1], mutation_sites2 = mutation_sites[strain2])
-                        identity = (L - len(mutation_sites[strain1]) - len(mutation_sites[strain2]) + totals['o'] + totals['c'])/L
-                        id_matrix[strain1,strain2] = identity
-                        id_matrix[strain2,strain1] = identity
-                        c_matrix[strain1,strain2] = totals['c']
-                        c_matrix[strain2,strain1] = totals['c']
-        return {'id_matrix': id_matrix, 'c_matrix': c_matrix}
+		for strain1 in range(n):
+				id_matrix[strain1][strain1] = 1
+				c_matrix[strain1][strain1] = 0
+				for strain2 in range(strain1+1,n):
+						totals = detect_o_and_c(ancestor, strains[strain1], strains[strain2], mutation_sites1 = mutation_sites[strain1], mutation_sites2 = mutation_sites[strain2])
+						identity = (L - len(mutation_sites[strain1]) - len(mutation_sites[strain2]) + totals['o'] + totals['c'])/L
+						id_matrix[strain1,strain2] = identity
+						id_matrix[strain2,strain1] = identity
+						c_matrix[strain1,strain2] = totals['c']
+						c_matrix[strain2,strain1] = totals['c']
+		return {'id_matrix': id_matrix, 'c_matrix': c_matrix}
 
 # simulation to mutate 2 DNA strands a given number of times and count the number of convergent mutations that are present between 2,3,...,n of them
 # starts with identical but random strands; factors in the probabilites of A,T,C,G; forces an exact number of mutations with each 'generation,' allows for multiple mutations at one site

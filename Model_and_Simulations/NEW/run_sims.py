@@ -25,7 +25,7 @@ import os
 # 	iterations (int) = number of iterations to run
 # return: a .csv file will be produced in the directory where this file is located with the data from all iterations and the expected value
 def run_mutation_sim(n, L, mu, generations, kappa, phi, iterations):
-        current_path = os.path.dirname(os.path.abspath(__file__))
+	current_path = os.path.dirname(os.path.abspath(__file__))
 	for l in L: # iterates over every length desired
 		for m in mu: # iterates over every mu desired
                         for g in generations:
@@ -151,19 +151,19 @@ def run_id_matrix_sim(N, L, mu, generations, kappa, phi, iterations):
                                                                 
 
 def run_c_q_sim(N, L, generations, mu, kappa, phi, iterations):
-        current_path = os.path.dirname(os.path.abspath(__file__))
+	current_path = os.path.dirname(os.path.abspath(__file__))
 	for n in N:
 		for l in L:
 			for g in generations:
 				for m in mu:
 					for k in kappa:
 						for p in phi:
-                                                        save_path = current_path + '/c_q Sim/L = ' + str(l)
-                                                        if not os.path.exists(save_path):
-                                                                os.makedirs(save_path)
-                                                        file_name = 'c_q_sim_' + '{0:04}'.format(n) + '_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
-                                                        full_name = os.path.join(save_path, file_name + '.csv')   
-                                                        with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
+							save_path = current_path + '/c_q Sim/L = ' + str(l)
+							if not os.path.exists(save_path):
+								os.makedirs(save_path)
+							file_name = 'c_q_sim_' + '{0:04}'.format(n) + '_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
+							full_name = os.path.join(save_path, file_name + '.csv')
+							with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
 								writer = csv.writer(f)
 								header = ['Iteration']
 								for q in range(2,n+1):
@@ -171,11 +171,11 @@ def run_c_q_sim(N, L, generations, mu, kappa, phi, iterations):
 								header.extend(('n', 'L', 'mu', 'kappa', 'phi'))
 								writer.writerow(header)
 								for i in range(iterations):
-                                                                        row = [(i+1)]
-                                                                        row.extend(id_matrix_sim(n, l, m, g, k, p))
-                                                                        row.extend((n,l,m,k,p))
-                                                                        writer.writerow(row)
-                                                                        print(i)
+									row = [(i+1)]
+									row.extend(id_matrix_sim(n, l, m, g, k, p))
+									row.extend((n,l,m,k,p))
+									writer.writerow(row)
+									print(i)
                 
 								
 								
