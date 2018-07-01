@@ -1,10 +1,8 @@
-#! python3
-
 # script for our model
 
 import numpy as np
-# from scipy import stats
-# from scipy import special
+from scipy import stats
+from scipy import special
 
 # function to calculate the expected number of convergent mutations for a given mutation rate and DNA sequence length
 # accounts for the unequal probabilities of switching to each other nucleotide

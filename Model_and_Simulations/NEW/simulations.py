@@ -1,4 +1,3 @@
-#! python 3
 
 import random
 import numpy as np
@@ -329,8 +328,8 @@ def c_q_sim(n, L, mu, generations, kappa, phi):
                 id_matrix[strain1][strain1] = 1 
                 for strain2 in range(strain1+1,n): # allows each strain after strain1 to be strain2; avoids doing any combination of strains twice
                         totals = detect_o_and_c(ancestor, strains[strain1], strains[strain2], mutation_sites1 = mutation_sites[strain1], mutation_sites2 = mutation_sites[strain2], return_sites = True)
-                        c_list_matrix[strain1,strain2] = totals['sites']
-                        c_list_matrix[strain2,strain1] = totals['sites']
+                        c_list_matrix[strain1][strain2] = totals['sites']
+                        c_list_matrix[strain2][strain1] = totals['sites']
                         
         site_counts = L*[None] # list of dictionaries to keep track of which nucleotides are at each convergent site; index = site; key = nucleotide, value = number of strains with that nucleotide
         strains_with_site = L*[None] # list of the strains that have a convergent mutation at each site; index = site
@@ -350,7 +349,7 @@ def c_q_sim(n, L, mu, generations, kappa, phi):
                                         
         c_q = (n-1)*[None] # list of the number of convergent mutations between q strains; index = q-2
         for x in range(n-1):
-                c_q = 0
+                c_q[x] = 0
         for site in site_counts:
                 for base in nucleotides:
                         for q in range(2,n+1):

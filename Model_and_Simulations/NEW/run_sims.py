@@ -8,6 +8,7 @@ from simulations import efficient_mutation_sim
 from simulations import generation_sim
 from simulations import identity_sim
 from simulations import id_matrix_sim
+from simulations import c_q_sim
 from data_averages import get_generation_sim_averages
 from data_averages import get_identity_sim_averages
 import csv
@@ -41,7 +42,7 @@ def run_mutation_sim(n, L, mu, generations, kappa, phi, iterations):
                                                                 actual = mutation_sim(n, l, m, g, k, p)
                                                         total_cms += actual
                                                         data[i] = (total_cms)/(i+1)
-                                                        print(i)
+##                                                        print(i)
                                                 save_path = current_path + '/Mutation Sim/L = ' + str(l)
                                                 if not os.path.exists(save_path):
                                                         os.makedirs(save_path)
@@ -163,7 +164,7 @@ def run_c_q_sim(N, L, generations, mu, kappa, phi, iterations):
 								os.makedirs(save_path)
 							file_name = 'c_q_sim_' + '{0:04}'.format(n) + '_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
 							full_name = os.path.join(save_path, file_name + '.csv')
-							with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
+							with open((full_name), 'wb') as f: # , newline = '') as f: # writes the data to a .csv file
 								writer = csv.writer(f)
 								header = ['Iteration']
 								for q in range(2,n+1):
@@ -172,7 +173,7 @@ def run_c_q_sim(N, L, generations, mu, kappa, phi, iterations):
 								writer.writerow(header)
 								for i in range(iterations):
 									row = [(i+1)]
-									row.extend(id_matrix_sim(n, l, m, g, k, p))
+									row.extend(c_q_sim(n, l, m, g, k, p))
 									row.extend((n,l,m,k,p))
 									writer.writerow(row)
 									print(i)

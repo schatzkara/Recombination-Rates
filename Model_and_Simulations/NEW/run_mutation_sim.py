@@ -1,11 +1,9 @@
-#! python3
-# export PATH=/opt/rh/rh-python36/root/usr/bin:$PATH
-
 
 # script to run the mutation simulation over multiple iterations and compare the actual number of convergent mutations to that from our model
 # time complexity for each mu,L combination: O(n^4), where n is L
 
-from run_sims import run_mutation_sim
+from simulations import efficient_mutation_sim
+from model import expected_cms
 
 # params:
 # 	n (int) = number of DNA strands
@@ -17,12 +15,16 @@ from run_sims import run_mutation_sim
 # return: a .csv file will be produced in the directory where this file is located with the data from all iterations and the expected value
 
 # enter parameters here
-n = 2
-L = [100] # format for range(): list(range(starting length, ending length+1, increment))
-mu = [0.01, 0.1]
-generations = [1]
-kappa = [0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0] 
-phi = [0.0, 0.25, 0.5, 0.75, 1.0] 
-iterations = 1000
+L = 10000
+mu = [0.001, 0.01, 0.1]
+generations = 1
+kappa = [1.0,2.0,3.0,4.0,5.0,6.0] 
+phi = 0.5
+iterations = 10
 
-run_mutation_sim(n, L, mu, generations, kappa, phi, iterations)
+for m in mu:
+    for k in kappa:
+        for i in range(iterations):
+            # we want to output the results of these two functions
+            efficient_mutation_sim(L, m, generations, k, phi)
+            expected_cms(L, m, k, phi)
