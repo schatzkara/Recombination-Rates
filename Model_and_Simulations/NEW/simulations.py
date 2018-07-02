@@ -347,12 +347,12 @@ def c_q_sim(n, L, mu, generations, kappa, phi):
                                         strains_with_site[site].append(strain2)
                                         site_counts[site][nucleotide] += 1
                                         
-        c_q = (n-1)*[None] # list of the number of convergent mutations between q strains; index = q-2
+        c_q = (n-1)*[None] # list of the number of convergent mutations between q strains; index = q - 2
         for x in range(n-1):
                 c_q[x] = 0
         for site in site_counts:
                 for base in nucleotides:
                         for q in range(2,n+1):
-                                if site[base] == q:
+                                if site[base] == (q):
                                         c_q[q-2] += 1
         return c_q
