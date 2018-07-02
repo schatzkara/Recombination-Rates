@@ -37,15 +37,6 @@ def cm_vs_id_evaluation(L, mu, generations, kappa, phi):
 							writer.writerows(data)
 
 def mg_vs_mustar_evaluation(L, generations, mu, kappa, phi):
-
-	# L = [1000]
-	# generations = [300]
-	# mu = [1/1000]
-	# # GC = [1.0]
-	# kappa = [1.0, 2.0, 3.0]
-	# phi = [1/2]
-	# iterations = 1000
-
 	for l in L: # iterates over all genome lengths desired
 		for g in generations: # iterates over all numbers of generations desired
 			for m in mu: # iterates over all mutation rates desired
@@ -60,9 +51,9 @@ def mg_vs_mustar_evaluation(L, generations, mu, kappa, phi):
 							with_mg[i] = cms_with_mg
 							with_mustar[i] = cms_with_mustar
 							print(i)
-						with open(('model_mg_vs_mustar_data_' + str(l) + '_' + str(g) + '_' + str(m) + '_' + str(k) + '_' + str(p) + '.csv'), 'w', newline = '') as f: # opens the file that the data will be written to
+						with open(('model_mg_vs_mustar_data_' + str(l) + '_' + str(g) + '_' + str(m) + '_' + str(k) + '_' + str(p) + '.csv'), 'wb') as f: # , newline = '') as f: # opens the file that the data will be written to
 							writer = csv.writer(f)
-							writer.writerow(['Generation', 'Expected CMs using M^g', 'Expected CMs using Mu*']) # column headers
-							data = [list(range(1,g+1)), with_mg, with_mustar] # the three lists that will form the columns of the output file
+							writer.writerow(['Generation', 'E[c] using M^g', 'E[c] using Mu*', 'L', 'mu', 'kappa', 'phi']) # column headers
+							data = [list(range(1,g+1)), with_mg, with_mustar, g*[l], g*[m], g*[k], g*[p]] # the three lists that will form the columns of the output file
 							data = zip(*data) # formats the data so it can be written row by row and produce two long columns
 							writer.writerows(data)
