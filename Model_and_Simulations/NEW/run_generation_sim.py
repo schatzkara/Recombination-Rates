@@ -16,12 +16,12 @@ from run_sims import run_generation_sim
 # return: a .csv file will be produced in the directory where this file is located with the data for a single interation (one .csv file for each iteration)
 
 # enter parameters here
-L = [100]
-mu = [1/100]
-generations = [30]
-GC = [0.8, 0.9, 1.0]
-kappa = [1.0, 2.0, 3.0]
-phi = [1/2]
+L = [1000]
+mu = [1/1000]
+generations = [300]
+GC = [0.1, 0.2, 0.3, 0.4, 0.5]
+kappa = [0.50, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+phi = [0.25, 0.50, 0.75, 1.00]
 iterations = 1000
 one_file = True
 
