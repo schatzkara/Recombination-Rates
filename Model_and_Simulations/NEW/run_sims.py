@@ -29,32 +29,32 @@ def run_mutation_sim(n, L, mu, generations, kappa, phi, iterations):
 	current_path = os.path.dirname(os.path.abspath(__file__))
 	for l in L: # iterates over every length desired
 		for m in mu: # iterates over every mu desired
-                        for g in generations:
-                                for k in kappa: # iterates over every kappa desired
-                                        for p in phi: # iterates over every phi desired
-                                                total_cms = 0 # counter for total convergent mutations over all iterations
-                                                data = iterations*[None] # dictionary for data over all iterations (key: iteration number, value: average convergent mutations of all iterations up to that point)
-                                                model_expected = expected_cms(l, m, k, p) # better_expected_cms(m, l, kappa, phi) # number of expected convergent mutations from our model
-                                                for i in range(iterations): # number of iterations to run
-                                                        if n == 2:
-                                                                actual = efficient_mutation_sim(l, m, g, k, p) # number of actual convergent mutations from simulation
-                                                        else: 
-                                                                actual = mutation_sim(n, l, m, g, k, p)
-                                                        total_cms += actual
-                                                        data[i] = (total_cms)/(i+1)
-##                                                        print(i)
-                                                save_path = current_path + '/Mutation Sim/L = ' + str(l)
-                                                if not os.path.exists(save_path):
-                                                        os.makedirs(save_path)
-                                                file_name = 'mutation_sim_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
-                                                full_name = os.path.join(save_path, file_name + '.csv')   
-                                                with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
-                                                    writer = csv.writer(f)
-                                                    writer.writerow(['Iteration', 'Average c', 'L', 'mu', 'kappa', 'phi', 'E[c]']) # column headers
-                                                    data_columns = [(list(range(1,iterations+1))), data, iterations*[l], iterations*[m], iterations*[k], iterations*[p], iterations*[model_expected]]
-                                                    data_row = zip(*data_columns)
-                                                    writer.writerows(data_row)
-                                                print('expected: ' + str(model_expected))
+			for g in range(generations+1):
+				for k in kappa: # iterates over every kappa desired
+					for p in phi: # iterates over every phi desired
+						total_cms = 0 # counter for total convergent mutations over all iterations
+						data = iterations*[None] # dictionary for data over all iterations (key: iteration number, value: average convergent mutations of all iterations up to that point)
+						model_expected = expected_cms(l, m, k, p) # better_expected_cms(m, l, kappa, phi) # number of expected convergent mutations from our model
+						for i in range(iterations): # number of iterations to run
+							if n == 2:
+								actual = efficient_mutation_sim(l, m, g, k, p) # number of actual convergent mutations from simulation
+							else: 
+								actual = mutation_sim(n, l, m, g, k, p)
+							total_cms += actual
+							data[i] = (total_cms)/(i+1)
+							print(i)
+						save_path = current_path + '/Mutation Sim/L = ' + str(l)
+						if not os.path.exists(save_path):
+							os.makedirs(save_path)
+						file_name = 'mutation_sim_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
+						full_name = os.path.join(save_path, file_name + '.csv')   
+						with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
+							writer = csv.writer(f)
+							writer.writerow(['Iteration', 'Average c', 'L', 'mu', 'generations', 'kappa', 'phi', 'E[c]']) # column headers
+							data_columns = [(list(range(1,iterations+1))), data, iterations*[l], iterations*[m], list(range(1,generations+1)), iterations*[k], iterations*[p], iterations*[model_expected]]
+							data_row = zip(*data_columns)
+							writer.writerows(data_row)
+						print('expected: ' + str(model_expected))
 
 # function to run the 
 def run_generation_sim(L, mu, generations, GC, kappa, phi, iterations, one_file):
