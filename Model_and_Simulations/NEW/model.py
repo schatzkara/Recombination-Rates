@@ -194,7 +194,7 @@ def prob_c_with_mg(L,kappa,phi,mg,cutoff):
 
 def pi_bar_with_mg(c,o,kappa,phi,mg):
 	prob = (mg[0,1]**2 + mg[0,2]**2 + mg[0,3]**2)/((mg[0,1] + mg[0,2] + mg[0,3])**2)
-	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density functio
+	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
 
 def mutation_matrix(mu, kappa, phi, generations):
 	alpha = (mu * kappa)/(kappa + 1) # probability of transitions
@@ -202,6 +202,59 @@ def mutation_matrix(mu, kappa, phi, generations):
 	m = np.matrix([[(1-mu), beta*phi, alpha, beta*(1-phi)], [beta*phi, (1-mu), beta*(1-phi), alpha], [alpha, beta*(1-phi), (1-mu), beta*phi], [beta*(1-phi), alpha, beta*phi, (1-mu)]], dtype = np.float)
 	mg = np.linalg.matrix_power(m, generations)
 	return mg
+	
+# model using uvwxyz
+	
+def mutation_matrix_uvwxyz(mu, u,v,w,x,y,z, generations):
+	m = np.matrix([[(1-mu), w, u, x], [w, (1-mu), y, v], [u, y, (1-mu), z], [x, v, z, (1-mu)]], dtype = np.float)
+	mg = np.linalg.matrix_power(m, generations)
+	return mg
+	
+def prob_c_with_mg_uvwxyz(L,kappa,phi,mg,cutoff):
+	c_probs = (cutoff+1)*[None] # will be populated as an ordered list of the expected values of c for o = 0 to L
+
+	summation = 0 # counter for the total expected value
+
+	for o in range(cutoff+1): # allows for all possible values of o
+		for c in range(o+1): # allows for all possible values of c
+			summation += c * pi_bar_with_mg_uvwxyz(c,o,kappa,phi,mg) # calculates the particular contribution to the expected value
+		c_probs[o] = summation
+		summation = 0
+
+	return c_probs
+	
+def pi_bar_with_mg_uvwxyz(c,o,kappa,phi,mg):
+	prob = (mg[0,1]**2 + mg[0,2]**2 + mg[0,3]**2)/((mg[0,1] + mg[0,2] + mg[0,3])**2)
+	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
+	
+def expected_cms_with_mg_uvwxyz(L, mu, kappa, phi, generations):
+	sum1 = 0 # counter for sum of all o and c combinations
+	sum2 = 0 # counter for sum of all o, c, and m2 combinations
+	total = 0 # counter for total sum
+
+	cutoff = int(stats.poisson.ppf(.9999, mu*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
+
+	m_probs = prob_m(L,mu,cutoff) # ordered list of the Poisson probabilties of each number of mutations with length L
+
+	mg = mutation_matrix(mu, kappa, phi, generations)
+
+	c_probs = prob_c_with_mg_uvwxyz(L,kappa,phi,mg,cutoff) # ordered list of the expected values of c for each possible value of o
+
+	mutation_combos = combos(L, cutoff) # ordered list of all the possible 'L choose m' values
+
+	for m1 in range(cutoff+1): # allows for all possible values of m1
+		x = m_probs[m1]
+		for m2 in range(cutoff+1): # allows for all possible values of m2
+			y = x * m_probs[m2]
+			for o in range(min(m1,m2)+1): # allows for all possible values of o (note that o cannot be greater m1 OR m2 because then there can be no overlaps)
+				z = prob_overlapping(L,o,m1,m2,mutation_combos) * c_probs[o]
+				sum2 += z
+			sum1 += y * sum2
+			sum2 = 0
+		total += sum1
+		sum1 = 0
+
+	return total
 
 
 
