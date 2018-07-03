@@ -7,18 +7,18 @@ from scipy import special
 # function to calculate the expected number of convergent mutations for a given mutation rate and DNA sequence length
 # accounts for the unequal probabilities of switching to each other nucleotide
 # params:
-# 	mu (float) = mutation rate (units: mutations per base pair per generation)
+# 	mu_star (float) = effective mutation rate (units: mutations per base pair)
 # 	L (int) = length of DNA strand
 # 	kappa (float) = proportion of transistions to transversions
 # 	phi (float) = probability of a transition to one's complementary base
 # return: float that equals the expected number of convergent mutations between 2 DNA strands of length L with mutation rate mu
 # time complexity: O(n^3)
-def expected_cms(L,mu,kappa,phi):
+def expected_cms(L,mu_star,kappa,phi):
 	sum1 = 0 # counter for sum of all o and c combinations
 	sum2 = 0 # counter for sum of all o, c, and m2 combinations
 	total = 0 # counter for total sum
 	
-	cutoff = int(stats.poisson.ppf(.9999, mu*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
+	cutoff = int(stats.poisson.ppf(.9999, mu_star*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
 
 	m_probs = prob_m(L,mu,cutoff) # ordered list of the Poisson probabilties of each number of mutations with length L
 
@@ -154,7 +154,7 @@ def expected_cms_with_mg(L, mu, kappa, phi, generations):
 	sum2 = 0 # counter for sum of all o, c, and m2 combinations
 	total = 0 # counter for total sum
 
-	cutoff = int(stats.poisson.ppf(.9999, mu*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
+	cutoff = int(stats.poisson.ppf(.9999, mu*L*generations))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
 
 	m_probs = prob_m(L,mu,cutoff) # ordered list of the Poisson probabilties of each number of mutations with length L
 
@@ -232,7 +232,7 @@ def expected_cms_with_mg_uvwxyz(L, mu, kappa, phi, generations):
 	sum2 = 0 # counter for sum of all o, c, and m2 combinations
 	total = 0 # counter for total sum
 
-	cutoff = int(stats.poisson.ppf(.9999, mu*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
+	cutoff = int(stats.poisson.ppf(.9999, mu*L*generations))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
 
 	m_probs = prob_m(L,mu,cutoff) # ordered list of the Poisson probabilties of each number of mutations with length L
 
