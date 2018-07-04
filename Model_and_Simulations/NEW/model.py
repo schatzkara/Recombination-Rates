@@ -320,7 +320,7 @@ def id_equation(L,m1,m2,o,c):
 
 
 
-def calc_correction_factor(c_q_list):
+def calc_correction_factor(n, c_q_list):
 	correction_factor = 0
 	for q in range(3,n+1):
 		c_q = c_q_list[q-2]
@@ -343,11 +343,11 @@ def c_q_list(n, L, mu, generations, kappa, phi):
 def expected_h_c_mu_star(n, L, mu, generations, kappa, phi):
 	mu_star = mu*generations
 	num_pairs = ((n*(n-1))/2)
-	correction_factor = calc_correction_factor(c_q_list(n, L, mu, generations, kappa, phi))
+	correction_factor = calc_correction_factor(n, c_q_list(n, L, mu, generations, kappa, phi))
 	return expected_cms(L, mu_star, kappa, phi) * num_pairs  - correction_factor
 
 
 def expected_h_c_mg(n, L, mu, generations, kappa, phi):
 	num_pairs = ((n*(n-1))/2)
-	correction_factor = calc_correction_factor(c_q_list(n, L, mu, generations, kappa, phi))
+	correction_factor = calc_correction_factor(n, c_q_list(n, L, mu, generations, kappa, phi))
 	return expected_cms_with_mg(L, mu, kappa, phi, generations)
