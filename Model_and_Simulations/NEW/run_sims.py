@@ -60,25 +60,25 @@ def run_mutation_sim(n, L, mu, generations, kappa, phi, iterations):
 def run_generation_sim(L, mu, generations, GC, kappa, phi, iterations, one_file):
 	current_path = os.path.dirname(os.path.abspath(__file__))
 	for l in L: # iterates over every length desired
-                for m in mu: # iterates over every mutation rate desired
-                        for g in generations: # iterates over every number of generations desired
-                                for gc in GC: # iterates over every GC% desired
-                                        for k in kappa: # iterates over every kappa desired
-                                                for p in phi: # iterates over every phi desired
-                                                        for i in range(iterations): # runs it for the desired iterations
-                                                                save_path = current_path + '/Generation Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
-                                                                if not os.path.exists(save_path):
-                                                                        os.makedirs(save_path)
-                                                                file_name = 'generation_sim_' + str(l) + '_' + str(g) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p) + '_' + '{0:04}'.format(i+1)
-                                                                full_name = os.path.join(save_path, file_name + '.csv')   
-                                                                with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
-                                                                    writer = csv.writer(f)
-                                                                    writer.writerow(['Generation', 'Mutations on Each Strain', 'c', 'L', 'mu', 'GC%', 'kappa', 'phi']) # column headers
-                                                                    mutations_per_generation = []
-                                                                    data = [list(range(1,g+1)), list(range(int(m*l),int(m*l*g+1),int(m*l))), (generation_sim(l, m, g, gc, k, p)), g*[l], g*[m], g*[gc], g*[k], g*[p]] # one variable is the number of SNPs and the other is the number of convergent mutations
-                                                                    data = zip(*data) # formats the data so it can be written row by row and produce two long columns
-                                                                    writer.writerows(data) # writes the data
-                                                                    print(i)
+		for m in mu: # iterates over every mutation rate desired
+			for g in generations: # iterates over every number of generations desired
+				for gc in GC: # iterates over every GC% desired
+					for k in kappa: # iterates over every kappa desired
+						for p in phi: # iterates over every phi desired
+							for i in range(iterations): # runs it for the desired iterations
+								save_path = current_path + '/Generation Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
+								if not os.path.exists(save_path):
+									os.makedirs(save_path)
+								file_name = 'generation_sim_' + str(l) + '_' + str(g) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p) + '_' + '{0:04}'.format(i+1)
+								full_name = os.path.join(save_path, file_name + '.csv')   
+								with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
+									writer = csv.writer(f)
+									writer.writerow(['Generation', 'Mutations on Each Strain', 'c', 'L', 'mu', 'GC%', 'kappa', 'phi']) # column headers
+									mutations_per_generation = []
+									data = [list(range(1,g+1)), list(range(int(m*l),int(m*l*g+1),int(m*l))), (generation_sim(l, m, g, gc, k, p)), g*[l], g*[m], g*[gc], g*[k], g*[p]] # one variable is the number of SNPs and the other is the number of convergent mutations
+									data = zip(*data) # formats the data so it can be written row by row and produce two long columns
+									writer.writerows(data) # writes the data
+								print(i)
 	if(one_file):
 		new_path = current_path + '/Generation Sim'
 		get_generation_sim_averages(L, mu, generations, GC, kappa, phi, save_path, new_path)
@@ -110,44 +110,44 @@ def run_identity_sim(L, mu, generations, GC, kappa, phi, iterations, one_file):
 		get_identity_sim_averages(L, mu, generations, GC, kappa, phi, save_path, new_path)
 
 def run_id_matrix_sim(N, L, mu, generations, kappa, phi, iterations):
-        current_path = os.path.dirname(os.path.abspath(__file__))
-        for n in N:
-                for l in L:
-                        for m in mu:
-                                for g in generations:
-                                        for k in kappa:
-                                                for p in phi:
-                                                        save_path = current_path + '/ID Matrix Sim/L = ' + str(l)
-                                                        if not os.path.exists(save_path):
-                                                                os.makedirs(save_path)
-                                                        file_name = 'id_matrix_sim_' + '{0:04}'.format(n) + '_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
-                                                        full_name = os.path.join(save_path, file_name + '.csv')   
-                                                        with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
-                                                                writer = csv.writer(f)
-                                                                matrices = id_matrix_sim(n, l, m, g, k, p)
-                                                                id_matrix = matrices['id_matrix']
-                                                                c_matrix = matrices['c_matrix']
-                                                                shape = id_matrix.shape # (rows, columns)
-                                                                writer.writerow(['Iteration'])
-                                                                for i in range(iterations):
-                                                                        writer.writerow([i+1, 'ID%'])
-                                                                        header = [i+1, '']
-                                                                        for strain in range(n):
-                                                                                header.append('strain' + str(strain+1))
-                                                                        writer.writerow(header)
-                                                                        for row in range(shape[0]):
-                                                                                write_row = [i+1, 'strain' + str(row+1)]
-                                                                                write_row.extend(id_matrix[row])
-                                                                                writer.writerow(write_row)
-                                                                        writer.writerow([i+1, 'c'])
-                                                                        writer.writerow(header)
-                                                                        for row in range(shape[0]):
-                                                                                write_row = [i+1, 'strain' + str(row+1)]
-                                                                                write_row.extend(c_matrix[row])
-                                                                                writer.writerow(write_row)
-                                                                        writer.writerow([])
-                                                                        print(i)
-                                                                
+    current_path = os.path.dirname(os.path.abspath(__file__))
+    for n in N:
+        for l in L:
+            for m in mu:
+                for g in generations:
+                    for k in kappa:
+                        for p in phi:
+                            save_path = current_path + '/ID Matrix Sim/L = ' + str(l)
+                            if not os.path.exists(save_path):
+                                os.makedirs(save_path)
+                            file_name = 'id_matrix_sim_' + '{0:04}'.format(n) + '_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
+                            full_name = os.path.join(save_path, file_name + '.csv')   
+                            with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
+                                writer = csv.writer(f)
+                                matrices = id_matrix_sim(n, l, m, g, k, p)
+                                id_matrix = matrices['id_matrix']
+                                c_matrix = matrices['c_matrix']
+                                shape = id_matrix.shape # (rows, columns)
+                                writer.writerow(['Iteration'])
+                                for i in range(iterations):
+                                    writer.writerow([i+1, 'ID%'])
+                                    header = [i+1, '']
+                                    for strain in range(n):
+                                        header.append('strain' + str(strain+1))
+                                    writer.writerow(header)
+                                    for row in range(shape[0]):
+                                        write_row = [i+1, 'strain' + str(row+1)]
+                                        write_row.extend(id_matrix[row])
+                                        writer.writerow(write_row)
+                                    writer.writerow([i+1, 'c'])
+                                    writer.writerow(header)
+                                    for row in range(shape[0]):
+                                        write_row = [i+1, 'strain' + str(row+1)]
+                                        write_row.extend(c_matrix[row])
+                                        writer.writerow(write_row)
+                                    writer.writerow([])
+                                    print(i)
+                                                        
                                                                 
                                                                 
 
@@ -159,7 +159,7 @@ def run_c_q_sim(N, L, mu, generations, kappa, phi, iterations):
 				for m in mu:
 					for k in kappa:
 						for p in phi:
-							save_path = current_path + '/c_q Sim/L = ' + str(l)
+							save_path = current_path + '/c_q Sim/n = ' + str(n) + '/L = ' + str(l)
 							if not os.path.exists(save_path):
 								os.makedirs(save_path)
 							file_name = 'c_q_sim_' + '{0:04}'.format(n) + '_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
@@ -177,6 +177,9 @@ def run_c_q_sim(N, L, mu, generations, kappa, phi, iterations):
 									row.extend((n,l,m,k,p))
 									writer.writerow(row)
 									print(i)
+
+# def run_single_c_q_sim(n, L, mu, generations, kappa, phi, iterations):
+	
                 
 								
 								

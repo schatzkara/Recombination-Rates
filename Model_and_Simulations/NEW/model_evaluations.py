@@ -6,8 +6,20 @@ from model import expected_cms
 from model import expected_cms_with_mg
 import csv
 
-def c_vs_id_evaluation(L, mu, generations, kappa, phi):
+def c_vs_m_evaluation(L, mu, generations, kappa, phi):
+	for l in L:
+		for m in mu:
+			for gen in generations:
+				for k in kappa:
+					for p in phi:
+						with open(('model_c_vs_m_data_' + str(l) + '_' + str(m) + '_' + str(gen) + '_' + str(k) + '_' + str(p) + '.csv'), 'w', newline = '') as f:
+							writer = csv.writer(f)
+							writer.writerow(['Generation', 'Number of Mutations on Each Strand', 'E[c]', 'L', 'mu', 'kappa', 'phi'])
+							for g in range(gen):
+								writer.writerow([g+1, int(m*l*g), expected_cms_given_m(l,m,g+1,k,p), l, m, k, p])
+								print(g)
 
+def c_vs_id_evaluation(L, mu, generations, kappa, phi):
 	for l in L: # iterates over all genome lengths desired
 		for m in mu:
 			for g in generations: # iterates over all numbers of generations desired

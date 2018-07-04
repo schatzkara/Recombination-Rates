@@ -3,6 +3,7 @@
 import numpy as np
 from scipy import stats
 from scipy import special
+from simulations import c_q_sim
 
 # function to calculate the expected number of convergent mutations for a given mutation rate and DNA sequence length
 # accounts for the unequal probabilities of switching to each other nucleotide
@@ -286,6 +287,14 @@ def expected_cms_given_m(L,mu,generations,kappa,phi):
 def expected_m_at_site(mu, g):
 	return (g*(mu**(g+1)))/(1-mu) + (mu - mu**(g+1))/((1-mu)**2)
 
+def expected_mutation_sites(L, mi):
+	total = 0
+	for k in range(1,mi):
+		num = special.comb((mi-1),(k-1),exact=False,repetition=False) * special.comb(L,k)
+		denom = L**mi
+		total += (num/denom) * k
+	return total
+
 
 
 
@@ -306,3 +315,39 @@ def expected_idp(mu, kappa, phi, generations):
 def id_equation(L,m1,m2,o,c):
         return (L-m1-m2+o+c)/L
 
+
+
+
+
+
+def calc_correction_factor(c_q_list):
+	correction_factor = 0
+	for q in range(3,n+1):
+		c_q = c_q_list[q-2]
+		overcounts = ((q*(q-1))/2) - 1
+		correction_factor += c_q * overcounts
+	return correction_factor
+
+def c_q_list(n, L, mu, generations, kappa, phi):
+	c_q_list = (n-1)*[None]
+	all_c_q = (n-1)*[None]
+	for x in range(n-1):
+		all_c_q[x] = 0 # 1000*[None]
+	for i in range(1000):
+		c_qs = c_q_sim(n, L, mu, generations, kappa, phi)
+		for q in range(2,n+1):
+			all_c_q[q-2] += c_qs[q-2] # all_c_q[q-2][i] = c_qs[q-2]
+	for y in range(len(all_c_q)):
+		c_q_list[y] = all_c_q[y]/1000 # np.mean(all_c_q[y])
+
+def expected_h_c_mu_star(n, L, mu, generations, kappa, phi):
+	mu_star = mu*generations
+	num_pairs = ((n*(n-1))/2)
+	correction_factor = calc_correction_factor(c_q_list(n, L, mu, generations, kappa, phi))
+	return expected_cms(L, mu_star, kappa, phi) * num_pairs  - correction_factor
+
+
+def expected_h_c_mg(n, L, mu, generations, kappa, phi):
+	num_pairs = ((n*(n-1))/2)
+	correction_factor = calc_correction_factor(c_q_list(n, L, mu, generations, kappa, phi))
+	return expected_cms_with_mg(L, mu, kappa, phi, generations)

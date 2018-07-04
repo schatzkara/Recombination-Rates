@@ -6,6 +6,7 @@
 import os 
 import glob
 import csv
+import numpy as np
 
 # function to read in the genomes and separate the strains from the .fa files
 # params: 
@@ -102,6 +103,33 @@ def nucleotide_composition(species):
 	print(GC)
 	return GC
 
+
+def id_matrix(species): # Given ordered list of String sequences seqList
+	strain_names = list(species.keys())
+	n = len(strain_names)
+	ID = np.empty([n,n], dtype = np.float, order='C')
+	for s1 in range(n):
+		strain1 = species[strain_names[s1]]
+		ID[s1,s1] = 1
+		for s2 in range(s1+1,n):
+			strain2 = species[strain_names[s2]]
+			identity = calc_id(strain1, strain2)
+			ID[s1,s2] = identity
+			ID[s2,s1] = identity
+	return ID
+
+def calc_id (s1, s2):
+	num_diff = 0
+	num_same = 0
+	if(len(s1) != len(s2)):
+		raise(ValueError('Strand Lengths not equal'))
+	else:
+		for i in range(len(s1)):
+			num_diff += (s1[i]!=s2[i]) # Uses boolean as int, +=1 if true, +=0 if false
+			num_same += (s1[i]==s2[i])
+	if (num_diff + num_same) != len(s1):
+		raise(ValueError('numDif + numSame != length'))
+	return num_same/len(s1)
 
 # # runs the functions to get pi, theta, GC% average, and GC% standard deviation for each species and write them into a .csv file
 # # time complexity: O(n^4), where n is the length of the strains
