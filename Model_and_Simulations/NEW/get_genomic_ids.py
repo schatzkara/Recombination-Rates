@@ -10,18 +10,38 @@ import csv
 # n = 4
 
 path = 'C:/Users/Owner/Documents/UNCG REU/Project/concatenates/clonal' # path where the .fa files are located 
-with open(('species_IDs.csv'), 'w', newline = '') as f: 
-	writer = csv.writer(f)
-	for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for each species
-		species = read_in_strains(filename)
-		strains = list(species.keys())
-		# number = len(species.keys())
-		name = filename.strip(path).strip('concat_') # strips off everything but the actual species name
-		# print(name)
+for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for each species
+	species = read_in_strains(filename)
+	strains = list(species.keys())
+	# number = len(species.keys())
+	name = filename.strip(path).strip('concat_') # strips off everything but the actual species name
+	# print(name)
+	# writer.writerow([name])
+	# id_matrix = np.matrix([[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]])
+	identity_matrix = id_matrix(species)
+	shape = identity_matrix.shape
+	# header = ['']
+	# header.extend(strains)
+	# writer.writerow(header)
+	# for row in range(shape[0]):
+		# write_row = [strains[row]]
+		# write_row.extend(identity_matrix[row])
+		# writer.writerow(write_row)
+	# writer.writerow([])
+	# print(name)
+	with open(('ID_Matrix_' + name+ '.csv'), 'w', newline = '') as f: 
+		writer = csv.writer(f)
 		writer.writerow([name])
+		# for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for each species
+		# species = read_in_strains(filename)
+		# strains = list(species.keys())
+		# number = len(species.keys())
+		# name = filename.strip(path).strip('concat_') # strips off everything but the actual species name
+		# print(name)
+		# writer.writerow([name])
 		# id_matrix = np.matrix([[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]])
-		identity_matrix = id_matrix(species)
-		shape = identity_matrix.shape
+		# identity_matrix = id_matrix(species)
+		# shape = identity_matrix.shape
 		header = ['']
 		header.extend(strains)
 		writer.writerow(header)
@@ -30,7 +50,7 @@ with open(('species_IDs.csv'), 'w', newline = '') as f:
 			write_row.extend(identity_matrix[row])
 			writer.writerow(write_row)
 		writer.writerow([])
-		print(name)
+	print(name)
 		# writer.writerow(species.keys())
 		# for x in range(number):
 		# 	ids = (number+1)*[None]
