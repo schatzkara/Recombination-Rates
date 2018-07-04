@@ -93,32 +93,32 @@ def get_identity_sim_averages(L, mu, generations, GC, kappa, phi, data_path, sav
                                                                         writer.writerow([(x+1), np.mean(values[x]), np.std(values[x]), np.mean(values2[x]), np.std(values2[x])], l, m, gc, k, p)
 								
 def get_c_q_sim_averages(path):
-	with open(('all_averages_c_q_sim.csv'), 'w', newline = '') as f:
-		writer = csv.writer(f)
-		# writer.writerow(['Average Number of 3+ Mutations', 'n', 'L', 'mu', 'kappa', 'phi'])
-		for filename in glob.glob(os.path.join(path, '*.csv')):
-			with open(filename) as d:
+    with open(('all_averages_c_q_sim.csv'), 'w', newline = '') as f:
+        writer = csv.writer(f)
+        # writer.writerow(['Average Number of 3+ Mutations', 'n', 'L', 'mu', 'kappa', 'phi'])
+        for filename in glob.glob(os.path.join(path, '*.csv')):
+            with open(filename) as d:
                 reader = csv.reader(d)
                 if j > 1:
                     next(reader)
                 else:
                     writer.writerow(reader[0])
                     next(reader)
-                data = [r for r in reader]
-                n = data[0][-5]
-                l = data[0][-4]
-                m = data[0][-3]
-                k = data[0][-2]
-                p = data[0][-1]
-                cqs = (n-2)*[None]
-                mean_cqs = (n-2)*[None]
-                for x in range(n-2):
-                    cqs[x] = []
-                for row in range(len(data)):
+                    data = [r for r in reader]
+                    n = data[0][-5]
+                    l = data[0][-4]
+                    m = data[0][-3]
+                    k = data[0][-2]
+                    p = data[0][-1]
+                    cqs = (n-2)*[None]
+                    mean_cqs = (n-2)*[None]
                     for x in range(n-2):
-                        cqs[x].append(row[1+x])
-                for x in range(n-2):
-                    mean_cqs[x] = np.mean(cqs[x])
-                writer.writerow([mean_cqs, n, l, m, k, p])
+                        cqs[x] = []
+                    for row in range(len(data)):
+                        for x in range(n-2):
+                            cqs[x].append(row[1+x])
+                    for x in range(n-2):
+                        mean_cqs[x] = np.mean(cqs[x])
+                    writer.writerow([mean_cqs, n, l, m, k, p])
 
         
