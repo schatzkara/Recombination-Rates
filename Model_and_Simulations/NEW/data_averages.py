@@ -26,7 +26,7 @@ def get_generation_sim_averages(L, mu, generations, GC, kappa, phi, data_path, s
         						data = {} # a dictionary to hold all the data from all the files; has key: generation number - 1 and value: list of CMs for that generation
         						for x in range(g):
         							data[x] = []
-        						file_name = 'generation_sim_averages' + str(l) + '_' + '{0:04}'.format(m) + '_' + str(g) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
+        						file_name = 'generation_sim_averages_' + str(l) + '_' + '{0:04}'.format(m) + '_' + str(g) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
         						full_name = os.path.join(save_path, file_name + '.csv')
         						with open((full_name), 'w', newline = '') as f: # opens the file that the data will be written to
         							writer = csv.writer(f)
@@ -70,7 +70,7 @@ def get_identity_sim_averages(L, mu, generations, GC, kappa, phi, data_path, sav
                                                         for x in range(g):
                                                                 values[x] = []
                                                                 values2[x] = []
-                                                        file_name = 'identity_sim_averages' + str(l) + '_' + str(g) + '_' + str(gc) + '_' + str(k) + '_' + str(p)
+                                                        file_name = 'identity_sim_averages_' + str(l) + '_' + str(g) + '_' + str(gc) + '_' + str(k) + '_' + str(p)
                                                         full_name = os.path.join(save_path, file_name + '.csv')
                                                         with open((full_name), 'w', newline = '') as f: # opens the file that the data will be written to
                                                                 writer = csv.writer(f)
