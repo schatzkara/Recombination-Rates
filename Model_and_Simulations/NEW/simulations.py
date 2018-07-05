@@ -194,9 +194,9 @@ def generation_sim(L, mu, generations, GC_prop, kappa, phi):
 				# mutates the nucleotide based on the appropriate probabilties
 			t = ''.join(t)
 			strains[child] = t # replaces the old child with the new one
-	totals = detect_o_and_c(ancestor, strains[0], strains[1], mutation_sites1 = mutation_sites[0], mutation_sites2 = mutation_sites[1])
+		totals = detect_o_and_c(ancestor, strains[0], strains[1], mutation_sites1 = mutation_sites[0], mutation_sites2 = mutation_sites[1])
 
-	cms[g] = totals['c']
+		cms[g] = totals['c']
 	return cms
 
 # simulation to mutate 2 DNA strands a given number of times and calculate the identity percentage and the total number of convergent mutations between them
