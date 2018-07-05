@@ -10,7 +10,7 @@ from process_genomes import nucleotide_composition
 
 # runs the functions to get pi, theta, GC% average, and GC% standard deviation for each species and write them into a .csv file
 # time complexity: O(n^4), where n is the length of the strains
-path = 'C:/Users/Owner/Documents/UNCG REU/Project/concatenates' # path where the .fa files are located 
+path = 'C:/Users/Owner/Documents/UNCG REU/Project/concatenates/clonal' # path where the .fa files are located 
 # with open(('species_params3.csv'), 'w', newline = '') as f: 
 # 	writer = csv.writer(f)
 # 	writer.writerow(['Species', 'Genome Length', 'pi', 'theta', 'GC%']) # column headers
@@ -41,3 +41,4 @@ for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for ea
 	name = filename[len(path)+1:len(filename)-3] # filename.strip('C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/concatenates').strip('/concat_') # strips off everything but the actual species name
 	print(name)
 	print(genome_length(species))
+	print(species_size(species))

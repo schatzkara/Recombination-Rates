@@ -39,6 +39,10 @@ def genome_length(species):
 		if len(strains[i]) != length:
 			raise ValueError('The strains do not all have the same genome length')
 	return length
+
+def species_size(species):
+	strains = list(species.keys())
+	return len(strains)
 # this function finds the value of pi, which is the average proportion of site differences b/w each 2 genomes
 # units: average number of differences b/w each 2 genomes / length
 # params: 
