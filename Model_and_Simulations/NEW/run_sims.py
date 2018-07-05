@@ -46,11 +46,11 @@ def run_mutation_sim(n, L, mu, generations, kappa, phi, iterations):
 						save_path = current_path + '/Mutation Sim/L = ' + str(l)
 						if not os.path.exists(save_path):
 							os.makedirs(save_path)
-						file_name = 'mutation_sim_' + str(l) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
+						file_name = 'mutation_sim_' + str(l) + '_' + '{0:04}'.format(m) +  '_' + str(g) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p)
 						full_name = os.path.join(save_path, file_name + '.csv')   
 						with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
 							writer = csv.writer(f)
-							writer.writerow(['Iteration', 'Average c', 'L', 'mu', 'generations', 'kappa', 'phi', 'E[c]']) # column headers
+							writer.writerow(['Iteration', 'Average c', 'L', 'mu', 'Generation', 'kappa', 'phi', 'E[c]']) # column headers
 							data_columns = [(list(range(1,iterations+1))), data, iterations*[l], iterations*[m], list(range(1,generations+1)), iterations*[k], iterations*[p], iterations*[model_expected]]
 							data_row = zip(*data_columns)
 							writer.writerows(data_row)
@@ -65,23 +65,23 @@ def run_generation_sim(L, mu, generations, GC, kappa, phi, iterations, one_file)
 				for gc in GC: # iterates over every GC% desired
 					for k in kappa: # iterates over every kappa desired
 						for p in phi: # iterates over every phi desired
-							for i in range(iterations): # runs it for the desired iterations
-								save_path = current_path + '/Generation Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
-								if not os.path.exists(save_path):
-									os.makedirs(save_path)
-								file_name = 'generation_sim_' + str(l) + '_' + str(g) + '_' + '{0:04}'.format(m) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p) + '_' + '{0:04}'.format(i+1)
-								full_name = os.path.join(save_path, file_name + '.csv')   
-								with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
-									writer = csv.writer(f)
-									writer.writerow(['Generation', 'Mutations on Each Strain', 'c', 'L', 'mu', 'GC%', 'kappa', 'phi']) # column headers
-									mutations_per_generation = []
-									data = [list(range(1,g+1)), list(range(int(m*l),int(m*l*g+1),int(m*l))), (generation_sim(l, m, g, gc, k, p)), g*[l], g*[m], g*[gc], g*[k], g*[p]] # one variable is the number of SNPs and the other is the number of convergent mutations
-									data = zip(*data) # formats the data so it can be written row by row and produce two long columns
-									writer.writerows(data) # writes the data
-								print(i)
-	if(one_file):
-		new_path = current_path + '/Generation Sim'
-		get_generation_sim_averages(L, mu, generations, GC, kappa, phi, save_path, new_path)
+							save_path = current_path + '/Generation Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
+							# for i in range(iterations): # runs it for the desired iterations
+								# if not os.path.exists(save_path):
+								# 	os.makedirs(save_path)
+								# file_name = 'generation_sim_' + str(l) + '_' + '{0:04}'.format(m) + '_' + str(g) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p) + '_' + '{0:04}'.format(i+1)
+								# full_name = os.path.join(save_path, file_name + '.csv')   
+								# with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
+								# 	writer = csv.writer(f)
+								# 	writer.writerow(['Generation', 'Mutations on Each Strain', 'c', 'L', 'mu', 'GC%', 'kappa', 'phi']) # column headers
+								# 	mutations_per_generation = []
+								# 	data = [list(range(1,g+1)), list(range(int(m*l),int((m*l*g)+1),int(m*l))), (generation_sim(l, m, g, gc, k, p)), g*[l], g*[m], g*[gc], g*[k], g*[p]] # one variable is the number of SNPs and the other is the number of convergent mutations
+								# 	data = zip(*data) # formats the data so it can be written row by row and produce two long columns
+								# 	writer.writerows(data) # writes the data
+								# print(i)
+							if(one_file):
+								new_path = current_path + '/Generation Sim'
+								get_generation_sim_averages(L, mu, generations, GC, kappa, phi, save_path, new_path)
 
 def run_identity_sim(L, mu, generations, GC, kappa, phi, iterations, one_file):
 	current_path = os.path.dirname(os.path.abspath(__file__))
@@ -91,12 +91,12 @@ def run_identity_sim(L, mu, generations, GC, kappa, phi, iterations, one_file):
 				for gc in GC: # iterates over every GC% desired
 					for k in kappa: # iterates over every kappa desired
 						for p in phi: # iterates over every phi desired
+							save_path = current_path + '/Identity Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
 							for i in range(iterations): # runs it for the desired iterations
-								save_path = current_path + '/Identity Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
 								if not os.path.exists(save_path):
 									os.makedirs(save_path)
 								# save_path = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/Data/ID Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(int(k))
-								file_name = 'identity_sim_' + str(l) + '_' + str(g) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p) + '_' + '{0:04}'.format(i+1)
+								file_name = 'identity_sim_' + str(l) + '_' + '{0:04}'.format(m) + str(g) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p) + '_' + '{0:04}'.format(i+1)
 								full_name = os.path.join(save_path, file_name + '.csv')   
 								with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
 									writer = csv.writer(f)
@@ -105,9 +105,9 @@ def run_identity_sim(L, mu, generations, GC, kappa, phi, iterations, one_file):
 									for key in sim.keys():
 										writer.writerow([key, int(m*l*key), sim[key][0], sim[key][1], l, m, gc, k, p]) # writes the data
 								print(i)
-	if(one_file):
-		new_path = current_path + '/Identity Sim'
-		get_identity_sim_averages(L, mu, generations, GC, kappa, phi, save_path, new_path)
+							if(one_file):
+								new_path = current_path + '/Identity Sim'
+								get_identity_sim_averages(l, m, g, gc, k, p, save_path, new_path)
 
 def run_id_matrix_sim(N, L, mu, generations, kappa, phi, iterations):
     current_path = os.path.dirname(os.path.abspath(__file__))
@@ -177,8 +177,6 @@ def run_c_q_sim(N, L, mu, generations, kappa, phi, iterations):
 									row.extend((n,l,m,k,p))
 									writer.writerow(row)
 									print(i)
-
-# def run_single_c_q_sim(n, L, mu, generations, kappa, phi, iterations):
 	
                 
 								

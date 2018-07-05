@@ -13,8 +13,10 @@ path = 'C:/Users/Owner/Documents/UNCG REU/Project/concatenates/clonal' # path wh
 for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for each species
 	species = read_in_strains(filename)
 	strains = list(species.keys())
+	name = filename[len(path)+1:len(filename)-3]
+	print(name)
 	# number = len(species.keys())
-	name = filename.strip(path).strip('concat_') # strips off everything but the actual species name
+	# name = filename.strip(path).strip('concat_') # strips off everything but the actual species name
 	# print(name)
 	# writer.writerow([name])
 	# id_matrix = np.matrix([[1,2,3,4], [1,2,3,4], [1,2,3,4], [1,2,3,4]])
@@ -29,7 +31,7 @@ for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for ea
 		# writer.writerow(write_row)
 	# writer.writerow([])
 	# print(name)
-	with open(('ID_Matrix_' + name+ '.csv'), 'w', newline = '') as f: 
+	with open(('ID_Matrix_' + name + '.csv'), 'w', newline = '') as f: 
 		writer = csv.writer(f)
 		writer.writerow([name])
 		# for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for each species

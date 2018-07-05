@@ -32,6 +32,13 @@ def read_in_strains(filename):
 			print('ABORT: THE LENGTHS ARE NOT THE SAME')
 	return strains
 
+def genome_length(species):
+	strains = list(species.values())
+	length = len(strains[0])
+	for i in range(1, len(strains)):
+		if len(strains[i]) != length:
+			raise ValueError('The strains do not all have the same genome length')
+	return length
 # this function finds the value of pi, which is the average proportion of site differences b/w each 2 genomes
 # units: average number of differences b/w each 2 genomes / length
 # params: 
@@ -125,11 +132,47 @@ def calc_id (s1, s2):
 		raise(ValueError('Strand Lengths not equal'))
 	else:
 		for i in range(len(s1)):
-			num_diff += (s1[i]!=s2[i]) # Uses boolean as int, +=1 if true, +=0 if false
-			num_same += (s1[i]==s2[i])
-	if (num_diff + num_same) != len(s1):
-		raise(ValueError('numDif + numSame != length'))
+			if s1[i] != '-':
+				num_diff += (s1[i]!=s2[i]) # Uses boolean as int, +=1 if true, +=0 if false
+				num_same += (s1[i]==s2[i])
+	# if (num_diff + num_same) != len(s1):
+		# raise(ValueError('numDif + numSame != length'))
 	return num_same/len(s1)
+	
+# filename or species	
+def average_id(**keyword_parameters):
+	if 'filename' in keyword_parameters:
+		filename = keyword_parameters['filename']
+		with open(filename) as d:
+			reader = csv.reader(d)
+			next(reader)
+			next(reader)
+			n = 0
+			total = 0
+			i = 2
+			for row in reader:
+				n = len(row)-1
+				for j in range(i,len(row)):
+					total += row[j]
+				i += 1
+		average_id = total/((n*(n-1))/2)
+	if 'species' in keyword_parameters:
+		species = keyword_parameters['species']
+		strain_names = list(species.keys())
+		n = len(strain_names)
+		total = 0
+		# ID = np.empty([n,n], dtype = np.float, order='C')
+		for s1 in range(n):
+			strain1 = species[strain_names[s1]]
+			# ID[s1,s1] = 1
+			for s2 in range(s1+1,n):
+				strain2 = species[strain_names[s2]]
+				identity = calc_id(strain1, strain2)
+				total += identity
+				# ID[s1,s2] = identity
+				# ID[s2,s1] = identity
+		average_id = total/((n*(n-1))/2)
+	return average_id
 
 # # runs the functions to get pi, theta, GC% average, and GC% standard deviation for each species and write them into a .csv file
 # # time complexity: O(n^4), where n is the length of the strains
