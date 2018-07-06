@@ -264,6 +264,13 @@ def expected_cms_with_mg_uvwxyz(L, mu, kappa, phi, generations):
 
 
 
+
+
+
+
+
+
+
 def expected_cms_given_m(L,mu,generations,kappa,phi):
 	total = 0 # counter for total sum
 	mutations = int(mu*L*generations)
@@ -343,11 +350,11 @@ def c_q_list(n, L, mu, generations, kappa, phi):
 def expected_h_c_mu_star(n, L, mu, generations, kappa, phi):
 	mu_star = mu*generations
 	num_pairs = ((n*(n-1))/2)
-	correction_factor = calc_correction_factor(n, c_q_list(n, L, mu, generations, kappa, phi))
-	return expected_cms(L, mu_star, kappa, phi) * num_pairs  - correction_factor
+	# correction_factor = calc_correction_factor(n, c_q_list(n, L, mu, generations, kappa, phi))
+	return expected_cms(L, mu_star, kappa, phi) * num_pairs
 
 
 def expected_h_c_mg(n, L, mu, generations, kappa, phi):
 	num_pairs = ((n*(n-1))/2)
-	correction_factor = calc_correction_factor(n, c_q_list(n, L, mu, generations, kappa, phi))
-	return expected_cms_with_mg(L, mu, kappa, phi, generations)
+	# correction_factor = calc_correction_factor(n, c_q_list(n, L, mu, generations, kappa, phi))
+	return expected_cms_with_mg(L, mu, kappa, phi, generations) * num_pairs
