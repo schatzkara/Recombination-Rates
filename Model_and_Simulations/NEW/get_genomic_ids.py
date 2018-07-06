@@ -1,6 +1,8 @@
 
 from process_genomes import read_in_strains
 from process_genomes import id_matrix
+from process_genomes import species_size
+from process_genomes import genome_length
 # from id_matrix import id_matrix
 import numpy as np
 import os
@@ -9,7 +11,7 @@ import csv
 
 # n = 4
 
-path = 'C:/Users/Owner/Documents/UNCG REU/Project/concatenates/clonal' # path where the .fa files are located 
+path = 'C:/Users/Owner/Documents/UNCG REU/Project/concatenates/Clonal' # path where the .fa files are located 
 for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for each species
 	species = read_in_strains(filename)
 	strains = list(species.keys())
@@ -53,6 +55,9 @@ for filename in glob.glob(os.path.join(path, '*.fa')): # finds the values for ea
 			writer.writerow(write_row)
 		writer.writerow([])
 	print(name)
+	print(genome_length(species))
+	print(species_size(species))
+
 		# writer.writerow(species.keys())
 		# for x in range(number):
 		# 	ids = (number+1)*[None]

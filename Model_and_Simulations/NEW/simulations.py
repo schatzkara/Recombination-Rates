@@ -194,9 +194,11 @@ def generation_sim(L, mu, generations, GC_prop, kappa, phi):
 				# mutates the nucleotide based on the appropriate probabilties
 			t = ''.join(t)
 			strains[child] = t # replaces the old child with the new one
+
 		totals = detect_o_and_c(ancestor, strains[0], strains[1], mutation_sites1 = mutation_sites[0], mutation_sites2 = mutation_sites[1])
 
 		cms[g] = totals['c']
+	# print(cms)
 	return cms
 
 # simulation to mutate 2 DNA strands a given number of times and calculate the identity percentage and the total number of convergent mutations between them
@@ -357,3 +359,37 @@ def c_q_sim(n, L, mu, generations, kappa, phi):
 					c_q[q-2] += 1
 	print(c_q)
 	return c_q
+
+def mutation_sites_sim(L, mu, generations, kappa, phi):
+	cms = generations*[None] # list of the number of convergent mutations that have arisen up to this point; index = (generation - 1)
+	# mutation_sites = generations*[None]
+	# this section creates the initial strains
+	# time comlexity: O(n), where n is L
+	ancestor = generate_ancestor(L)
+	daughter = ancestor
+	# duplicates the ancestor strand to generate 2 daughter strands
+	# strains = 2*[None] # list of the 2 daughter strands
+	# for z in range(2):
+	# 	strains[z] = ancestor
+
+	# this section adds the mutations to each daughter strain
+	m = int(mu*L) # the number of mutations to add per generation
+	mutation_sites = [] # a list of lists where each list contains the sites that were mutated in the corresponding strand; the strand number is the first index and the generation number in the second index
+	for g in range(generations): # adds m mutations for each generation
+		# for child in range(2): # adds m mutations to each child strand
+		t = list(daughter) # list(strains[child])
+		for x in range(m): # mutates the appropriate number of sites for a generation
+			site = random.randint(0,L-1) # the site that is to be mutated
+			if(site not in mutation_sites):
+				mutation_sites.append(site)
+			current_nucleotide = t[site]
+			t[site] = mutate(current_nucleotide, mu, kappa, phi, True)
+			# mutates the nucleotide based on the appropriate probabilties
+		t = ''.join(t)
+		daughter = t # replaces the old child with the new one
+
+		# totals = detect_o_and_c(ancestor, strains[0], strains[1], mutation_sites1 = mutation_sites[0], mutation_sites2 = mutation_sites[1])
+
+		cms[g] = len(mutation_sites) # totals['c']
+	# print(cms)
+	return cms

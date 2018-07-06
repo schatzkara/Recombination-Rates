@@ -30,7 +30,7 @@ def get_generation_sim_averages(L, mu, generations, GC, kappa, phi, data_path, s
     full_name = os.path.join(save_path, file_name + '.csv')
     with open((full_name), 'w', newline = '') as f: # opens the file that the data will be written to
         writer = csv.writer(f)
-        writer.writerow(['Mutations on Each Strain', 'Average c', 'STDev', 'L', 'mu', 'GC%', 'kappa', 'phi']) # column headers
+        writer.writerow(['Generation', 'Mutations on Each Strain', 'Average c', 'STDev', 'L', 'mu', 'GC%', 'kappa', 'phi']) # column headers
         j = 1 # counter for the number of files
         for filename in glob.glob(os.path.join(data_path, '*.csv')): # iterates over every .csv file in the path
             with open(filename) as d: # reads the file
@@ -45,7 +45,7 @@ def get_generation_sim_averages(L, mu, generations, GC, kappa, phi, data_path, s
             if(j > 1000):
                 print(str(L) + str(mu) + str(generations) + str(GC)+str(kappa) + 'MESSED UPPPPPPPPP')
             j += 1
-            
+
         i = 1 # counter for the generation number 
         for item in data.values(): # writes each row to the new file; each row corresponds to a generation
             writer.writerow([i, np.mean(item), np.std(item), L, mu, GC, kappa, phi])
@@ -126,3 +126,37 @@ def get_c_q_sim_averages(path):
                     writer.writerow([mean_cqs, n, l, m, k, p])
 
         
+def get_mutation_sites_sim_averages(L, mu, generations, kappa, phi, data_path, save_path):
+        # for l in L: # iterates over every length the sim ran for
+        #   for m in mu: # iterates over every length the sim ran for
+        #       for g in generations: # iterates over every number of generations the sim ran for
+        #           for gc in GC: # iterates over every GC% the sim ran for
+        #               for k in kappa: # iterates over every kappa the sim ran for
+        #                   for p in phi: # iterates over every phi the sim ran for
+    data = {} # a dictionary to hold all the data from all the files; has key: generation number - 1 and value: list of CMs for that generation
+    for x in range(generations):
+        data[x] = []
+    file_name = 'mutation_sites_sim_average_' + str(L) + '_' + '{0:04}'.format(mu) + '_' + str(generations) + '_' + '{0:04}'.format(kappa) + '_' + '{0:04}'.format(phi)
+    full_name = os.path.join(save_path, file_name + '.csv')
+    with open((full_name), 'w', newline = '') as f: # opens the file that the data will be written to
+        writer = csv.writer(f)
+        writer.writerow(['Mutations', 'Mutation Sites', 'STDev', 'L', 'mu', 'kappa', 'phi']) # column headers
+        j = 1 # counter for the number of files
+        for filename in glob.glob(os.path.join(data_path, '*.csv')): # iterates over every .csv file in the path
+            with open(filename) as d: # reads the file
+                reader = csv.reader(d)
+                next(reader) # skips the column headers
+                file_data = [r for r in reader] # this is a list of lists; the external list contains all the rows, the internal list contains each row element
+                for row in range(len(file_data)): # iterates over every row of the data; the row corresponds to a generation
+                    m = int(file_data[row][0]) # extracts the number of mutations on each strand from the data
+                    m_s = int(file_data[row][1]) # extracts the number of convergent mutations from the data
+                    data[m-1].append(m_s)
+            print('FILE NUMBER ' + str(j))
+            if(j > 1000):
+                print(str(L) + str(mu) + str(generations) + str(kappa) + 'MESSED UPPPPPPPPP')
+            j += 1
+
+        i = 1 # counter for the generation number 
+        for item in data.values(): # writes each row to the new file; each row corresponds to a generation
+            writer.writerow([i, np.mean(item), np.std(item), L, mu, kappa, phi])
+            i += 1
