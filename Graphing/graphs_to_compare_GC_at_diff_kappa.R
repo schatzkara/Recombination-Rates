@@ -1,7 +1,7 @@
 setwd("C://Users//insan_000//Desktop")
 library(tidyverse)
 
-dfr = read_csv("all_averages_for_SNP_sim_1000.csv")
+dfr = read_csv("all_averages_for_id_sim_1000.csv")
 dfr$Kappa = as.factor(dfr$Kappa)
 dfr$`GC%` = as.factor(dfr$`GC%`)
 
@@ -10,7 +10,7 @@ dfr.k2 <- subset(dfr,dfr$Kappa == 2)
 dfr.k3 <- subset(dfr,dfr$Kappa == 3)
 
 ggplot(dfr,aes(x=`Mutations on Each Strain`,y=`Average CMs`,color=`GC%`)) + 
-  geom_point() + 
+  geom_smooth() + 
   theme_classic() + 
   ggtitle("CMs vs total mutations for variant Kappa") + 
   facet_wrap(~`Kappa`) +
@@ -45,6 +45,8 @@ ggplot(data=dfr.k3) +
   geom_smooth(aes(x=`Mutations on Each Strain`,y=`Average CMs`,color=`GC%`))
 
 ggplot(dfr,aes(x=`GC%`,y=`Average CMs`)) + geom_boxplot()
+
+pairwise.t.test(dfr$`Average ID%`,dfr$`GC%`,p.adjust="b")
 
 kappaaov <- aov(dfr$`Average CMs`~dfr$Kappa,data=dfr)
 summary(kappaaov)
