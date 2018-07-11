@@ -14,6 +14,7 @@ with open(('homoplaies.csv'), 'w', newline = '') as f:
 	species = os.listdir(path)
 	for x in range(len(species)):
 		species_name = species[x]
+		print(species_name)
 		folder_path = os.path.join(path, species_name)
 
 		full_path = os.path.join(folder_path, 'concat_core.fa')
@@ -22,13 +23,13 @@ with open(('homoplaies.csv'), 'w', newline = '') as f:
 			concat_core_file = list(concat_core_file)
 			strains = read_in_strains(full_path)
 			strain_names = list(strains.keys())
-			name = filename[len(path)+1:len(filename)-3]
-			print(name)
+			# name = full_path[len(path)+1:len(full_path)-3]
+			# print(name)
 			identity_matrix = id_matrix(strains)
 			shape = identity_matrix.shape
-			with open(('ID_Matrix_' + name + '.csv'), 'w', newline = '') as f: 
+			with open(('ID_Matrix_' + species_name + '.csv'), 'w', newline = '') as f: 
 				writer = csv.writer(f)
-				writer.writerow([name])
+				writer.writerow([species_name])
 				header = ['']
 				header.extend(strain_names)
 				writer.writerow(header)
@@ -37,7 +38,7 @@ with open(('homoplaies.csv'), 'w', newline = '') as f:
 					write_row.extend(identity_matrix[row])
 					writer.writerow(write_row)
 				writer.writerow([])
-			print(name)
+			# print(name)
 			L = genome_length(strains)
 			n = species_size(strains)
 
@@ -53,7 +54,7 @@ with open(('homoplaies.csv'), 'w', newline = '') as f:
 		# concat_core_file = open(os.path.join(full_path, 'concat_core.fa'), 'r') # open('concat_core.fa', 'r')
 		# concat_universal_file = open(os.path.join(full_path, 'concat_universal.fa'), 'r')
 		full_path = os.path.join(folder_path, 'kappa.txt')
-		if os.path.exists(fulllpath):
+		if os.path.exists(full_path):
 			kappa_file = open(full_path, 'r')
 			kappa_file = list(kappa_file)
 			kappa = kappa_file[0]
@@ -97,4 +98,4 @@ with open(('homoplaies.csv'), 'w', newline = '') as f:
 		# h_universal = universal_values[1]
 		# print('h_universal = ' + str(h_universal))
 
-		writer.writerow([species_name, n, L, kappa, h_core, h_universal])
+	writer.writerow([species_name, n, L, kappa, h_core, h_universal])
