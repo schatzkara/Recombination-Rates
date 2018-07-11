@@ -244,6 +244,41 @@ def identity_sim(L, mu, generations, GC_prop, kappa, phi):
 		identity = (L - len(mutation_sites[0]) - len(mutation_sites[1]) + totals['o'] + totals['c'])/L
 		id_cms[g+1] = [identity, totals['c']]
 	return id_cms
+
+def identity_sim_no_d(L, mu, generations, GC_prop, kappa, phi):
+	id_cms = {} # a dictionary to hold the ID% and convergent mutations after each generation; key: generation number, value: (ID%, convergent mutations)
+
+	# this section creates the initial strains
+	# time comlexity: O(n), where n is L
+	ancestor = generate_ancestor(L, GC_prop=GC_prop)
+	# duplicates the ancestor to generate 2 daughter strands
+	strains = 2*[None] # list of the 2 daughter strands
+	for z in range(2):
+		strains[z] = ancestor
+			
+	# this section adds the mutations to each daughter strain
+	nucleotides = ['A', 'T', 'G', 'C']
+	m = int(mu*L) # the number of mutations to add per generation
+	mutation_sites = [[],[]] # a list of lists where each list contains the sites that were mutated in the corresponding strand; the strand number is the first index and the generation number in the second index
+	for g in range(generations): # adds m mutations for each generation
+		for child in range(2): # adds m mutations to each daughter strand
+			t = list(strains[child])
+			for x in range(m): # mutates the appropriate number of sites for a generation
+				site = random.randint(0,L-1) # the site that is to be mutated
+				while (site in mutation_sites[child]):
+					site = random.randint(0,L-1)
+				mutation_sites[child].append(site)
+				current_nucleotide = t[site]
+				# mutates the nucleotide based on the appropriate probabilties
+				t[site] = mutate(current_nucleotide, mu, kappa, phi, True)
+				if t[site] == ancestor[site]:
+					mutation_sites[child].remove(site)
+			t = ''.join(t)
+			strains[child] = t # replaces the old child with the new one
+		totals = detect_o_and_c(ancestor, strains[0], strains[1], mutation_sites1 = mutation_sites[0], mutation_sites2 = mutation_sites[1])
+		identity = (L - len(mutation_sites[0]) - len(mutation_sites[1]) + totals['o'] + totals['c'])/L
+		id_cms[g+1] = [identity, totals['c']]
+	return id_cms
         
 def id_matrix_sim(n, L, mu, generations, kappa, phi):
 	ancestor = '' # ancestor DNA strand

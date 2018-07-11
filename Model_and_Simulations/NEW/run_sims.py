@@ -10,6 +10,7 @@ from simulations import identity_sim
 from simulations import id_matrix_sim
 from simulations import c_q_sim
 from simulations import mutation_sites_sim
+from simulations import identity_sim_no_d
 from data_averages import get_generation_sim_averages
 from data_averages import get_identity_sim_averages
 from data_averages import get_mutation_sites_sim_averages
@@ -112,6 +113,33 @@ def run_identity_sim(L, mu, generations, GC, kappa, phi, iterations, one_file):
 								print(i)
 							if(one_file):
 								new_path = current_path + '/Identity Sim'
+								get_identity_sim_averages(l, m, g, gc, k, p, save_path, new_path)
+
+def run_identity_sim_no_d(L, mu, generations, GC, kappa, phi, iterations, one_file):
+	current_path = os.path.dirname(os.path.abspath(__file__))
+	for l in L: # iterates over every length desired
+		for m in mu: # iterates over every mutation rate desired
+			for g in generations: # iterates over every number of SNPs desired
+				for gc in GC: # iterates over every GC% desired
+					for k in kappa: # iterates over every kappa desired
+						for p in phi: # iterates over every phi desired
+							# save_path = 'D:/BIGG DATA/Identity Sim/all GCs with kappa .5,1-6/L = 1000/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
+							save_path = current_path + '/Identity Sim no d/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(k) + '/phi = ' + str(p)
+							for i in range(iterations): # runs it for the desired iterations
+								if not os.path.exists(save_path):
+									os.makedirs(save_path)
+								# save_path = 'C:/Users/Owner/Documents/UNCG REU/Project/Recombination-Rates/Data/ID Sim/L = ' + str(l) + '/GC% = ' + str(gc) + '/kappa = ' + str(int(k))
+								file_name = 'identity_sim_no_d' + str(l) + '_' + '{0:04}'.format(m) + '_' +  str(g) + '_' + '{0:04}'.format(gc) + '_' + '{0:04}'.format(k) + '_' + '{0:04}'.format(p) + '_' + '{0:04}'.format(i+1)
+								full_name = os.path.join(save_path, file_name + '.csv')   
+								with open((full_name), 'w', newline = '') as f: # writes the data to a .csv file
+									writer = csv.writer(f)
+									writer.writerow(['Generation', 'Mutations on Each Strain', 'ID%', 'c', 'L', 'mu', 'GC%', 'kappa', 'phi']) # column headers
+									sim = identity_sim_no_d(l, m, g, gc, k, p)
+									for key in sim.keys():
+										writer.writerow([key, int(m*l*key), sim[key][0], sim[key][1], l, m, gc, k, p]) # writes the data
+								print(i)
+							if(one_file):
+								new_path = current_path + '/Identity Sim no d'
 								get_identity_sim_averages(l, m, g, gc, k, p, save_path, new_path)
 
 def run_id_matrix_sim(N, L, mu, generations, kappa, phi, iterations):
