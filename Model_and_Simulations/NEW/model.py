@@ -19,7 +19,7 @@ def expected_cms(L,mu_star,kappa,phi):
 	sum2 = 0 # counter for sum of all o, c, and m2 combinations
 	total = 0 # counter for total sum
 	
-	cutoff = int(stats.poisson.ppf(.9999, mu_star*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
+	cutoff = int(stats.poisson.ppf(.99, mu_star*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
 
 	m_probs = prob_m(L,mu,cutoff) # ordered list of the Poisson probabilties of each number of mutations with length L
 
@@ -155,7 +155,7 @@ def expected_cms_with_mg(L, mu, kappa, phi, generations):
 	sum2 = 0 # counter for sum of all o, c, and m2 combinations
 	total = 0 # counter for total sum
 
-	cutoff = int(stats.poisson.ppf(.9999, mu*L*generations))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
+	cutoff = int(stats.poisson.ppf(.99, mu*L*generations))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
 	print('cutoff: ' + str(cutoff))
 	m_probs = prob_m(L,mu,cutoff) # ordered list of the Poisson probabilties of each number of mutations with length L
 	print('m probs done')
@@ -235,7 +235,7 @@ def expected_cms_with_mg_uvwxyz(L, mu, kappa, phi, generations):
 	sum2 = 0 # counter for sum of all o, c, and m2 combinations
 	total = 0 # counter for total sum
 
-	cutoff = int(stats.poisson.ppf(.9999, mu*L*generations))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
+	cutoff = int(stats.poisson.ppf(.99, mu*L*generations))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
 
 	m_probs = prob_m(L,mu,cutoff) # ordered list of the Poisson probabilties of each number of mutations with length L
 
@@ -305,7 +305,24 @@ def expected_mutation_sites(L, mi):
 	return total
 
 
+def expected_c_given_ms(L,m1,m2,generations,kappa,phi):
+	total = 0 # counter for total sum
+	# mutations = int(mu*L*generations)
 
+	# cutoff = int(stats.poisson.ppf(.9999, mu*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
+
+	mg = mutation_matrix(mu, kappa, phi, generations)
+
+	c_probs = prob_c_with_mg(L,kappa,phi,mg,max(m1,m2)) # ordered list of the expected values of c for each possible value of o
+
+	mutation_combos = combos(L,max(m1,m2)) # ordered list of all the possible 'L choose m' values
+
+	# mutation_sites = int((mu*L)/expected_m_at_site(mu, generations))
+
+	for o in range(min(m1,m2)+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
+		total += prob_overlapping(L,o,m1,m2,mutation_combos) * c_probs[o]
+
+	return total
 
 
 

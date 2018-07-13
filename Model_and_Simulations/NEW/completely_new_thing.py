@@ -46,8 +46,8 @@ def get_min_m(strains, L):
 
 	return min_m
 
-def scale(branch_length, total_branch_length, L, min_m):
-	scaled_branch_length = str(float(branch_length) * float(min_m) / (float(total_branch_length) * int(L)))
+def scale(branch_length, total_branch_length, real_L, sim_L, min_m):
+	scaled_branch_length = str(float(branch_length) * int(min_m) / (float(total_branch_length) * int(L)))
 	# print(scaled_branch_length)
 	return scaled_branch_length
 	# return min_m / L
@@ -92,10 +92,10 @@ def scale_newick_format_tree(strains, L, min_m, tree_string):
 	# str.replace(old, new[, count])
 	# Return a copy of the string with all occurrences of substring old replaced by new. If the optional argument count is given, only the first count occurrences are replaced.
 
-strains = {1:'AAAA', 2:'TTTT', 3:'GGGG', 4:'CCCC'}
-L = 4
-min_m = get_min_m(strains, L)
-# print(min_m)
-tree_string = '((t1:0.5,t2:0.5)i1:0.5,(t3:0.5,t4:0.5)i2:0.5)root;'
+# strains = {1:'AAAA', 2:'TTTT', 3:'GGGG', 4:'CCCC'}
+# L = 4
+# min_m = get_min_m(strains, L)
+# # print(min_m)
+# tree_string = '((t1:0.5,t2:0.5)i1:0.5,(t3:0.5,t4:0.5)i2:0.5)root;'
 
-print(scale_newick_format_tree(strains, L, min_m, tree_string))
+# print(scale_newick_format_tree(strains, L, min_m, tree_string))
