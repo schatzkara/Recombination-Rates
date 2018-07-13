@@ -9,7 +9,7 @@ from process_genomes import species_size
 from process_genomes import pi_value
 from process_genomes import theta_value
 
-path = 'C:/Users/Owner/Documents/UNCG REU/Project/Data from Bobay/Aaayyy Complete'
+path = 'C:/Users/Owner/Documents/UNCG REU/Project/BIGG DATA/Useful Data/Concatenates, Trees, Homoplasies/Aayyy Clonal/'
 species_names = []
 ns = []
 Ls = []
@@ -24,7 +24,7 @@ for x in range(len(species)):
 	print(species_name)
 	folder_path = os.path.join(path, species_name)
 
-	full_path = os.path.join(folder_path, 'concat_core.fa')
+	full_path = os.path.join(folder_path, 'concat_universal.fa')
 	if os.path.exists(full_path):
 		concat_core_file = open((full_path), 'r') # open('concat_core.fa', 'r')
 		concat_core_file = list(concat_core_file)
@@ -32,19 +32,19 @@ for x in range(len(species)):
 		strain_names = list(strains.keys())
 		name = full_path[len(path)+1:len(full_path)-3]
 		print(name)
-		identity_matrix = id_matrix(strains)
-		shape = identity_matrix.shape
-		with open(('ID_Matrix_' + species_name + '.csv'), 'w', newline = '') as f: 
-			writer = csv.writer(f)
-			writer.writerow([species_name])
-			header = ['']
-			header.extend(strain_names)
-			writer.writerow(header)
-			for row in range(shape[0]):
-				write_row = [strain_names[row]]
-				write_row.extend(identity_matrix[row])
-				writer.writerow(write_row)
-			writer.writerow([])
+		# identity_matrix = id_matrix(strains)
+		# shape = identity_matrix.shape
+		# with open(('ID_Matrix_' + species_name + '.csv'), 'w', newline = '') as f: 
+		# 	writer = csv.writer(f)
+		# 	writer.writerow([species_name])
+		# 	header = ['']
+		# 	header.extend(strain_names)
+		# 	writer.writerow(header)
+		# 	for row in range(shape[0]):
+		# 		write_row = [strain_names[row]]
+		# 		write_row.extend(identity_matrix[row])
+		# 		writer.writerow(write_row)
+		# 	writer.writerow([])
 		print(name)
 		L = genome_length(strains)
 		n = species_size(strains)
@@ -98,7 +98,7 @@ for x in range(len(species)):
 	h_universals.append(h_universal)
 
 
-with open(('homoplaies2.csv'), 'w', newline = '') as f:
+with open(('homoplaies_universal.csv'), 'w', newline = '') as f:
 	writer = csv.writer(f)
 	writer.writerow(['Species', 'n', 'L', 'pi', 'theta', 'kappa', 'h_core', 'h_universal'])
 	data = [species_names, ns, Ls, pis, thetas, kappas, h_cores, h_universals]

@@ -46,13 +46,13 @@ def get_min_m(strains, L):
 
 	return min_m
 
-def scale(branch_length, total_branch_length, real_L, sim_L, min_m):
-	scaled_branch_length = str(float(branch_length) * int(min_m) / (float(total_branch_length) * int(L)))
+def scale(branch_length, total_branch_length, L, min_m, increment):
+	scaled_branch_length = str(float(branch_length) * (int(min_m) + increment) / (float(total_branch_length) * int(L)))
 	# print(scaled_branch_length)
 	return scaled_branch_length
 	# return min_m / L
 
-def scale_newick_format_tree(strains, L, min_m, tree_string):
+def scale_newick_format_tree(strains, L, min_m, tree_string, increment):
 	l = len(tree_string)
 	total_branch_length = 0
 	# print(l)
@@ -82,7 +82,7 @@ def scale_newick_format_tree(strains, L, min_m, tree_string):
 	for branch in branch_lengths:
 		branch_length = tree_string[branch[0]:branch[1]]
 		# print(length)
-		scaled_tree_string = scaled_tree_string.replace(branch_length, scale(branch_length, total_branch_length, L, min_m))
+		scaled_tree_string = scaled_tree_string.replace(branch_length, scale(branch_length, total_branch_length, L, min_m, increment))
 
 	return scaled_tree_string
 
