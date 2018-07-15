@@ -9,7 +9,7 @@ from process_genomes import species_size
 from process_genomes import pi_value
 from process_genomes import theta_value
 
-path = 'C:/Users/Owner/Documents/UNCG REU/Project/BIGG DATA/Useful Data/Concatenates, Trees, Homoplasies/Aayyy Clonal/'
+path = 'C:/Users/Owner/Documents/UNCG REU/Project/BIGG DATA/Useful Data/Concatenates, Trees, Homoplasies/Aaayyy Complete 3/'
 species_names = []
 ns = []
 Ls = []
@@ -30,7 +30,7 @@ for x in range(len(species)):
 		concat_core_file = list(concat_core_file)
 		strains = read_in_strains(full_path)
 		strain_names = list(strains.keys())
-		name = full_path[len(path)+1:len(full_path)-3]
+		name = full_path[len(path):len(full_path)-3]
 		print(name)
 		# identity_matrix = id_matrix(strains)
 		# shape = identity_matrix.shape
@@ -98,7 +98,7 @@ for x in range(len(species)):
 	h_universals.append(h_universal)
 
 
-with open(('homoplaies_universal.csv'), 'w', newline = '') as f:
+with open(('species_values_universal2.csv'), 'w', newline = '') as f:
 	writer = csv.writer(f)
 	writer.writerow(['Species', 'n', 'L', 'pi', 'theta', 'kappa', 'h_core', 'h_universal'])
 	data = [species_names, ns, Ls, pis, thetas, kappas, h_cores, h_universals]
@@ -121,4 +121,4 @@ with open(('homoplaies_universal.csv'), 'w', newline = '') as f:
 		# h_universal = universal_values[1]
 		# print('h_universal = ' + str(h_universal))
 
-	writer.writerow([species_name, n, L, kappa, h_core, h_universal])
+	# writer.writerow([species_name, n, L, kappa, h_core, h_universal])

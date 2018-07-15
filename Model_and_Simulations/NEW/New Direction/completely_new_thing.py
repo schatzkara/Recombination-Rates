@@ -61,7 +61,7 @@ def scale_newick_format_tree(strains, L, min_m, tree_string, increment):
 	while current < l:
 		start = tree_string.find(':', current) + 1
 		if start == 0:
-			current= l
+			current = l
 		else:
 			# print('start = ' + str(start))
 			x = tree_string.find(',', start)
@@ -72,8 +72,12 @@ def scale_newick_format_tree(strains, L, min_m, tree_string, increment):
 				end = x
 			else:
 				end = min(x,y)
+			if end == -1:
+				end = -2
+			# print(end)
 			# print('end = ' + str(end))
 			branch_lengths.append([start, end])
+			# print(tree_string[start:end])
 			total_branch_length += float(tree_string[start:end])
 			# print(tree_string[start:end])
 			current = end
