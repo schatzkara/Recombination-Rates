@@ -9,7 +9,7 @@ from process_genomes import species_size
 from process_genomes import pi_value
 from process_genomes import theta_value
 
-path = 'C:/Users/Owner/Documents/UNCG REU/Project/BIGG DATA/Useful Data/Concatenates, Trees, Homoplasies/Aaayyy Complete 3/'
+path = 'C:/Users/Owner/Documents/UNCG REU/Project/BIGG DATA/Useful Data/Concatenates, Trees, Homoplasies/'
 species_names = []
 ns = []
 Ls = []

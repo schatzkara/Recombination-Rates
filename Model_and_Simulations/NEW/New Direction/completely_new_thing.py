@@ -87,7 +87,8 @@ def scale_newick_format_tree(strains, L, min_m, tree_string, increment):
 		branch_length = tree_string[branch[0]:branch[1]]
 		# print(length)
 		scaled_tree_string = scaled_tree_string.replace(branch_length, scale(branch_length, total_branch_length, L, min_m, increment))
-
+	# for x in range(10000):
+	# 	print(scaled_tree_string)
 	return scaled_tree_string
 
 
