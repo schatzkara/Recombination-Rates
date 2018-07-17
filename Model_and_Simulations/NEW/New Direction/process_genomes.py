@@ -14,13 +14,14 @@ import numpy as np
 # return: dictionary with all the strains (key: strain name, value: strain genome)
 # time complexity: O(n), where n is the number of lines in the file
 def read_in_strains(filename):
+	print('Reading in the DNA sequences.\n')
 	f = open(filename, 'r')
 	f = list(f)
 	strains = {} # dictionary to hold all the strains (key: strain name, value: strain genome)
 
 	for line in f: 
 		if(line[0] == '>'): # separates out the strain names
-			key = line.strip('\n')
+			key = line.strip('\n').strip('>')
 			strains[key] = ''
 		else:
 			strains[key] += line.strip('\n') # concatenates all the lines of genome

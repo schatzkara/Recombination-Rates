@@ -19,34 +19,56 @@ from model import expected_c_given_ms
 # return: a dictionary with the strain names and each of the S,C,A,R matrices; key = 'strain_names', the matrix names, value = the list of names, the matrices
 def apply_model_along_phylogeny(species_path, kappa, tree_string):
 	# ancestor = ''
+	# print('Reading in the strains.\n\n')
 	strains = read_in_strains(species_path) # dictionary with the genomes of all the strains; key = strain name, value = genome
 	strain_names = list(strains.keys()) # list of all the extant strain names
+	print(strain_names)
 	n = species_size(strains) # number of extant strains
+	total_pairs = (n*(n-1))/2 # the total number of strain pairs that will be compared
 	L = genome_length(strains) # number of base pairs in the genomd
 	theta = theta_value(strains) # proportion of the genome that is polymorphic
 	mu = theta/(2*n) # mutation rate in mutations per base pair per generation
 	min_m = get_min_m(strains, L) # minimum number of mutations that could account for all the polymorphisms in the species
+	# print('Scaling the branch lengths of the tree.\n\n')
+	# scaled_tree_string = tree_string
 	scaled_tree_string = scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
 
 	# SHARED = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides shared between two strains; the (i,j) entry is the number of nucleotides that are the same between strain i and strain j
-	# CONVERGENT = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to convergent mutation between two strains; the (i,j) entry is the number of convergent mutations between strain i and strain j
+	CONVERGENT = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to convergent mutation between two strains; the (i,j) entry is the number of convergent mutations between strain i and strain j
 	# ANCESTRAL = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to direct inheritence from the ancestor; the (i,j) entry is the number of nucleotides that were inherited by both strain i and strain j
-	RECOMBINANT = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to a recombination event; the (i,j) entry is the number of nucleotides that were recombined between strain i and strain j
+	# RECOMBINANT = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to a recombination event; the (i,j) entry is the number of nucleotides that were recombined between strain i and strain j
 
+	updated_tree_info = name_nodes(tree_string, strain_names) 
+	tree_string = updated_tree_info['tree_string'] # version of the tree_string where every node is labeled
+	new_nodes = updated_tree_info['new_nodes'] # the new node names that were added
+	all_nodes = strain_names + new_nodes # list of all the node names in the pyhlogenetic tree
+	# print(all_nodes) 
+
+	parents = find_parents(strain_names, tree_string) # a dictionary of the sequence of parents of each strain; key = strain name, value = list of the parents in order of increasing distance from the strain
+	distances = get_branch_lengths(all_nodes, tree_string) # a dictionary of the distances of each strain to its closest ancestor; key = strain name, value = distance to its closest ancestor
+	# print(parents)
+	print(distances)
+
+	# parents = parents_and_distances['parents']
+	# distances = parents_and_distances['distances']
+
+	count = 1 # a counter for the current strain pair number that is being processed
 	for s1 in range(n): # allows each strain to be strain 1
-		strain1 = strains[strain_names[s1]]
+		strain1 = strain_names[s1]
+		genome1 = strains[strain1]
 		# SHARED[s1,s1] = L
-		# RECOMBINANT[s1,s1] = 0
-		# ANCESTRAL[s1,s1] = L
 		CONVERGENT[s1,s1] = 0 # there can be no convergent mutations between a strain and itself
+		# ANCESTRAL[s1,s1] = L
+		# RECOMBINANT[s1,s1] = 0
 		for s2 in range(s1+1,n): # allows each strain after strain 1 to be strain 2
-			strain2 = strains[strain_names[s2]]
-			s,a = 0,0 # initializes the shared and ancestral values for the pair of strains to 0
-			for site in range(L): # goes through every site along the genome
-				if strain1[site] == strain2[site]: # counts up the number of shared sites
-					s += 1
-					if strain1[site] == ancestor[site]: # counts up the number of shared sites that were inherited from the ancestor
-						a += 1
+			strain2 = strain_names[s2]
+			genome2 = strains[strain2]
+			# s,a = 0,0 # initializes the shared and ancestral values for the pair of strains to 0
+			# for site in range(L): # goes through every site along the genome
+			# 	if genome1[site] == genome2[site]: # counts up the number of shared sites
+			# 		s += 1
+			# 		if genome1[site] == ancestor[site]: # counts up the number of shared sites that were inherited from the ancestor
+			# 			a += 1
 
 			# s1_tree_location = scaled_tree_string.find(strain_names[s1])
 			
@@ -74,12 +96,12 @@ def apply_model_along_phylogeny(species_path, kappa, tree_string):
 
 			# length_1 = float(scaled_tree_string[start_length_1:end_length_1])
 			# length_2 = float(scaled_tree_string[start_length_2:end_length_2])
-
-			distances = get_distances_to_MRCA(strain1, strain2, tree_string, strain_names) # gets the total lengths of the branches back to the MRCA of strain 1 and strain 2
-			distance_1 = distances['distance_1'] # the distance from strain 1 to the MRCA
-			distance_2 = distances['distance_2'] # the distance from strain 2 to the MRCA
-			m_1 = int(distance_1 * L) # the number of mutations that occurred on strain 1
-			m_2 = int(distance_1 * L) # the number of mutations that occurred on strain 2
+			MRCA = find_MRCA(strain1, strain2, parents) # the Most Recent Common Ancestor between the two strains
+			pair_distances = get_distances_to_MRCA(strain1, strain2, MRCA, tree_string, strain_names, parents, distances) # gets the total lengths of the branches back to the MRCA of strain 1 and strain 2
+			distance_1 = pair_distances['distance_1'] # the distance from strain 1 to the MRCA
+			distance_2 = pair_distances['distance_2'] # the distance from strain 2 to the MRCA
+			m_1 = int(distance_1 * L + 1) # the number of mutations that occurred on strain 1
+			m_2 = int(distance_1 * L + 1) # the number of mutations that occurred on strain 2
 			generations_1 = int(m_1/mu) # the number of generations over which these mutations occurred on strain 1
 			generations_2 = int(m_2/mu) # the number of generations over which these mutations occurred on strain 2
 
@@ -94,6 +116,10 @@ def apply_model_along_phylogeny(species_path, kappa, tree_string):
 			# ANCESTRAL[s2,s1] = a
 			# RECOMBINANT[s1,s2] = s - a - c
 			# RECOMBINANT[s2,s1] = s - a - c
+
+			count += 1
+			print('\n\nCompleted strain pairing ' + str(count) + ' out of ' + str(n**2) + '\n\n')
+
 	return {'strain_names': strain_names, 'Convergent': CONVERGENT}
 	# return {'strain_names': strain_names, 'Shared': SHARED, 'Recombinant': RECOMBINANT, 'Ancestral': ANCESTRAL, 'Convergent': CONVERGENT}
 
@@ -105,6 +131,7 @@ def apply_model_along_phylogeny(species_path, kappa, tree_string):
 # 	tree_string (string) = the new tree string with fully labeled nodes
 # 	new_nodes (list) = a list of the node names that were added
 def name_nodes(tree_string, strain_names):
+	# print('Making sure all the nodes are named.\n')
 	current = 0 # the current position along the tree_string we are accessing
 	count = 1 # counter for the number of new nodes that have been added, for naming purposes
 	new_nodes = [] # will be populated as a list of the node names that get added 
@@ -134,7 +161,7 @@ def get_branch_lengths(strain_names, tree_string):
 	distances = {} # dictonary of all the distances to the closest ancestors; key = strain name, value = distance to its closest ancestor
 	for child in strain_names: # iterates over all strains given
 		child_location = tree_string.find(child) # the index of the starting position of the strain name in the tree_string
-		if tree_string[child_location+len(child)] != ':': # makes sure this is the not a strain with the same name just longer (i.e. B5 and B57)
+		while tree_string[child_location+len(child)] != ':': # makes sure this is the not a strain with the same name just longer (i.e. B5 and B57)
 			child_location = tree_string.find(child,child_location + len(child) + 1)
 		child_location_end = child_location + len(child) # the index of the ending position of the strain name in the tree_string
 		length_start = child_location_end + 1 # the index of the starting position of the branch length
@@ -259,19 +286,8 @@ def find_MRCA(strain1, strain2, parents):
 # 	tree_string (string) = a Newick formatted phylogenetic tree of the species
 # 	strain_names (list) = a list of the names of all the strains in tree
 # return: a dictionary with the distances from strain 1 and strain 2 to their MRCA; keys: 'distance_1' and 'distance_2'
-def get_distances_to_MRCA(strain1, strain2, tree_string, strain_names):
-	updated_tree_info = name_nodes(tree_string) 
-	tree_string = updated_tree_info['tree_string'] # version of the tree_string where every node is labeled
-	new_nodes = updated_tree_info['new_nodes'] # the new node names that were added
-	all_nodes = strain_names + new_nodes # list of all the node names in the pyhlogenetic tree
-	# print(all_nodes) 
-
-	parents = find_parents(strain_names, tree_string) # a dictionary of the sequence of parents of each strain; key = strain name, value = list of the parents in order of increasing distance from the strain
-	distances = get_branch_lengths(all_nodes, tree_string) # a dictionary of the distances of each strain to its closest ancestor; key = strain name, value = distance to its closest ancestor
-	# parents = parents_and_distances['parents']
-	# distances = parents_and_distances['distances']
-
-	MRCA = find_MRCA(strain1, strain2, parents) # the Most Recent Common Ancestor between the two strains
+def get_distances_to_MRCA(strain1, strain2, MRCA, tree_string, strain_names, parents, distances):
+	print('Finding the distances to the MRCA.\n')
 
 	distance_1 = 0 # float(distances[strain1]) # the sum of the distances from strain 1 to the MRCA
 	distance_2 = 0 # float(distances[strain2]) # the sum of the distances from strain 2 to the MRCA
@@ -284,8 +300,10 @@ def get_distances_to_MRCA(strain1, strain2, tree_string, strain_names):
 
 	for i in range(separation_1): # adds up all the branch lengths between strain 1 and the MRCA
 		distance_1 += float(distances[parents_1[i]])
+		# print(parents_1[i])
 		# distance_1 += sum(parents_1[0:separation_1])
 	for i in range(separation_2): # adds up all the branch lengths between strain 2 and the MRCA
+		# print(parents_2[i])
 		distance_2 += float(distances[parents_2[i]])
 
 	return {'distance_1': distance_1, 'distance_2': distance_2}

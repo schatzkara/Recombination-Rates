@@ -199,8 +199,8 @@ def pi_bar_with_mg(c,o,kappa,phi,mg_1,mg_2):
 	prob = (mg_1[0,1]*mg_2[0,1] + mg_1[0,2]*mg_2[0,2] + mg_1[0,3]*mg_2[0,3])/((mg_1[0,1] + mg_1[0,2] + mg_1[0,3])*(mg_2[0,1] + mg_2[0,2] + mg_2[0,3]))
 	num = (mg_1[0,1]*mg_2[0,1] + mg_1[0,2]*mg_2[0,2] + mg_1[0,3]*mg_2[0,3])
 	denom = ((mg_1[0,1] + mg_1[0,2] + mg_1[0,3])*(mg_2[0,1] + mg_2[0,2] + mg_2[0,3]))
-	print(num)
-	print(denom)
+	# print(num)
+	# print(denom)
 	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
 
 def mutation_matrix(mu, kappa, phi, generations):
@@ -307,11 +307,12 @@ def mutation_matrix(mu, kappa, phi, generations):
 
 
 def expected_c_given_ms(L, m1, m2, mu, generations_1, generations_2, kappa, phi):
+	print('Calculating the expected number of convergent mutations.\n')
 	total = 0 # counter for total sum
 	# mutations = int(mu*L*generations)
 
 	# cutoff = int(stats.poisson.ppf(.9999, mu*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
-
+	print('\tGenerating the mutation matrices.')
 	mg_1 = mutation_matrix(mu, kappa, phi, generations_1)
 	mg_2 = mutation_matrix(mu, kappa, phi, generations_2)
 
@@ -321,7 +322,7 @@ def expected_c_given_ms(L, m1, m2, mu, generations_1, generations_2, kappa, phi)
 	mutation_combos = combos(L, max(m1,m2)) # ordered list of all the possible 'L choose m' values
 
 	# mutation_sites = int((mu*L)/expected_m_at_site(mu, generations))
-
+	print('\tRunning the expected value.')
 	for o in range(min(m1,m2)+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
 		total += prob_overlapping(L, o, m1, m2, mutation_combos[m1], mutation_combos[m2]) * c_probs[o]
 

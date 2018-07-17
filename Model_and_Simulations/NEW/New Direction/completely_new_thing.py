@@ -29,6 +29,7 @@ def genome_length(species):
 	return length
 
 def get_min_m(strains, L):
+	print('Determining the minimum number of mutations.\n')
 	sequences = list(strains.values())
 
 	alleles = L*[None]
@@ -53,6 +54,7 @@ def scale(branch_length, total_branch_length, L, min_m, increment):
 	# return min_m / L
 
 def scale_newick_format_tree(strains, L, min_m, tree_string, increment):
+	print('Scaling the branch lengths.\n')
 	l = len(tree_string)
 	total_branch_length = 0
 	# print(l)
