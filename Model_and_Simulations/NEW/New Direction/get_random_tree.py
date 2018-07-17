@@ -13,10 +13,10 @@ def get_random_tree(species, filename, tree_string, L, kappa, iteration, increme
 	strains = read_in_strains(filename)
 	# L = genome_length(strains)
 	min_m = get_min_m(strains, L)
-	scaled_tree_string = scale_newick_format_tree(strains, L, min_m, tree_string, increment)
+	scaled_tree_string = tree_string # scale_newick_format_tree(strains, L, min_m, tree_string, increment)
 
 	phylogeny = pyvolve.read_tree(tree = tree_string)
-	# pyvolve.print_tree(phylogeny)
+	pyvolve.print_tree(phylogeny)
 
 	freqs = [0.25,0.25,0.25,0.25]
 

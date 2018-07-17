@@ -197,7 +197,10 @@ def prob_c_with_mg(L,kappa,phi,mg_1,mg_2,cutoff):
 def pi_bar_with_mg(c,o,kappa,phi,mg_1,mg_2):
 	# prob = (mg[0,1]**2 + mg[0,2]**2 + mg[0,3]**2)/((mg[0,1] + mg[0,2] + mg[0,3])**2)
 	prob = (mg_1[0,1]*mg_2[0,1] + mg_1[0,2]*mg_2[0,2] + mg_1[0,3]*mg_2[0,3])/((mg_1[0,1] + mg_1[0,2] + mg_1[0,3])*(mg_2[0,1] + mg_2[0,2] + mg_2[0,3]))
-	print(prob)
+	num = (mg_1[0,1]*mg_2[0,1] + mg_1[0,2]*mg_2[0,2] + mg_1[0,3]*mg_2[0,3])
+	denom = ((mg_1[0,1] + mg_1[0,2] + mg_1[0,3])*(mg_2[0,1] + mg_2[0,2] + mg_2[0,3]))
+	print(num)
+	print(denom)
 	return stats.binom.pmf(c,o,prob) # pi_bar is equivalent to the binomial probability density function
 
 def mutation_matrix(mu, kappa, phi, generations):
@@ -378,7 +381,7 @@ def expected_c_given_ms(L, m1, m2, mu, generations_1, generations_2, kappa, phi)
 # 	# correction_factor = calc_correction_factor(n, c_q_list(n, L, mu, generations, kappa, phi))
 # 	return expected_cms_with_mg(L, mu, kappa, phi, generations) * num_pairs
 
-for g in range(100):
-	mg = mutation_matrix(.0004, 2.5, 0.5, g)
-	print(mg)
-	pi_bar_with_mg(2,4,2.5,0.5,mg,mg)
+# for g in range(5000,5100):
+# 	mg = mutation_matrix(.00004, 2.5, 0.5, g)
+# 	print(mg)
+# 	pi_bar_with_mg(2,4,2.5,0.5,mg,mg)
