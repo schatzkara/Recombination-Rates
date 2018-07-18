@@ -19,7 +19,8 @@ from model_application import find_parents
 from model_application import get_branch_lengths
 from model_application import find_MRCA
 from model_application import get_distances_to_MRCA
-from completely_new_thing import scale_newick_format_tree
+# from completely_new_thing import scale_newick_format_tree
+from completely_new_thing import scale_branch_lengths
 from simulations import generate_ancestor
 from completely_new_thing import scale 
 from model import expected_c_given_ms
@@ -49,25 +50,33 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 
 	L = genome_length(strains) # number of base pairs in the genome
 	n = species_size(strains) # number of extant strains
+	strain_names = list(strains.keys()) # list of all the extant strain names
 
 	SHARED = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides shared between two strains; the (i,j) entry is the number of nucleotides that are the same between strain i and strain j
 	CONVERGENT = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to convergent mutation between two strains; the (i,j) entry is the number of convergent mutations between strain i and strain j
 	ANCESTRAL = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to direct inheritence from the ancestor; the (i,j) entry is the number of nucleotides that were inherited by both strain i and strain j
 	RECOMBINANT = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to a recombination event; the (i,j) entry is the number of nucleotides that were recombined between strain i and strain j
 
+	tree_file = open((os.path.join(raxml_path, rooted_tree_file)), 'r')
+	rooted_tree_string = list(tree_file)[0]
+	tree_file = open((os.path.join(raxml_path, ancestral_tree_file)), 'r')
+	ancestral_tree_string = list(tree_file)[0]
 	# strains = read_in_strains(species_alignment) # dictionary with the genomes of all the strains; key = strain name, value = genome
 	internal_nodes = get_internal_nodes(os.path.join(raxml_path, ancestral_alignment))
 	# all_nodes = internal_nodes
+
+	internal_nodes,ancestral_tree_string = rename_ancestors(internal_nodes, strain_names, ancestral_tree_string)
+
 	all_nodes = {}
 	for key in strains.keys():
 		all_nodes[key] = strains[key]
 	for key in internal_nodes.keys():
 		all_nodes[key] = internal_nodes[key]
 
-	strain_names = list(strains.keys()) # list of all the extant strain names
+	# strain_names = list(strains.keys()) # list of all the extant strain names
 	all_node_names = list(all_nodes.keys())
-	print(strain_names)
-	print(all_node_names)
+	# print(strain_names)
+	# print(all_node_names)
 
 
 
@@ -76,32 +85,39 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 	# L = genome_length(strains) # number of base pairs in the genome
 	pi = pi_value(strains)
 	theta = theta_value(strains) # proportion of the genome that is polymorphic
-	print(theta)
-	print(n)
-	mu = theta/(2*n) # mutation rate in mutations per base pair per generation
+	# print(theta)
+	# print(n)
+	mu = (theta)/(2*n) # mutation rate in mutations per base pair per generation
 	print(mu)
 
-	tree_file = open((os.path.join(raxml_path, rooted_tree_file)), 'r')
-	rooted_tree_string = list(tree_file)[0]
-	tree_file = open((os.path.join(raxml_path, ancestral_tree_file)), 'r')
-	ancestral_tree_string = list(tree_file)[0]
+	# tree_file = open((os.path.join(raxml_path, rooted_tree_file)), 'r')
+	# rooted_tree_string = list(tree_file)[0]
+	# tree_file = open((os.path.join(raxml_path, ancestral_tree_file)), 'r')
+	# ancestral_tree_string = list(tree_file)[0]
 
+	# print(rooted_tree_string)
+	# print(ancestral_tree_string)
 	complete_tree_string = merge_trees(rooted_tree_string, ancestral_tree_string)
+	print(complete_tree_string)
 
 	kappa_file = open(kappa_file, 'r')
 	kappa = float(list(kappa_file)[0])
 	min_m = get_min_m(strains, L) # minimum number of mutations that could account for all the polymorphisms in the species
 	max_m = get_max_m(strains, L, complete_tree_string)
-	scaled_tree_string = complete_tree_string
+	
+	###############################################################################
+	##### CHANGE THIS!!!!!!!!!!!!!!!!!!!!! ########################################
+	###############################################################################
+	# scaled_tree_string = complete_tree_string
+
+	scaled_tree_string = scale_branch_lengths(L, complete_tree_string, min_m, max_m, pi, theta, kappa) # scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
+		# L, tree_string, min_m, max_m, real_pi, real_theta, kappa
+	# phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
+	# pyvolve.print_tree(phylogeny)
 
 	g = open('scaled_tree.txt', 'w')
 	g.write(scaled_tree_string)
 	g.close()
-
-	# phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
-	# pyvolve.print_tree(phylogeny)
-
-	# scaled_tree_string = scale_branch_lengths(complete_tree_string, min_m, max_m, pi, theta, kappa) # scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
 
 	# updated_tree_info = name_nodes(tree_string, strain_names) 
 	# scaled_tree_string = updated_tree_info['tree_string'] # version of the tree_string where every node is labeled
@@ -111,11 +127,11 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 
 	# parents = find_parents(strain_names, tree_string) # a dictionary of the sequence of parents of each strain; key = strain name, value = list of the parents in order of increasing distance from the strain
 	parents = find_parents(all_node_names, scaled_tree_string)
-	print('found parents')
-	print(parents)
+	# print('found parents')
+	# print(parents)
 	distances = get_branch_lengths(all_node_names, scaled_tree_string) # a dictionary of the distances of each strain to its closest ancestor; key = strain name, value = distance to its closest ancestor
-	print('found distances')
-	print(distances)
+	# print('found distances')
+	# print(distances)
 
 	count = 1 # a counter for the current strain pair number that is being processed
 	for s1 in range(n): # allows each strain to be strain 1
@@ -133,10 +149,10 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 			MRCA_genome = all_nodes[MRCA]
 
 			s,a = get_s_a(genome1, genome2, MRCA_genome, L)
-			print('got s and a')
+			# print('got s and a')
 
 			c = get_c(strain1, strain2, MRCA, parents, scaled_tree_string, distances, L, mu, kappa)
-			print('got c')
+			# print('got c')
 
 			r = s - c - a
 
@@ -157,6 +173,42 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 	return {'strain_names': strain_names, 'Shared': SHARED, 'Convergent': CONVERGENT, 'Ancestral': ANCESTRAL, 'Recombinant': RECOMBINANT}
 
 
+def rename_ancestors(internal_nodes, strain_names, tree_with_ancestors):
+	# print(tree_with_ancestors)
+	old_internal_nodes = dict(internal_nodes)
+	for node in old_internal_nodes:
+		if ('Q' + node) not in strain_names:
+			internal_nodes['Q' + node] = old_internal_nodes[node]
+			node_location = tree_with_ancestors.find(node)
+			# print(node)
+			# print(tree_with_ancestors[node_location:node_location+len(node)])
+			left_char = tree_with_ancestors[node_location-1]
+			right_char = tree_with_ancestors[node_location+len(node)]
+			# print('left_char:' + left_char)
+			# print('right_char:' + right_char)
+			while left_char not in ['(',')',',',':'] or right_char not in ['(',')',',',':',';']:  # != '(' and right_char != ')' and right_char != ':' and right_char != ',' and right_char != ';': # makes sure this is the not a strain with the same name just longer (i.e. B5 and B57)
+				node_location = tree_with_ancestors.find(node,node_location + len(node) + 1)
+				left_char = tree_with_ancestors[node_location-1]
+				right_char = tree_with_ancestors[node_location+len(node)]
+				# print('left_char:' + left_char)
+				# print('right_char:' + right_char)
+			left = tree_with_ancestors[:node_location]
+			right = tree_with_ancestors[node_location + len(node):]
+			middle = 'Q' + node
+			# print('left:' + left )
+			# print('right:' + right)
+			# print('middle: ' + middle)
+			tree_with_ancestors = left + middle + right
+			# print(tree_with_ancestors)
+
+		# elif ('Z' + node) not in strain_names:
+		# 	internal_nodes['Z' + node] = internal_nodes[node]
+		# elif('X' + node) not in strain_names:
+		# 	internal_nodes['X' + node] = internal_nodes[node]
+
+		# del internal_nodes[node]
+
+	return internal_nodes,tree_with_ancestors
 
 
 	
@@ -197,9 +249,9 @@ def get_ancestors(rooted_tree_file, species_alignment, raxml_path, reduced):
 
 # 5. get the S & A matrices
 def get_s_a(genome1, genome2, MRCA, L):
-	print(len(genome1))
-	print(len(genome2))
-	print(len(MRCA))
+	# print(len(genome1))
+	# print(len(genome2))
+	# print(len(MRCA))
 	l = min(len(MRCA), L)
 	s,a = 0,0 # initializes the shared and ancestral values for the pair of strains to 0
 	for site in range(l): # goes through every site along the genome
@@ -211,50 +263,50 @@ def get_s_a(genome1, genome2, MRCA, L):
 	return s,a
 
 
-# 6. scale the branch lengths
-def scale_branch_lengths(tree_string, min_m, max_m, real_pi, real_theta, kappa):
-	scaled_trees = []
-	average_pi = []
-	average_theta = []
-	ms = list(range(min_m, max_m+1))
-	for m in ms:
-		scaled_tree_string = scale_newick_format_tree(strains, L, m, max_m, tree_string)
-		scaled_trees.append(scaled_tree_string)
-		pis = []
-		thetas = []
+# # 6. scale the branch lengths
+# def scale_branch_lengths(tree_string, min_m, max_m, real_pi, real_theta, kappa):
+# 	scaled_trees = []
+# 	average_pi = []
+# 	average_theta = []
+# 	ms = list(range(min_m, max_m+1))
+# 	for m in ms:
+# 		scaled_tree_string = scale_newick_format_tree(strains, L, m, max_m, tree_string)
+# 		scaled_trees.append(scaled_tree_string)
+# 		pis = []
+# 		thetas = []
 
-		phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
-		# pyvolve.print_tree(phylogeny)
+# 		phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
+# 		# pyvolve.print_tree(phylogeny)
 
-		freqs = [0.25,0.25,0.25,0.25]
-		nuc_model = pyvolve.Model('nucleotide', {'kappa':kappa, 'state_freqs':freqs})
+# 		freqs = [0.25,0.25,0.25,0.25]
+# 		nuc_model = pyvolve.Model('nucleotide', {'kappa':kappa, 'state_freqs':freqs})
 
-		ancestor = generate_ancestor(L)
-		for i in ranage(5):
-			my_partition = pyvolve.Partition(models = nuc_model, root_sequence = ancestor)
-			my_evolver = pyvolve.Evolver(partitions = my_partition, tree = phylogeny)
-			my_evolver(ratefile = None, infofile = None, seqfile = "simulated_alignment_" + m + "_universal_" + str(iteration + 1) + ".fasta" )
-			simulated_strains = my_evolver.get_sequences()
-			# strains = my_evolver.get_sequences(anc = True)
-			pi = pi_value(simulated_strains)
-			theta = theta_value(simulated_strains)
-			pis.append(pi)
-			thetas.append(theta)
+# 		ancestor = generate_ancestor(L)
+# 		for i in ranage(5):
+# 			my_partition = pyvolve.Partition(models = nuc_model, root_sequence = ancestor)
+# 			my_evolver = pyvolve.Evolver(partitions = my_partition, tree = phylogeny)
+# 			my_evolver(ratefile = None, infofile = None, seqfile = "simulated_alignment_" + m + "_universal_" + str(iteration + 1) + ".fasta" )
+# 			simulated_strains = my_evolver.get_sequences()
+# 			# strains = my_evolver.get_sequences(anc = True)
+# 			pi = pi_value(simulated_strains)
+# 			theta = theta_value(simulated_strains)
+# 			pis.append(pi)
+# 			thetas.append(theta)
 
-			average_pi.append(np.mean(pis))
-			average_theta.append(np.mean(thetas))
+# 			average_pi.append(np.mean(pis))
+# 			average_theta.append(np.mean(thetas))
 
-	pi_margins = []
-	theta_margins = []
-	for item in range(len(ms)):
-		pi_margins[item] = average_pi[item] - real_pi
-		theta_margins[item] = average_theta[item] - real_theta
+# 	pi_margins = []
+# 	theta_margins = []
+# 	for item in range(len(ms)):
+# 		pi_margins[item] = average_pi[item] - real_pi
+# 		theta_margins[item] = average_theta[item] - real_theta
 
-	min_margin, index = min((val, idx) for (idx, val) in enumerate(theta_margins))
+# 	min_margin, index = min((val, idx) for (idx, val) in enumerate(theta_margins))
 
-	accurate_tree = scaled_trees[index]
+# 	accurate_tree = scaled_trees[index]
 
-	return accurate_tree
+# 	return accurate_tree
 
 def scale_newick_format_tree(strains, L, desired_m, tree_string):
 	l = len(tree_string)
@@ -361,8 +413,13 @@ def get_c(strain1, strain2, MRCA, parents, tree_string, distances, L, mu, kappa)
 	distance_2 = pair_distances['distance_2'] # the distance from strain 2 to the MRCA
 	m_1 = int(distance_1 * L + 1) # the number of mutations that occurred on strain 1
 	m_2 = int(distance_1 * L + 1) # the number of mutations that occurred on strain 2
+	###################### CHANGE #####################
 	generations_1 = int(m_1/mu) # the number of generations over which these mutations occurred on strain 1
 	generations_2 = int(m_2/mu) # the number of generations over which these mutations occurred on strain 2
+	# print('m_1 = ' + str(m_1))
+	# print('m_2 = ' + str(m_2))
+	# print('generations_1 = ' + str(generations_1))
+	# print('generations_2 = ' + str(generations_2))
 
 	c = expected_c_given_ms(L, m_1, m_2, mu, generations_1, generations_2, kappa, 0.5) # the expected number of convergent mutations between strain 1 and strain 2
 

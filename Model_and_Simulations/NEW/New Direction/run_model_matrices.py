@@ -3,14 +3,14 @@ from get_matrices import get_SCAR_matrices
 from get_matrices import print_matrices
 
 
-species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/AAAYYY Run Pyvolve/Acinetobacter_pittii/concat_universal.fa'
+species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/AAAYYY Run Pyvolve/Bacillus_anthracis/concat_universal.fa'
 # raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML'
 # tree_file = 'RAxML_bestTree.tree'
 # rooted_tree_file = 'RAxML_rootedTree.root'
 ancestral_alignment = 'RAxML_marginalAncestralStates.anc'
 # ancestral_tree_file = 'RAxML_nodeLabelledRootedTree.anc'
-kappa_file = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/AAAYYY Run Pyvolve/Acinetobacter_pittii/kappa.txt'
-output_file = 'SCAR_Acinetobacter_pittii'
+kappa_file = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/AAAYYY Run Pyvolve/Bacillus_anthracis/kappa.txt'
+output_file = 'SCARy_Bacillus_anthracis'
 
 
 SCAR = get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, False)
