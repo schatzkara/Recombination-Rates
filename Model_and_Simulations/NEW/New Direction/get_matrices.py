@@ -25,7 +25,7 @@ from completely_new_thing import scale
 from model import expected_c_given_ms
 
 # species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/concat_universal.fa'
-reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/concat_universal.fa.reduced'
+reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/concat_universal.fa.reduced'
 raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML'
 tree_file = 'RAxML_bestTree.tree'
 rooted_tree_file = 'RAxML_rootedTree.root'
@@ -33,13 +33,16 @@ rooted_tree_file = 'RAxML_rootedTree.root'
 ancestral_tree_file = 'RAxML_nodeLabelledRootedTree.anc'
 # kappa_file = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/kappa.txt'
 
-def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file):
-	get_tree_string(species_alignment, raxml_path)
-	get_tree_root(tree_file, raxml_path)
-	get_ancestors(rooted_tree_file, species_alignment, raxml_path)
+def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduced):
+	# get_tree_string(species_alignment, raxml_path)
+	reduced = os.path.exists(reduced_species_alignment)
+	# get_tree_root(tree_file, raxml_path)
+	# get_ancestors(rooted_tree_file, species_alignment, raxml_path, reduced)
 
-	# strains = read_in_strains(species_alignment)
-	strains = read_in_reduced_strains(reduced_species_alignment) # dictionary with the genomes of all the strains; key = strain name, value = genome
+	if not reduced:
+		strains = read_in_strains(species_alignment)
+	else:
+		strains = read_in_reduced_strains(reduced_species_alignment) # dictionary with the genomes of all the strains; key = strain name, value = genome
 	# for strain in strains.keys():
 	# 	print(strain)
 	# 	print(strains[strain][:10])
@@ -69,7 +72,7 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file):
 
 
 	# n = species_size(strains) # number of extant strains
-	total_pairs = (n*(n-1))/2 # the total number of strain pairs that will be compared
+	total_pairs = int((n*(n-1)) / 2) # the total number of strain pairs that will be compared
 	# L = genome_length(strains) # number of base pairs in the genome
 	pi = pi_value(strains)
 	theta = theta_value(strains) # proportion of the genome that is polymorphic
@@ -147,8 +150,9 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file):
 			RECOMBINANT[s1,s2] = s - a - c
 			RECOMBINANT[s2,s1] = s - a - c
 
+			print('\n\nCompleted strain pairing ' + str(count) + ' out of ' + str(total_pairs) + '\n\n')
 			count += 1
-			print('\n\nCompleted strain pairing ' + str(count) + ' out of ' + str(n**2) + '\n\n')
+			
 
 	return {'strain_names': strain_names, 'Shared': SHARED, 'Convergent': CONVERGENT, 'Ancestral': ANCESTRAL, 'Recombinant': RECOMBINANT}
 
@@ -181,8 +185,11 @@ def get_tree_root(tree_file, raxml_path):
 
 # 4. get the ancestral alignments
 	# must use the file without the '-'s
-def get_ancestors(rooted_tree_file, species_alignment, raxml_path):
-	raxml_command = 'raxmlHPC ­-f A -­t ' + rooted_tree_file + ' -­s ' + species_alignment + '.reduced -­m GTRGAMMA ­-n anc'
+def get_ancestors(rooted_tree_file, species_alignment, raxml_path, reduced):
+	if not reduced:
+		raxml_command = 'raxmlHPC ­-f A -­t ' + rooted_tree_file + ' -­s ' + species_alignment + ' -­m GTRGAMMA ­-n anc'
+	else:
+		raxml_command = 'raxmlHPC ­-f A -­t ' + rooted_tree_file + ' -­s ' + species_alignment + '.reduced -­m GTRGAMMA ­-n anc'
 	subprocess.Popen(raxml_command.split(), cwd = raxml_path)
 	print('Obtained the ancestral alignments.')
 
@@ -193,8 +200,9 @@ def get_s_a(genome1, genome2, MRCA, L):
 	print(len(genome1))
 	print(len(genome2))
 	print(len(MRCA))
+	l = min(len(MRCA), L)
 	s,a = 0,0 # initializes the shared and ancestral values for the pair of strains to 0
-	for site in range(L-1): # goes through every site along the genome
+	for site in range(l): # goes through every site along the genome
 		if genome1[site] == genome2[site]: # counts up the number of shared sites
 			s += 1
 			if genome1[site] == MRCA[site]: # counts up the number of shared sites that were inherited from the ancestor
