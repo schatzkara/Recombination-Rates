@@ -23,7 +23,7 @@ for x in range(len(species)):
 	print(c_matrix)
 
 	shape = c_matrix.shape
-	with open((species[x][:-1] +'_universal_c_matrix' + '.csv'), 'w', newline = '') as f: 
+	with open((species[x][:-1] +'_universal3_c_matrix' + '.csv'), 'w', newline = '') as f: 
 		writer = csv.writer(f)
 		writer.writerow([species[x][:-1]])
 		header = ['']

@@ -33,6 +33,29 @@ def read_in_strains(filename):
 			print('ABORT: THE LENGTHS ARE NOT THE SAME')
 	return strains
 
+def read_in_reduced_strains(filename):
+	print('Reading in the DNA sequences.\n')
+	f = open(filename, 'r')
+	f = list(f)
+	strains = {} # dictionary to hold all the strains (key: strain name, value: strain genome)
+
+	for l in range(1,len(f)): 
+		line = f[l]
+		name, sequence = line.split(' ')
+		strains[name] = sequence
+		# if(line[0] not in ['A','T','G','C']): # separates out the strain names
+		# 	key = line.strip('\n').strip('>')
+		# 	strains[key] = ''
+		# else:
+		# 	strains[key] += line.strip('\n') # concatenates all the lines of genome
+	values = list(strains.values())
+	length = len(values[0])
+	for strain in strains.values(): # makes sure that the genome length of each strain is uniform
+		# print(len(strain))
+		if len(strain) != length:
+			print('ABORT: THE LENGTHS ARE NOT THE SAME')
+	return strains
+
 def genome_length(species):
 	strains = list(species.values())
 	length = len(strains[0])
@@ -61,7 +84,7 @@ def pi_value(species):
 			for k in range(len(strain1)):
 				if strain1[k] != strain2[k] and strain1[k] != '-' and strain2[k] !='-': # ignores any genome sites that are '-'
 					differences+=1
-			diff_prop.append(differences/len(strain1))
+			diff_prop.append(float(differences)/float(len(strain1)))
 			differences = 0 # resets the difference counter before moving on to a new pair of strains
 	# pi = np.mean(diff_prop)
 	pi = sum(diff_prop)/len(diff_prop)
@@ -83,7 +106,11 @@ def theta_value(species):
 			strain2 = strains[i]
 			if strain1[k] != strain2[k] and strain1[k] != '-' and strain2[k] != '-' and k not in diff_sites: # ignores any genome sites that are '-' or are already marked as polymorphic
 				diff_sites.append(k)
-	theta = len(diff_sites)/len(strains[0])
+				print('yup')
+	# print(len(diff_sites))
+	# print(len(strains[0]))
+	# print(len(diff_sites)/len(strains[0]))
+	theta = float(len(diff_sites))/float(len(strains[0]))
 	# print(theta)
 	return theta
 

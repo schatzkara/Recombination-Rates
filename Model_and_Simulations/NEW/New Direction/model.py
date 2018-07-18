@@ -186,8 +186,8 @@ def prob_c_with_mg(L,kappa,phi,mg_1,mg_2,cutoff):
 
 	summation = 0 # counter for the total expected value
 
-	for o in range(cutoff+1): # allows for all possible values of o
-		for c in range(o+1): # allows for all possible values of c
+	for o in range(1,cutoff+1): # allows for all possible values of o
+		for c in range(1,o+1): # allows for all possible values of c
 			summation += c * pi_bar_with_mg(c,o,kappa,phi,mg_1,mg_2) # calculates the particular contribution to the expected value
 		c_probs[o] = summation
 		summation = 0
@@ -319,12 +319,17 @@ def expected_c_given_ms(L, m1, m2, mu, generations_1, generations_2, kappa, phi)
 	c_probs = prob_c_with_mg(L, kappa, phi, mg_1, mg_2, min(m1,m2)) # ordered list of the expected values of c for each possible value of o
 	# c_probs_2 = prob_c_with_mg(L, kappa, phi, mg_2, m2)
 
-	mutation_combos = combos(L, max(m1,m2)) # ordered list of all the possible 'L choose m' values
+	mutation_combos_1 = special.comb(L,m1,exact=False,repetition=False)
+	mutation_combos_2 = special.comb(L,m2,exact=False,repetition=False)
+	# mutation_combos = combos(L, max(m1,m2)) # ordered list of all the possible 'L choose m' values
 
 	# mutation_sites = int((mu*L)/expected_m_at_site(mu, generations))
 	print('\tRunning the expected value.')
-	for o in range(min(m1,m2)+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
-		total += prob_overlapping(L, o, m1, m2, mutation_combos[m1], mutation_combos[m2]) * c_probs[o]
+	for o in range(1, min(m1,m2)+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
+		prob_o = prob_overlapping(L, o, m1, m2, mutation_combos_1, mutation_combos_2)
+		if prob_o < .000001:
+			break
+		total += prob_o * c_probs[o]
 
 	return total
 
