@@ -26,15 +26,15 @@ from completely_new_thing import scale
 from model import expected_c_given_ms
 
 # species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/concat_universal.fa'
-reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/concat_universal.fa.reduced'
-raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML'
+reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Vibrio_cholerae/concat_universal.fa.reduced'
+raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Vibrio_cholerae'
 tree_file = 'RAxML_bestTree.tree'
 rooted_tree_file = 'RAxML_rootedTree.root'
 # ancestral_alignment = 'RAxML_marginalAncestralStates.anc'
 ancestral_tree_file = 'RAxML_nodeLabelledRootedTree.anc'
 # kappa_file = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/kappa.txt'
 
-def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduced):
+def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 	# get_tree_string(species_alignment, raxml_path)
 	reduced = os.path.exists(reduced_species_alignment)
 	# get_tree_root(tree_file, raxml_path)
@@ -56,6 +56,7 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 	CONVERGENT = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to convergent mutation between two strains; the (i,j) entry is the number of convergent mutations between strain i and strain j
 	ANCESTRAL = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to direct inheritence from the ancestor; the (i,j) entry is the number of nucleotides that were inherited by both strain i and strain j
 	RECOMBINANT = np.empty([n,n], dtype = np.float, order='C') # a matrix of the number of nucleotides that match due to a recombination event; the (i,j) entry is the number of nucleotides that were recombined between strain i and strain j
+	RATES = np.empty([n,n], dtype = np.float, order='C')
 
 	tree_file = open((os.path.join(raxml_path, rooted_tree_file)), 'r')
 	rooted_tree_string = list(tree_file)[0]
@@ -75,8 +76,8 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 
 	# strain_names = list(strains.keys()) # list of all the extant strain names
 	all_node_names = list(all_nodes.keys())
-	# print(strain_names)
-	# print(all_node_names)
+	print(strain_names)
+	print(all_node_names)
 
 
 
@@ -87,8 +88,8 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 	theta = theta_value(strains) # proportion of the genome that is polymorphic
 	# print(theta)
 	# print(n)
-	mu = (theta)/(2*n) # mutation rate in mutations per base pair per generation
-	print(mu)
+	# mu = (theta)/(2*n) # mutation rate in mutations per base pair per generation
+	# print(mu)
 
 	# tree_file = open((os.path.join(raxml_path, rooted_tree_file)), 'r')
 	# rooted_tree_string = list(tree_file)[0]
@@ -112,8 +113,8 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 
 	scaled_tree_string = scale_branch_lengths(L, complete_tree_string, min_m, max_m, pi, theta, kappa) # scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
 		# L, tree_string, min_m, max_m, real_pi, real_theta, kappa
-	# phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
-	# pyvolve.print_tree(phylogeny)
+	phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
+	pyvolve.print_tree(phylogeny)
 
 	g = open('scaled_tree.txt', 'w')
 	g.write(scaled_tree_string)
@@ -127,13 +128,14 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 
 	# parents = find_parents(strain_names, tree_string) # a dictionary of the sequence of parents of each strain; key = strain name, value = list of the parents in order of increasing distance from the strain
 	parents = find_parents(all_node_names, scaled_tree_string)
-	# print('found parents')
-	# print(parents)
+	print('found parents')
+	print(parents)
 	distances = get_branch_lengths(all_node_names, scaled_tree_string) # a dictionary of the distances of each strain to its closest ancestor; key = strain name, value = distance to its closest ancestor
-	# print('found distances')
-	# print(distances)
+	print('found distances')
+	print(distances)
 
 	count = 1 # a counter for the current strain pair number that is being processed
+	total = 0
 	for s1 in range(n): # allows each strain to be strain 1
 		strain1 = strain_names[s1]
 		genome1 = strains[strain1]
@@ -149,10 +151,10 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 			MRCA_genome = all_nodes[MRCA]
 
 			s,a = get_s_a(genome1, genome2, MRCA_genome, L)
-			# print('got s and a')
+			print('got s and a')
 
-			c = get_c(strain1, strain2, MRCA, parents, scaled_tree_string, distances, L, mu, kappa)
-			# print('got c')
+			c,pair_distances = get_c(strain1, strain2, MRCA, parents, scaled_tree_string, distances, L, mu, kappa)
+			print('got c')
 
 			r = s - c - a
 
@@ -163,14 +165,20 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, reduce
 			CONVERGENT[s2,s1] = c
 			ANCESTRAL[s1,s2] = a
 			ANCESTRAL[s2,s1] = a
-			RECOMBINANT[s1,s2] = s - a - c
-			RECOMBINANT[s2,s1] = s - a - c
+			RECOMBINANT[s1,s2] = r
+			RECOMBINANT[s2,s1] = r
+			RATES[s1,s2] = r/float(pair_distances['distance_1'])
+			RATES[s2,s1] = r/float(pair_distances['distance_2'])
+			total += r/float(pair_distances['distance_1'])
+			total += r/float(pair_distances['distance_2'])
+
 
 			print('\n\nCompleted strain pairing ' + str(count) + ' out of ' + str(total_pairs) + '\n\n')
 			count += 1
 			
+	average_rate = total / total_pairs
 
-	return {'strain_names': strain_names, 'Shared': SHARED, 'Convergent': CONVERGENT, 'Ancestral': ANCESTRAL, 'Recombinant': RECOMBINANT}
+	return {'strain_names': strain_names, 'Shared': SHARED, 'Convergent': CONVERGENT, 'Ancestral': ANCESTRAL, 'Recombinant': RECOMBINANT, 'Rates': RATES, 'average': average_rate}
 
 
 def rename_ancestors(internal_nodes, strain_names, tree_with_ancestors):
@@ -411,8 +419,8 @@ def get_c(strain1, strain2, MRCA, parents, tree_string, distances, L, mu, kappa)
 	pair_distances = get_distances_to_MRCA(strain1, strain2, MRCA, tree_string, parents, distances) # gets the total lengths of the branches back to the MRCA of strain 1 and strain 2
 	distance_1 = pair_distances['distance_1'] # the distance from strain 1 to the MRCA
 	distance_2 = pair_distances['distance_2'] # the distance from strain 2 to the MRCA
-	m_1 = int(distance_1 * L + 1) # the number of mutations that occurred on strain 1
-	m_2 = int(distance_1 * L + 1) # the number of mutations that occurred on strain 2
+	m_1 = int(distance_1 * L) # the number of mutations that occurred on strain 1
+	m_2 = int(distance_1 * L) # the number of mutations that occurred on strain 2
 	###################### CHANGE #####################
 	generations_1 = int(m_1/mu) # the number of generations over which these mutations occurred on strain 1
 	generations_2 = int(m_2/mu) # the number of generations over which these mutations occurred on strain 2
@@ -423,14 +431,14 @@ def get_c(strain1, strain2, MRCA, parents, tree_string, distances, L, mu, kappa)
 
 	c = expected_c_given_ms(L, m_1, m_2, mu, generations_1, generations_2, kappa, 0.5) # the expected number of convergent mutations between strain 1 and strain 2
 
-	return c
+	return c, pair_distances
 
 
 # # 10. get the R matrix
 # def get_R():
 
 # 11. print the matrices to a csv
-def print_matrices(output_file, S,C,A,R, strain_names):
+def print_matrices(output_file, S,C,A,R,RATES, strain_names, average_rate):
 	shape = S.shape
 
 	with open((output_file + '.csv'), 'w', newline = '') as f: 
@@ -465,7 +473,15 @@ def print_matrices(output_file, S,C,A,R, strain_names):
 			write_row = [strain_names[row]]
 			write_row.extend(R[row])
 			writer.writerow(write_row)
+
+		writer.writerow(['RATES'])
+		writer.writerow(header)
+		for row in range(shape[0]):
+			write_row = [strain_names[row]]
+			write_row.extend(RATES[row])
+			writer.writerow(write_row)
 		
+		writer.writerow([average_rate])
 
 
 # # 12. print average recombs? with stddev?

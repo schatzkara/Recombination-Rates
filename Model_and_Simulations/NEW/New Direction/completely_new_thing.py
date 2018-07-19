@@ -13,6 +13,9 @@ def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kapp
 	average_pi = []
 	average_theta = []
 	ms = list(range(min_m, max_m+1))
+	print(ms)
+	pi_margins = []
+	theta_margins = []
 	for m in ms:
 		print('trying all m values')
 		scaled_tree_string = scale_newick_format_tree(m, max_m, tree_string)
@@ -40,15 +43,27 @@ def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kapp
 			pis.append(pi)
 			thetas.append(theta)
 
-		average_pi.append(np.mean(pis))
-		average_theta.append(np.mean(thetas))
+		avg_pi = np.mean(pis)
+		avg_theta = np.mean(thetas)
+		pi_margin = abs(avg_pi - real_pi)
+		theta_margin = abs(avg_theta - real_theta)
+
+		average_pi.append(avg_pi)
+		average_theta.append(avg_theta)
+		pi_margins.append(pi_margin)
+		theta_margins.append(theta_margin)
+		if pi_margin < .0000000001 and theta_margin < .00000000001:
+			break
+
+
+
 	print('got all m values')
 
-	pi_margins = []
-	theta_margins = []
-	for item in range(len(ms)):
-		pi_margins[item] = average_pi[item] - real_pi
-		theta_margins[item] = average_theta[item] - real_theta
+	# pi_margins = len(ms)*[None]
+	# theta_margins = len(ms)*[None]
+	# for item in range(len(ms)):
+	# 	pi_margins[item] = (average_pi[item] - real_pi)
+	# 	theta_margins[item] = average_theta[item] - real_theta
 
 	print(theta_margins)
 
@@ -58,11 +73,11 @@ def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kapp
 	# min_margin, index = min((val, idx) for (idx, val) in enumerate(theta_margins))
 	index_difference = min_theta_margin_index - min_pi_margin_index
 	if index_difference == 0:
-		print('theta and pi have both been optimized to within ' + min_theta_margin + ' and ' + min_pi_margin + ', respectively.')
+		print('theta and pi have both been optimized to within ' + str(min_theta_margin) + ' and ' + str(min_pi_margin) + ', respectively.')
 	elif index_difference < 0:
-		print('Theta has been optimized to within ' + min_theta_margin + ', but to optimize pi would require ' + index_difference + ' more mutations.')
+		print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference * -1) + ' more mutations.')
 	elif index_difference > 0:
-		print('Theta has been optimized to within ' + min_theta_margin + ', but to optimize pi would require ' + index_difference + ' fewer mutations.')
+		print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference) + ' fewer mutations.')
 
 	# print('found most accurate m')
 

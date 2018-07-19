@@ -81,7 +81,7 @@ for s in range(len(species)):
 		# print('pi_sim: ' + str(pi))
 		# print('theta_sim: ' + str(theta))
 		print('iteration complete')
-	with open(('pyvolve_data_with_increments_' + species[s][:-1] + '_universal.csv'), 'w', newline = '') as f:
+	with open(('pyvolve_data_with_' + species[s][:-1] + '_universal.csv'), 'w', newline = '') as f:
 		writer = csv.writer(f)
 		writer.writerow(['increment', 'pi', 'theta'])
 		data = [list(range(1,iterations+1)) , pis, thetas]
