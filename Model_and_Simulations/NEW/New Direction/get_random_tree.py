@@ -8,7 +8,7 @@ from process_genomes import pi_value
 from process_genomes import theta_value
 import pyvolve
 
-def get_random_tree(species, scaled_tree_string, kappa, iteration):
+def get_random_tree(L, species, scaled_tree_string, kappa, iteration):
 	# strains = read_in_strains(filename)
 	# L = genome_length(strains)
 	# min_m = get_min_m(strains, L)

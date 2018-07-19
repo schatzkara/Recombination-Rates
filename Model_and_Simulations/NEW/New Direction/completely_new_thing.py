@@ -8,30 +8,35 @@ from process_genomes import pi_value
 from process_genomes import theta_value
 import numpy as np
 
-def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kappa):
-	scaled_trees = []
-	average_pi = []
-	average_theta = []
+def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kappa, iterations):
+	found = False 
 	ms = list(range(min_m, max_m+1))
 	print(ms)
+	length = len(ms)
+	# indices = list(range(length))
+	current_index = int(length/2)
 	pi_margins = []
 	theta_margins = []
-	for m in ms:
-		print('trying all m values')
+	tree_strings = []
+
+	while not found:
+		# print('Still optimizing the branch lengths.')
+		m = ms[current_index]
+		print(m)
 		scaled_tree_string = scale_newick_format_tree(m, max_m, tree_string)
-		scaled_trees.append(scaled_tree_string)
-		pis = []
-		thetas = []
+		tree_strings.append(scaled_tree_string)
+		pis = iterations*[]
+		thetas = iterations*[]
 
 		phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
-		pyvolve.print_tree(phylogeny)
+		# pyvolve.print_tree(phylogeny)
 
 		freqs = [0.25,0.25,0.25,0.25]
 		nuc_model = pyvolve.Model('nucleotide', {'kappa':kappa, 'state_freqs':freqs})
 
 		ancestor = generate_ancestor(L)
 		###############CHANGE THIS##############
-		for i in range(1):
+		for i in range(iterations):
 			my_partition = pyvolve.Partition(models = nuc_model, root_sequence = ancestor)
 			my_evolver = pyvolve.Evolver(partitions = my_partition, tree = phylogeny)
 			my_evolver(ratefile = None, infofile = None, seqfile = "simulated_alignment_" + str(m) + "_universal_" + str(i + 1) + ".fasta" )
@@ -42,48 +47,133 @@ def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kapp
 			theta = theta_value(simulated_strains)
 			pis.append(pi)
 			thetas.append(theta)
-
 		avg_pi = np.mean(pis)
 		avg_theta = np.mean(thetas)
-		pi_margin = abs(avg_pi - real_pi)
-		theta_margin = abs(avg_theta - real_theta)
-
-		average_pi.append(avg_pi)
-		average_theta.append(avg_theta)
+		pi_margin = avg_pi - real_pi
+		theta_margin = avg_theta - real_theta
 		pi_margins.append(pi_margin)
 		theta_margins.append(theta_margin)
-		if pi_margin < .0000000001 and theta_margin < .00000000001:
-			break
 
+		print('pi = ' + str(pi))
+		print('theta = ' + str(theta))
+		print('pi = ' + str(pi_margin))
+		print('theta_margin = ' + str(theta_margin))
 
+		if abs(pi_margin)/real_pi < 0.01 and abs(theta_margin)/real_theta < 0.01:
+			print('pi and theta have been optimized within 1%')
+			found = True
+			accurate_tree = scaled_tree_string
+		elif theta_margin < 0:
+			ms = list(range(m+1, max_m+1))
+			length = len(ms)
+			current_index = int(length/2)
+			min_m = m+1
+			print('theta and pi were too small.')
+		elif theta_margin > 0:
+			ms = list(range(min_m, m))
+			length = len(ms)
+			current_index = int(length/2)
+			max_m = m
+			print('theta and pi were too large.')
+		if length == 0:
+			found = True
+			print('pi and theta could not be optimized within 1%.')
+			min_theta_margin_index, min_theta_margin = min(enumerate(theta_margins), key=operator.itemgetter(1))
+			min_pi_margin_index, min_pi_margin = min(enumerate(pi_margins), key=operator.itemgetter(1))
+			pi_error = min_pi_margin/real_pi
+			theta_error = min_theta_margin/real_theta
+			print('Instead, pi was optimized to ' + str(abs(pi_error)) + ' and theta was optimized to ' + str(abs(theta_error)) + '.')
+			accurate_tree = tree_strings[min_theta_margin_index]
+			# min_margin, index = min((val, idx) for (idx, val) in enumerate(theta_margins))
+			# index_difference = min_theta_margin_index - min_pi_margin_index
+			# if index_difference == 0:
+			# 	print('theta and pi have both been optimized to within ' + str(min_theta_margin) + ' and ' + str(min_pi_margin) + ', respectively.')
+			# elif index_difference < 0:
+			# 	print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference * -1) + ' more mutations.')
+			# elif index_difference > 0:
+			# 	print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference) + ' fewer mutations.')
 
-	print('got all m values')
-
-	# pi_margins = len(ms)*[None]
-	# theta_margins = len(ms)*[None]
-	# for item in range(len(ms)):
-	# 	pi_margins[item] = (average_pi[item] - real_pi)
-	# 	theta_margins[item] = average_theta[item] - real_theta
-
-	print(theta_margins)
-
-	min_theta_margin_index, min_theta_margin = min(enumerate(theta_margins), key=operator.itemgetter(1))
-	min_pi_margin_index, min_pi_margin = min(enumerate(pi_margins), key=operator.itemgetter(1))
-
-	# min_margin, index = min((val, idx) for (idx, val) in enumerate(theta_margins))
-	index_difference = min_theta_margin_index - min_pi_margin_index
-	if index_difference == 0:
-		print('theta and pi have both been optimized to within ' + str(min_theta_margin) + ' and ' + str(min_pi_margin) + ', respectively.')
-	elif index_difference < 0:
-		print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference * -1) + ' more mutations.')
-	elif index_difference > 0:
-		print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference) + ' fewer mutations.')
-
-	# print('found most accurate m')
-
-	accurate_tree = scaled_trees[min_theta_margin_index]
 
 	return accurate_tree
+
+
+
+
+	# scaled_trees = []
+	# average_pi = []
+	# average_theta = []
+	# ms = list(range(min_m, max_m+1))
+	# print(ms)
+	# pi_margins = []
+	# theta_margins = []
+	# for m in ms:
+	# 	print('trying all m values')
+	# 	scaled_tree_string = scale_newick_format_tree(m, max_m, tree_string)
+	# 	scaled_trees.append(scaled_tree_string)
+	# 	pis = []
+	# 	thetas = []
+
+	# 	phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
+	# 	pyvolve.print_tree(phylogeny)
+
+	# 	freqs = [0.25,0.25,0.25,0.25]
+	# 	nuc_model = pyvolve.Model('nucleotide', {'kappa':kappa, 'state_freqs':freqs})
+
+	# 	ancestor = generate_ancestor(L)
+	# 	###############CHANGE THIS##############
+	# 	for i in range(1):
+	# 		my_partition = pyvolve.Partition(models = nuc_model, root_sequence = ancestor)
+	# 		my_evolver = pyvolve.Evolver(partitions = my_partition, tree = phylogeny)
+	# 		my_evolver(ratefile = None, infofile = None, seqfile = "simulated_alignment_" + str(m) + "_universal_" + str(i + 1) + ".fasta" )
+	# 		print('simulated')
+	# 		simulated_strains = my_evolver.get_sequences()
+	# 		# strains = my_evolver.get_sequences(anc = True)
+	# 		pi = pi_value(simulated_strains)
+	# 		theta = theta_value(simulated_strains)
+	# 		pis.append(pi)
+	# 		thetas.append(theta)
+
+	# 	avg_pi = np.mean(pis)
+	# 	avg_theta = np.mean(thetas)
+	# 	pi_margin = abs(avg_pi - real_pi)
+	# 	theta_margin = abs(avg_theta - real_theta)
+
+	# 	average_pi.append(avg_pi)
+	# 	average_theta.append(avg_theta)
+	# 	pi_margins.append(pi_margin)
+	# 	theta_margins.append(theta_margin)
+	# 	if pi_margin < .0000000001 and theta_margin < .00000000001:
+	# 		break
+
+
+
+	# print('got all m values')
+
+	# # pi_margins = len(ms)*[None]
+	# # theta_margins = len(ms)*[None]
+	# # for item in range(len(ms)):
+	# # 	pi_margins[item] = (average_pi[item] - real_pi)
+	# # 	theta_margins[item] = average_theta[item] - real_theta
+
+	# print(theta_margins)
+
+	# min_theta_margin_index, min_theta_margin = min(enumerate(theta_margins), key=operator.itemgetter(1))
+	# min_pi_margin_index, min_pi_margin = min(enumerate(pi_margins), key=operator.itemgetter(1))
+
+	# # min_margin, index = min((val, idx) for (idx, val) in enumerate(theta_margins))
+	# index_difference = min_theta_margin_index - min_pi_margin_index
+	# if index_difference == 0:
+	# 	print('theta and pi have both been optimized to within ' + str(min_theta_margin) + ' and ' + str(min_pi_margin) + ', respectively.')
+	# elif index_difference < 0:
+	# 	print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference * -1) + ' more mutations.')
+	# elif index_difference > 0:
+	# 	print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference) + ' fewer mutations.')
+
+	# # print('found most accurate m')
+
+	# accurate_tree = scaled_trees[min_theta_margin_index]
+
+	# return accurate_tree
 
 def scale_newick_format_tree(desired_m, max_m, tree_string):
 	l = len(tree_string)

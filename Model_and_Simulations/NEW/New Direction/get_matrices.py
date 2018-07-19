@@ -26,8 +26,8 @@ from completely_new_thing import scale
 from model import expected_c_given_ms
 
 # species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/concat_universal.fa'
-reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Vibrio_cholerae/concat_universal.fa.reduced'
-raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Vibrio_cholerae'
+reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Bacillus_subtilis/concat_universal.fa.reduced'
+raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Bacillus_subtilis'
 tree_file = 'RAxML_bestTree.tree'
 rooted_tree_file = 'RAxML_rootedTree.root'
 # ancestral_alignment = 'RAxML_marginalAncestralStates.anc'
@@ -76,8 +76,8 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 
 	# strain_names = list(strains.keys()) # list of all the extant strain names
 	all_node_names = list(all_nodes.keys())
-	print(strain_names)
-	print(all_node_names)
+	# print(strain_names)
+	# print(all_node_names)
 
 
 
@@ -99,7 +99,7 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 	# print(rooted_tree_string)
 	# print(ancestral_tree_string)
 	complete_tree_string = merge_trees(rooted_tree_string, ancestral_tree_string)
-	print(complete_tree_string)
+	# print(complete_tree_string)
 
 	kappa_file = open(kappa_file, 'r')
 	kappa = float(list(kappa_file)[0])
@@ -111,10 +111,10 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 	###############################################################################
 	# scaled_tree_string = complete_tree_string
 
-	scaled_tree_string = scale_branch_lengths(L, complete_tree_string, min_m, max_m, pi, theta, kappa) # scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
+	scaled_tree_string = scale_branch_lengths(L, complete_tree_string, min_m, max_m, pi, theta, kappa, 1) # scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
 		# L, tree_string, min_m, max_m, real_pi, real_theta, kappa
 	phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
-	pyvolve.print_tree(phylogeny)
+	# pyvolve.print_tree(phylogeny)
 
 	g = open('scaled_tree.txt', 'w')
 	g.write(scaled_tree_string)
@@ -129,10 +129,10 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 	# parents = find_parents(strain_names, tree_string) # a dictionary of the sequence of parents of each strain; key = strain name, value = list of the parents in order of increasing distance from the strain
 	parents = find_parents(all_node_names, scaled_tree_string)
 	print('found parents')
-	print(parents)
+	# print(parents)
 	distances = get_branch_lengths(all_node_names, scaled_tree_string) # a dictionary of the distances of each strain to its closest ancestor; key = strain name, value = distance to its closest ancestor
 	print('found distances')
-	print(distances)
+	# print(distances)
 
 	count = 1 # a counter for the current strain pair number that is being processed
 	total = 0

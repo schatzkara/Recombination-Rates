@@ -51,7 +51,7 @@ for s in range(len(species)):
 	print('max_m = ' + str(max_m))
 	print('got min and max m')
 
-	tree_string = scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kappa)
+	tree_string = scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kappa, 1)
 	print('got the appropriately scaled tree')
 
 	pis = iterations*[None]
@@ -68,7 +68,7 @@ for s in range(len(species)):
 		# theta = theta_value(strains)
 		# values = get_random_tree(filename, tree_string, L, kappa, i, 0) # 
 		# for increment in range(increments):
-		pi,theta = get_random_tree(species[s], tree_string, kappa, i) # 
+		pi,theta = get_random_tree(L, species[s], tree_string, kappa, i) # 
 		pis[i] = pi
 		thetas[i] - theta
 		# pi = values['pi']

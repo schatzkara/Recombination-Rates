@@ -316,11 +316,11 @@ def expected_c_given_ms(L, m1, m2, mu, generations_1, generations_2, kappa, phi)
 	# mutations = int(mu*L*generations)
 
 	# cutoff = int(stats.poisson.ppf(.9999, mu*L))+1 # this is the point at which m1 and m2 become negligible with 99.99% confidence
-	print('\tGenerating the mutation matrices.')
+	# print('\tGenerating the mutation matrices.')
 	mg_1 = mutation_matrix(mu, kappa, phi, generations_1)
 	mg_2 = mutation_matrix(mu, kappa, phi, generations_2)
-	print(mg_1)
-	print(mg_2)
+	# print(mg_1)
+	# print(mg_2)
 
 	# print('\tGetting the c probs.')
 	# c_probs = prob_c_with_mg(L, kappa, phi, mg_1, mg_2, min(m1,m2)) # ordered list of the expected values of c for each possible value of o
@@ -330,12 +330,12 @@ def expected_c_given_ms(L, m1, m2, mu, generations_1, generations_2, kappa, phi)
 
 	mutation_combos_1 = special.comb(L,m1,exact=False,repetition=False)
 	mutation_combos_2 = special.comb(L,m2,exact=False,repetition=False)
-	print(mutation_combos_1)
-	print(mutation_combos_2)
+	# print(mutation_combos_1)
+	# print(mutation_combos_2)
 	# mutation_combos = combos(L, max(m1,m2)) # ordered list of all the possible 'L choose m' values
 
 	# mutation_sites = int((mu*L)/expected_m_at_site(mu, generations))
-	print('\tGetting o probs.')
+	# print('\tGetting o probs.')
 	for o in range(1, min(m1,m2)+1): # allows for all possible values of o (note that o cannot be greater than m1 OR m2 because then there can be no overlaps)
 		prob_o = prob_overlapping(L, o, m1, m2, mutation_combos_1, mutation_combos_2)
 		o_probs.append(prob_o)
@@ -343,17 +343,17 @@ def expected_c_given_ms(L, m1, m2, mu, generations_1, generations_2, kappa, phi)
 			break
 	max_o = len(o_probs) - 1
 
-	print(o_probs)
+	# print(o_probs)
 
-	print('\tGetting c probs.')
+	# print('\tGetting c probs.')
 	c_probs = prob_c_with_mg(L, kappa, phi, mg_1, mg_2, max_o) # ordered list of the expected values of c for each possible value of o
-	print(c_probs)
+	# print(c_probs)
 
-	print('\tGetting expexcted value')
+	# print('\tGetting expexcted value')
 	for o in range(1,max_o):
 		total += o_probs[o-1] * c_probs[o]
 
-	print(total)
+	# print(total)
 
 	return total
 
