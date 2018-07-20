@@ -26,8 +26,8 @@ from completely_new_thing import scale
 from model import expected_c_given_ms
 
 # species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/concat_universal.fa'
-reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Bacillus_subtilis/concat_universal.fa.reduced'
-raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Bacillus_subtilis'
+reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Listeria_monocytogenes/concat_universal.fa.reduced'
+raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Listeria_monocytogenes'
 tree_file = 'RAxML_bestTree.tree'
 rooted_tree_file = 'RAxML_rootedTree.root'
 # ancestral_alignment = 'RAxML_marginalAncestralStates.anc'
@@ -64,6 +64,7 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 	ancestral_tree_string = list(tree_file)[0]
 	# strains = read_in_strains(species_alignment) # dictionary with the genomes of all the strains; key = strain name, value = genome
 	internal_nodes = get_internal_nodes(os.path.join(raxml_path, ancestral_alignment))
+	# print(internal_nodes.keys())
 	# all_nodes = internal_nodes
 
 	internal_nodes,ancestral_tree_string = rename_ancestors(internal_nodes, strain_names, ancestral_tree_string)
@@ -77,7 +78,7 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 	# strain_names = list(strains.keys()) # list of all the extant strain names
 	all_node_names = list(all_nodes.keys())
 	# print(strain_names)
-	# print(all_node_names)
+	print(all_node_names)
 
 
 
@@ -99,19 +100,19 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 	# print(rooted_tree_string)
 	# print(ancestral_tree_string)
 	complete_tree_string = merge_trees(rooted_tree_string, ancestral_tree_string)
-	# print(complete_tree_string)
+	print(complete_tree_string)
 
 	kappa_file = open(kappa_file, 'r')
 	kappa = float(list(kappa_file)[0])
-	min_m = get_min_m(strains, L) # minimum number of mutations that could account for all the polymorphisms in the species
-	max_m = get_max_m(strains, L, complete_tree_string)
-	
+	# min_m = get_min_m(strains, L) # minimum number of mutations that could account for all the polymorphisms in the species
+	# max_m = get_max_m(strains, L, complete_tree_string)
+	#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	###############################################################################
 	##### CHANGE THIS!!!!!!!!!!!!!!!!!!!!! ########################################
 	###############################################################################
-	# scaled_tree_string = complete_tree_string
+	scaled_tree_string = complete_tree_string
 
-	scaled_tree_string = scale_branch_lengths(L, complete_tree_string, min_m, max_m, pi, theta, kappa, 1) # scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
+	# scaled_tree_string = scale_branch_lengths(L, complete_tree_string, min_m, max_m, pi, theta, kappa, 1) # scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
 		# L, tree_string, min_m, max_m, real_pi, real_theta, kappa
 	phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
 	# pyvolve.print_tree(phylogeny)
@@ -128,10 +129,10 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 
 	# parents = find_parents(strain_names, tree_string) # a dictionary of the sequence of parents of each strain; key = strain name, value = list of the parents in order of increasing distance from the strain
 	parents = find_parents(all_node_names, scaled_tree_string)
-	print('found parents')
+	# print('found parents')
 	# print(parents)
 	distances = get_branch_lengths(all_node_names, scaled_tree_string) # a dictionary of the distances of each strain to its closest ancestor; key = strain name, value = distance to its closest ancestor
-	print('found distances')
+	# print('found distances')
 	# print(distances)
 
 	count = 1 # a counter for the current strain pair number that is being processed
@@ -151,12 +152,15 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 			MRCA_genome = all_nodes[MRCA]
 
 			s,a = get_s_a(genome1, genome2, MRCA_genome, L)
-			print('got s and a')
+			# print('got s and a')
 
 			c,pair_distances = get_c(strain1, strain2, MRCA, parents, scaled_tree_string, distances, L, mu, kappa)
-			print('got c')
+			# print('got c')
 
 			r = s - c - a
+			# print(pair_distances['distance_1'])
+			# print(pair_distances['distance_2'])
+			# print(L)
 
 			# fills in the appropriate values to the S,C,A,R matrices for the current strain pair
 			SHARED[s1,s2] = s
@@ -167,16 +171,17 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 			ANCESTRAL[s2,s1] = a
 			RECOMBINANT[s1,s2] = r
 			RECOMBINANT[s2,s1] = r
-			RATES[s1,s2] = r/float(pair_distances['distance_1'])
-			RATES[s2,s1] = r/float(pair_distances['distance_2'])
-			total += r/float(pair_distances['distance_1'])
-			total += r/float(pair_distances['distance_2'])
+			RATES[s1,s2] = r/int(pair_distances['distance_1'] * L + 1)
+			RATES[s2,s1] = r/int(pair_distances['distance_2'] * L + 1)
+			total += r/int(pair_distances['distance_1'] * L + 1)
+			total += r/int(pair_distances['distance_2'] * L + 1)
 
 
-			print('\n\nCompleted strain pairing ' + str(count) + ' out of ' + str(total_pairs) + '\n\n')
+			# print('\n\nCompleted strain pairing ' + str(count) + ' out of ' + str(total_pairs) + '\n\n')
 			count += 1
 			
 	average_rate = total / total_pairs
+	print('The average recombination rate is ' + str(average_rate))
 
 	return {'strain_names': strain_names, 'Shared': SHARED, 'Convergent': CONVERGENT, 'Ancestral': ANCESTRAL, 'Recombinant': RECOMBINANT, 'Rates': RATES, 'average': average_rate}
 
@@ -184,9 +189,11 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 def rename_ancestors(internal_nodes, strain_names, tree_with_ancestors):
 	# print(tree_with_ancestors)
 	old_internal_nodes = dict(internal_nodes)
-	for node in old_internal_nodes:
+	new_internal_nodes = {}
+	names = old_internal_nodes.keys()
+	for node in names:
 		if ('Q' + node) not in strain_names:
-			internal_nodes['Q' + node] = old_internal_nodes[node]
+			new_internal_nodes['Q' + node] = old_internal_nodes[node]
 			node_location = tree_with_ancestors.find(node)
 			# print(node)
 			# print(tree_with_ancestors[node_location:node_location+len(node)])
@@ -216,7 +223,7 @@ def rename_ancestors(internal_nodes, strain_names, tree_with_ancestors):
 
 		# del internal_nodes[node]
 
-	return internal_nodes,tree_with_ancestors
+	return new_internal_nodes,tree_with_ancestors
 
 
 	
@@ -352,7 +359,7 @@ def scale(branch_length, desired_m, max_m):
 def merge_trees(tree_with_distances, tree_with_nodes):
 
 	left = tree_with_distances[:-1]
-	tree_with_distances = left + 'ROOT:0.0;'
+	tree_with_distances = left + 'QROOT:0.0;'
 
 	current_1 = 0
 	current_2 = 0
@@ -419,8 +426,8 @@ def get_c(strain1, strain2, MRCA, parents, tree_string, distances, L, mu, kappa)
 	pair_distances = get_distances_to_MRCA(strain1, strain2, MRCA, tree_string, parents, distances) # gets the total lengths of the branches back to the MRCA of strain 1 and strain 2
 	distance_1 = pair_distances['distance_1'] # the distance from strain 1 to the MRCA
 	distance_2 = pair_distances['distance_2'] # the distance from strain 2 to the MRCA
-	m_1 = int(distance_1 * L) # the number of mutations that occurred on strain 1
-	m_2 = int(distance_1 * L) # the number of mutations that occurred on strain 2
+	m_1 = int(distance_1 * L + 1) # the number of mutations that occurred on strain 1
+	m_2 = int(distance_1 * L + 1) # the number of mutations that occurred on strain 2
 	###################### CHANGE #####################
 	generations_1 = int(m_1/mu) # the number of generations over which these mutations occurred on strain 1
 	generations_2 = int(m_2/mu) # the number of generations over which these mutations occurred on strain 2

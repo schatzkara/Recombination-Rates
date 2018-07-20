@@ -26,7 +26,7 @@ def apply_model_along_phylogeny(species_path, kappa, tree_string):
 	all_nodes = strains + internal_nodes
 	strain_names = list(strains.keys()) # list of all the extant strain names
 	all_node_names = list(all_nodes.keys())
-	print(strain_names)
+	# print(strain_names)
 	n = species_size(strains) # number of extant strains
 	total_pairs = (n*(n-1))/2 # the total number of strain pairs that will be compared
 	L = genome_length(strains) # number of base pairs in the genomd
@@ -52,7 +52,7 @@ def apply_model_along_phylogeny(species_path, kappa, tree_string):
 	parents = find_parents(all_node_names, tree_string)
 	distances = get_branch_lengths(all_nodes, tree_string) # a dictionary of the distances of each strain to its closest ancestor; key = strain name, value = distance to its closest ancestor
 	# print(parents)
-	print(distances)
+	# print(distances)
 
 	# parents = parents_and_distances['parents']
 	# distances = parents_and_distances['distances']
@@ -126,7 +126,7 @@ def apply_model_along_phylogeny(species_path, kappa, tree_string):
 			RECOMBINANT[s2,s1] = s - a - c
 
 			count += 1
-			print('\n\nCompleted strain pairing ' + str(count) + ' out of ' + str(n**2) + '\n\n')
+			# print('\n\nCompleted strain pairing ' + str(count) + ' out of ' + str(n**2) + '\n\n')
 
 	# return {'strain_names': strain_names, 'Convergent': CONVERGENT}
 	return {'strain_names': strain_names, 'Shared': SHARED, 'Convergent': CONVERGENT, 'Ancestral': ANCESTRAL, 'Recombinant': RECOMBINANT}
@@ -297,7 +297,7 @@ def find_MRCA(strain1, strain2, parents):
 # 	strain_names (list) = a list of the names of all the strains in tree
 # return: a dictionary with the distances from strain 1 and strain 2 to their MRCA; keys: 'distance_1' and 'distance_2'
 def get_distances_to_MRCA(strain1, strain2, MRCA, tree_string, parents, distances):
-	print('Finding the distances to the MRCA.\n')
+	# print('Finding the distances to the MRCA.\n')
 
 	distance_1 = 0 # float(distances[strain1]) # the sum of the distances from strain 1 to the MRCA
 	distance_2 = 0 # float(distances[strain2]) # the sum of the distances from strain 2 to the MRCA

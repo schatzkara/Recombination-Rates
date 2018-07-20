@@ -70,7 +70,7 @@ for s in range(len(species)):
 		# for increment in range(increments):
 		pi,theta = get_random_tree(L, species[s], tree_string, kappa, i) # 
 		pis[i] = pi
-		thetas[i] - theta
+		thetas[i] = theta
 		# pi = values['pi']
 		# theta = values['theta']
 		# pis[i] = values['pis']

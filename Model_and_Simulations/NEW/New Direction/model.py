@@ -189,8 +189,8 @@ def prob_c_with_mg(L,kappa,phi,mg_1,mg_2,cutoff):
 	for o in range(1,cutoff+1): # allows for all possible values of o
 		for c in range(1,o+1): # allows for all possible values of c
 			summation += c * pi_bar_with_mg(c,o,kappa,phi,mg_1,mg_2) # calculates the particular contribution to the expected value
-			print(c)
-			print(pi_bar_with_mg(c,o,kappa,phi,mg_1,mg_2))
+			# print(c)
+			# print(pi_bar_with_mg(c,o,kappa,phi,mg_1,mg_2))
 		c_probs[o] = summation
 		summation = 0
 
@@ -311,7 +311,7 @@ def mutation_matrix(mu, kappa, phi, generations):
 
 
 def expected_c_given_ms(L, m1, m2, mu, generations_1, generations_2, kappa, phi):
-	print('Calculating the expected number of convergent mutations.\n')
+	# print('Calculating the expected number of convergent mutations.\n')
 	total = 0 # counter for total sum
 	# mutations = int(mu*L*generations)
 

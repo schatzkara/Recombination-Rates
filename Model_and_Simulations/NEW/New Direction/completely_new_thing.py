@@ -18,8 +18,12 @@ def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kapp
 	pi_margins = []
 	theta_margins = []
 	tree_strings = []
+	margin = False
+	bounds = []
 
-	while not found:
+	print(real_pi)
+	print(real_theta)
+	while not found and not margin:
 		# print('Still optimizing the branch lengths.')
 		m = ms[current_index]
 		print(m)
@@ -75,6 +79,11 @@ def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kapp
 			current_index = int(length/2)
 			max_m = m
 			print('theta and pi were too large.')
+		if length == 2:
+			margin = True
+			bounds = ms
+			print(bounds)
+
 		if length == 0:
 			found = True
 			print('pi and theta could not be optimized within 1%.')
@@ -92,6 +101,69 @@ def scale_branch_lengths(L, tree_string, min_m, max_m, real_pi, real_theta, kapp
 			# 	print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference * -1) + ' more mutations.')
 			# elif index_difference > 0:
 			# 	print('Theta has been optimized to within ' + str(min_theta_margin) + ', but to optimize pi would require ' + str(index_difference) + ' fewer mutations.')
+	upper = bounds[1]
+	lower = bounds[0]
+	if margin:
+		while not found:
+			m = (upper + lower)/2
+			print(m)
+			scaled_tree_string = scale_newick_format_tree(m, max_m, tree_string)
+			tree_strings.append(scaled_tree_string)
+			pis = iterations*[]
+			thetas = iterations*[]
+
+			phylogeny = pyvolve.read_tree(tree = scaled_tree_string)
+			# pyvolve.print_tree(phylogeny)
+
+			freqs = [0.25,0.25,0.25,0.25]
+			nuc_model = pyvolve.Model('nucleotide', {'kappa':kappa, 'state_freqs':freqs})
+
+			ancestor = generate_ancestor(L)
+			###############CHANGE THIS##############
+			for i in range(iterations):
+				my_partition = pyvolve.Partition(models = nuc_model, root_sequence = ancestor)
+				my_evolver = pyvolve.Evolver(partitions = my_partition, tree = phylogeny)
+				my_evolver(ratefile = None, infofile = None, seqfile = "simulated_alignment_" + str(m) + "_universal_" + str(i + 1) + ".fasta" )
+				print('simulated')
+				simulated_strains = my_evolver.get_sequences()
+				# strains = my_evolver.get_sequences(anc = True)
+				pi = pi_value(simulated_strains)
+				theta = theta_value(simulated_strains)
+				pis.append(pi)
+				thetas.append(theta)
+			avg_pi = np.mean(pis)
+			avg_theta = np.mean(thetas)
+			pi_margin = avg_pi - real_pi
+			theta_margin = avg_theta - real_theta
+			pi_margins.append(pi_margin)
+			theta_margins.append(theta_margin)
+
+			print('pi = ' + str(pi))
+			print('theta = ' + str(theta))
+			print('pi = ' + str(pi_margin))
+			print('theta_margin = ' + str(theta_margin))
+
+			if abs(pi_margin)/real_pi < 0.05 and abs(theta_margin)/real_theta < 0.05:
+				print('pi and theta have been optimized within 1%')
+				found = True
+				accurate_tree = scaled_tree_string
+			elif theta_margin < 0:
+				lower = m 
+				upper = upper
+				# ms = list(range(m+1, max_m+1))
+				# length = len(ms)
+				# current_index = int(length/2)
+				# min_m = m+1
+				print('theta and pi were too small.')
+			elif theta_margin > 0:
+				lower = lower
+				upper = m
+				# ms = list(range(min_m, m))
+				# length = len(ms)
+				# current_index = int(length/2)
+				# max_m = m
+				print('theta and pi were too large.')
+
 
 
 	return accurate_tree
