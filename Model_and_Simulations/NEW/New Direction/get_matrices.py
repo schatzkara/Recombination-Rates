@@ -19,22 +19,29 @@ from model_application import find_parents
 from model_application import get_branch_lengths
 from model_application import find_MRCA
 from model_application import get_distances_to_MRCA
-# from completely_new_thing import scale_newick_format_tree
+from completely_new_thing import scale_newick_format_tree
 from completely_new_thing import scale_branch_lengths
 from simulations import generate_ancestor
 from completely_new_thing import scale 
 from model import expected_c_given_ms
 
 # species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/concat_universal.fa'
-reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Listeria_monocytogenes/concat_universal.fa.reduced'
-raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Listeria_monocytogenes'
-tree_file = 'RAxML_bestTree.tree'
-rooted_tree_file = 'RAxML_rootedTree.root'
-# ancestral_alignment = 'RAxML_marginalAncestralStates.anc'
-ancestral_tree_file = 'RAxML_nodeLabelledRootedTree.anc'
+# reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Mycobacterium_tuberculosis/concat_universal.fa.reduced'
+# raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/Mycobacterium_tuberculosis'
+# tree_file = 'RAxML_bestTree.tree'
+# rooted_tree_file = 'RAxML_rootedTree.root'
+# # ancestral_alignment = 'RAxML_marginalAncestralStates.anc'
+# ancestral_tree_file = 'RAxML_nodeLabelledRootedTree.anc'
 # kappa_file = '/mnt/c/Users/Owner/Documents/UNCG/Project/BIGG_DATA/Useful_Data/Concatenates,Trees,Homoplasies/Aayyy_Clonal/Bacillus_anthracis/kappa.txt'
 
-def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
+def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu, species):
+	reduced_species_alignment = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/done_species/'  +species + 'concat_universal.fa.reduced'
+	raxml_path = '/mnt/c/Users/Owner/Documents/UNCG/Project/standard-RAxML/done_species/' + species # uberculosis'
+	tree_file = 'RAxML_bestTree.tree'
+	rooted_tree_file = 'RAxML_rootedTree.root'
+	# ancestral_alignment = 'RAxML_marginalAncestralStates.anc'
+	ancestral_tree_file = 'RAxML_nodeLabelledRootedTree.anc'
+
 	# get_tree_string(species_alignment, raxml_path)
 	reduced = os.path.exists(reduced_species_alignment)
 	# get_tree_root(tree_file, raxml_path)
@@ -110,7 +117,8 @@ def get_SCAR_matrices(species_alignment, ancestral_alignment, kappa_file, mu):
 	###############################################################################
 	##### CHANGE THIS!!!!!!!!!!!!!!!!!!!!! ########################################
 	###############################################################################
-	scaled_tree_string = complete_tree_string
+	# scaled_tree_string = complete_tree_string
+	scaled_tree_string = scale_newick_format_tree(complete_tree_string)
 
 	# scaled_tree_string = scale_branch_lengths(L, complete_tree_string, min_m, max_m, pi, theta, kappa, 1) # scale_newick_format_tree(strains, L, min_m, tree_string, 0) # the tree_string scaled by min_m
 		# L, tree_string, min_m, max_m, real_pi, real_theta, kappa
@@ -323,33 +331,33 @@ def get_s_a(genome1, genome2, MRCA, L):
 
 # 	return accurate_tree
 
-def scale_newick_format_tree(strains, L, desired_m, tree_string):
-	l = len(tree_string)
-	branch_lengths = []
-	current = 0
-	while current < l:
-		start = tree_string.find(':', current) + 1
-		if start == 0:
-			current = l
-		else:
-			x = tree_string.find(',', start)
-			y = tree_string.find(')', start)
-			if x == -1:
-				end = y
-			elif y == -1:
-				end = x
-			else:
-				end = min(x,y)
-			# if end == -1:
-			# 	end = -2
-			branch_lengths.append([start, end])
-			current = end
-	scaled_tree_string = tree_string
-	for branch in branch_lengths:
-		branch_length = tree_string[branch[0]:branch[1]]
-		scaled_tree_string = scaled_tree_string.replace(branch_length, scale(branch_length, desired_m, max_m))
+# def scale_newick_format_tree(strains, L, desired_m, tree_string):
+# 	l = len(tree_string)
+# 	branch_lengths = []
+# 	current = 0
+# 	while current < l:
+# 		start = tree_string.find(':', current) + 1
+# 		if start == 0:
+# 			current = l
+# 		else:
+# 			x = tree_string.find(',', start)
+# 			y = tree_string.find(')', start)
+# 			if x == -1:
+# 				end = y
+# 			elif y == -1:
+# 				end = x
+# 			else:
+# 				end = min(x,y)
+# 			# if end == -1:
+# 			# 	end = -2
+# 			branch_lengths.append([start, end])
+# 			current = end
+# 	scaled_tree_string = tree_string
+# 	for branch in branch_lengths:
+# 		branch_length = tree_string[branch[0]:branch[1]]
+# 		scaled_tree_string = scaled_tree_string.replace(branch_length, scale(branch_length, desired_m, max_m))
 
-	return scaled_tree_string
+# 	return scaled_tree_string
 
 def scale(branch_length, desired_m, max_m):
 	scaled_branch_length = str(float(branch_length) * (int(min_m)) / max_m) # (float(total_branch_length) * int(L)))
